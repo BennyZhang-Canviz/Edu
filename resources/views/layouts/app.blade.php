@@ -12,7 +12,8 @@
 
     <!-- Styles -->
     <link href="{{ asset('/public/css/app.css') }}" rel="stylesheet">
-
+    <link href="{{ asset('/public/css/bootstrap.css') }}" rel="stylesheet">
+    <link href="{{ asset('/public/css/site.css') }}" rel="stylesheet">
     <!-- Scripts -->
     <script>
         window.Laravel = {!! json_encode([
@@ -21,8 +22,8 @@
     </script>
 </head>
 <body>
-    <div id="app">
-        <nav class="navbar navbar-default navbar-static-top">
+    <div id="app" class="navbar navbar-inverse navbar-fixed-top">
+        <nav >
             <div class="container">
                 <div class="navbar-header">
 
@@ -78,6 +79,9 @@
             </div>
         </nav>
 
+
+    </div>
+    <div class="containerbg">
         @yield('content')
     </div>
 

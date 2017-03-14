@@ -7,7 +7,7 @@ use App\Http\Controllers\Controller;
 use Microsoft\Graph\Graph;
 use Microsoft\Graph\Connect\Constants;
 
-class LoginController extends Controller
+class O365AuthController extends Controller
 {
     public function oauth()
     {
