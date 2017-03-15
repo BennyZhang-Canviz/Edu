@@ -67,23 +67,24 @@ class O365AuthController extends Controller
                 $idToken = $microsoftToken->getValues()['id_token'];
                 $token = (new Parser())->parse((string) $idToken); // Parses from a string
 
-                $O365UserId = $token->getClaim('oid');
+                $o365UserId = $token->getClaim('oid');
 
-                $user  = User::where('o365UserId',$O365UserId)->get();
+                $user  = User::where('o365UserId',$o365UserId)->first();
 
                 //If user exists on db, check if this user is linked. If linked, go to schools/index page, otherwise go to link page.
                 //If user doesn't exists on db, add user information like o365 user id, first name, last name to session and then go to link page.
                 if($user){
-
+                  $emailaa =   $user->email;
+                  $a=1;
                 }
                 else{
                     $_SESSION[SiteConstants::Session_MS_GRaph_Token] = $microsoftToken->getToken();
                     $_SESSION[SiteConstants::Session_AAD_GRaph_Token] = $aadGraphToken->getToken();
-                    $_SESSION[SiteConstants::Session_O365_User_ID] = $O365UserId;
+                    $_SESSION[SiteConstants::Session_O365_User_ID] = $o365UserId;
                     $_SESSION[SiteConstants::Session_O365_User_Email] = $token->getClaim('unique_name');
                     $_SESSION[SiteConstants::Session_O365_User_First_name] = $token->getClaim('given_name');
                     $_SESSION[SiteConstants::Session_O365_User_Last_name] = $token->getClaim('family_name');
-
+                    return redirect('/link');
                 }
 
 
