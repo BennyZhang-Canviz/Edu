@@ -48,7 +48,7 @@ class LinkController extends Controller
             User::create([
                 'firstName' => $firstName,
                 'lastName' => $lastName,
-                //'password' => bcrypt('secret'),
+                'password' => bcrypt('secret'),
                 'o365UserId' =>$o365UserId,
                 'o365Email'=>$o365Email,
                 'email' =>$o365Email,
