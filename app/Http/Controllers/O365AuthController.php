@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Microsoft\Graph\Graph;
 use Microsoft\Graph\Connect\Constants;
 
@@ -64,7 +65,9 @@ class O365AuthController extends Controller
 
                 $newtoken1= $newtoken->getToken();
 
-                echo $accessToken;
+$avalue = $accessToken->getValues();
+$id = $accessToken->getResourceOwnerId();
+
 
 //
 //                header('Location: http://localhost:8000/email');

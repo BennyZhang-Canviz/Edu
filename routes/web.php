@@ -18,9 +18,16 @@ Route::get('/', function () {
     return redirect('/login');
 });
 
+//O365 user login
 Route::get('/oauth.php', 'O365AuthController@oauth');
 
-
+//login, register related.
 Auth::routes();
 
-Route::get('/home', 'HomeController@index');
+
+//a user must login to visit below pages.
+Route::group(['middleware' => ['web','auth.basic']], function () {
+
+    //add school related routers.
+    Route::get('/home', 'HomeController@index');
+});
