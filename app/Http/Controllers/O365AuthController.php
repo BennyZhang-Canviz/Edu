@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Auth;
 use Microsoft\Graph\Graph;
 use Microsoft\Graph\Connect\Constants;
 use Lcobucci\JWT\Parser;
+use App\Config\SiteConstants;
+use App\User;
 
 class O365AuthController extends Controller
 {
@@ -54,22 +56,38 @@ class O365AuthController extends Controller
                 ]);
 
 
-                $graphToken = $provider->getAccessToken('refresh_token', [
+                $aadGraphToken = $provider->getAccessToken('refresh_token', [
                     'refresh_token'     => $microsoftToken->getRefreshToken(),
                     'resource' =>Constants::AADGraph
                 ]);
 
 
-                $refreshToken = $graphToken->getRefreshToken();
+                $refreshToken = $aadGraphToken->getRefreshToken();
 
                 $idToken = $microsoftToken->getValues()['id_token'];
                 $token = (new Parser())->parse((string) $idToken); // Parses from a string
 
+                $O365UserId = $token->getClaim('oid');
 
-                //$_SESSION['access_token'] = $microsoftToken->getToken();
-//
-//                header('Location: http://localhost:8000/email');
-//                exit();
+                $user  = User::where('o365UserId',$O365UserId)->get();
+
+                //If user exists on db, check if this user is linked. If linked, go to schools/index page, otherwise go to link page.
+                //If user doesn't exists on db, add user information like o365 user id, first name, last name to session and then go to link page.
+                if($user){
+
+                }
+                else{
+                    $_SESSION[SiteConstants::Session_MS_GRaph_Token] = $microsoftToken->getToken();
+                    $_SESSION[SiteConstants::Session_AAD_GRaph_Token] = $aadGraphToken->getToken();
+                    $_SESSION[SiteConstants::Session_O365_User_ID] = $O365UserId;
+                    $_SESSION[SiteConstants::Session_O365_User_Email] = $token->getClaim('unique_name');
+                    $_SESSION[SiteConstants::Session_O365_User_First_name] = $token->getClaim('given_name');
+                    $_SESSION[SiteConstants::Session_O365_User_Last_name] = $token->getClaim('family_name');
+
+                }
+
+
+
             } catch (Exception $e) {
                 echo 'Something went wrong, couldn\'t get tokens: ' . $e->getMessage();
             }

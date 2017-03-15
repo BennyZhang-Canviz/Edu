@@ -13,7 +13,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password','favorite_color'
+        'name', 'email', 'password','favorite_color','firstName', 'lastName', 'o365UserId','o365Email'
     ];
     /**
      * The attributes that should be hidden for arrays.
