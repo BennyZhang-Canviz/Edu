@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Microsoft\Graph\Graph;
 use Microsoft\Graph\Connect\Constants;
+use Lcobucci\JWT\Parser;
 
 class O365AuthController extends Controller
 {
@@ -48,27 +49,24 @@ class O365AuthController extends Controller
             // With the authorization code, we can retrieve access tokens and other data.
             try {
                 // Get an access token using the authorization code grant
-                $accessToken = $provider->getAccessToken('authorization_code', [
+                $microsoftToken = $provider->getAccessToken('authorization_code', [
                     'code'     => $_GET['code']
                 ]);
-                $_SESSION['access_token'] = $accessToken->getToken();
-
-                // The id token is a JWT token that contains information about the user
-                // It's a base64 coded string that has a header, payload and signature
-                $idToken = $accessToken->getValues()['id_token'];
 
 
-                $newtoken = $provider->getAccessToken('refresh_token', [
-                    'refresh_token'     => $accessToken->getRefreshToken(),
+                $graphToken = $provider->getAccessToken('refresh_token', [
+                    'refresh_token'     => $microsoftToken->getRefreshToken(),
                     'resource' =>Constants::AADGraph
                 ]);
 
-                $newtoken1= $newtoken->getToken();
 
-$avalue = $accessToken->getValues();
-$id = $accessToken->getResourceOwnerId();
+                $refreshToken = $graphToken->getRefreshToken();
+
+                $idToken = $microsoftToken->getValues()['id_token'];
+                $token = (new Parser())->parse((string) $idToken); // Parses from a string
 
 
+                //$_SESSION['access_token'] = $microsoftToken->getToken();
 //
 //                header('Location: http://localhost:8000/email');
 //                exit();
