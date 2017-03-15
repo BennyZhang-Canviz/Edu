@@ -81,8 +81,11 @@
 
 
     </div>
-    <div class="containerbg">
-        @yield('content')
+
+        <div class="containerbg">
+            <div class="container body-content">
+                @yield('content')
+            </div>
     </div>
 
     <!-- Scripts -->
