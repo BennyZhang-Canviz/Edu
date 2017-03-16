@@ -1,12 +1,12 @@
 <?php
 
 namespace App\Http\Controllers\Auth;
-
 use App\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Auth;
 
 
 class RegisterController extends Controller
@@ -32,6 +32,15 @@ class RegisterController extends Controller
     //protected $redirectTo = '/home';
     protected function redirectTo()
     {
+        if (Auth::check()) {
+            $user = Auth::user();
+            $o365UserIdInDB= $user->o365UserId;
+            $o365UserEmailInDB=$user->o365Email;
+            if( !$o365UserEmailInDB || ! $o365UserEmailInDB || $o365UserEmailInDB==='' || $o365UserIdInDB==='' ){
+                return '/link';
+            }
+        }
+
         return '/home';
     }
     /**

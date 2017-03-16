@@ -29,9 +29,13 @@ class TokenCache extends Model
 
     }
 
-    public function GetToken($UserId)
+    public function GetToken($userId)
     {
-
+        $tokenCache = $this->where('UserId',$userId)->first();
+        if($tokenCache)
+            return $tokenCache->refreshToken;
+        else
+            return null;
     }
 
 
