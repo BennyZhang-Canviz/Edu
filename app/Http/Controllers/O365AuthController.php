@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -11,7 +12,7 @@ use Lcobucci\JWT\Parser;
 use App\Config\SiteConstants;
 use App\User;
 use Illuminate\Support\Facades\Crypt;
-
+use App\Model\TokenCache;
 
 
 class O365AuthController extends Controller
@@ -66,7 +67,18 @@ class O365AuthController extends Controller
                 ]);
 
 
+                $ts = $aadGraphToken->getExpires();
+                $date = new \DateTime("@$ts");
+                $aadTokenExpires = $date->format('Y-m-d H:i:s');
+                $ts = $microsoftToken->getExpires();
+                $date = new \DateTime("@$ts");
+                $microsoftTokenExpires =  $date->format('Y-m-d H:i:s');
+                $format = '{"https://graph.windows.net":{"expiresOn":"%s","value":"%s"},"https://graph.microsoft.com":{"expiresOn":"%s","value":"%s"}}';
+                $tokensArray = sprintf($format, $aadTokenExpires,$aadGraphToken->getToken(), $microsoftTokenExpires,$microsoftToken->getToken());
+                $_SESSION[SiteConstants::Session_Tokens_Array] = $tokensArray;
+
                 $refreshToken = $aadGraphToken->getRefreshToken();
+                $_SESSION[SiteConstants::Session_Refresh_Token] = $refreshToken;
 
                 $idToken = $microsoftToken->getValues()['id_token'];
                 $token = (new Parser())->parse((string) $idToken); // Parses from a string
@@ -85,13 +97,14 @@ class O365AuthController extends Controller
                     }else{
                         Auth::loginUsingId($user->id);
                         if (Auth::check()) {
+
+                            (new TokenCache)->UpdateOrInsertCache($o365UserIdInDB,$refreshToken,$tokensArray);
+
                             return redirect("/schools");
                         }
                     }
                 }
                 else{
-                    $_SESSION[SiteConstants::Session_MS_GRaph_Token] = $microsoftToken->getToken();
-                    $_SESSION[SiteConstants::Session_AAD_GRaph_Token] = $aadGraphToken->getToken();
                     $_SESSION[SiteConstants::Session_O365_User_ID] = $o365UserId;
                     $_SESSION[SiteConstants::Session_O365_User_Email] = $token->getClaim('unique_name');
                     $_SESSION[SiteConstants::Session_O365_User_First_name] = $token->getClaim('given_name');
@@ -106,4 +119,6 @@ class O365AuthController extends Controller
             }
         }
     }
+
+
 }
