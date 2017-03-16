@@ -10,11 +10,15 @@ use Microsoft\Graph\Connect\Constants;
 use Lcobucci\JWT\Parser;
 use App\Config\SiteConstants;
 use App\User;
+use Illuminate\Support\Facades\Crypt;
+
+
 
 class O365AuthController extends Controller
 {
     public function oauth()
     {
+
         //We store user name, id, and tokens in session variables
         if (session_status() == PHP_SESSION_NONE) {
             session_start();
@@ -33,7 +37,7 @@ class O365AuthController extends Controller
         if ($_SERVER['REQUEST_METHOD'] === 'GET' && !isset($_GET['code'])) {
             $authorizationUrl = $provider->getAuthorizationUrl();
 
-            // The OAuth library automaticaly generates a state value that we can
+            // The OAuth library automatically generates a state value that we can
             // validate later. We just save it for now.
             $_SESSION['state'] = $provider->getState();
 
@@ -74,8 +78,16 @@ class O365AuthController extends Controller
                 //If user exists on db, check if this user is linked. If linked, go to schools/index page, otherwise go to link page.
                 //If user doesn't exists on db, add user information like o365 user id, first name, last name to session and then go to link page.
                 if($user){
-                  $emailaa =   $user->email;
-                  $a=1;
+                     $o365UserIdInDB= $user->o365UserId;
+                    $o365UserEmailInDB=$user->o365Email;
+                    if($o365UserEmailInDB==='' || $o365UserIdInDB===''){
+                        return redirect('/link');
+                    }else{
+                        Auth::loginUsingId($user->id);
+                        if (Auth::check()) {
+                            return redirect("/schools");
+                        }
+                    }
                 }
                 else{
                     $_SESSION[SiteConstants::Session_MS_GRaph_Token] = $microsoftToken->getToken();
