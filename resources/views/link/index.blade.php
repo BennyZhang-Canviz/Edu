@@ -1,5 +1,8 @@
 @extends('layouts.app')
 @section('content')
+    @if(session('msg'))
+        <div class="message-container bg-danger"> <p>{{session('msg')}}</p>  </div>
+    @endif
     <h2>Link Office 365 & Local Account</h2>
     @if ($areAccountsLinked)
         accounts are linked
@@ -29,4 +32,11 @@
 
         </div>
     @endif
+
+<script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.1.1.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.message-container').fadeOut(5000);
+    });
+</script>
 @endsection

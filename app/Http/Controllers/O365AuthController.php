@@ -84,13 +84,21 @@ class O365AuthController extends Controller
                 $token = (new Parser())->parse((string) $idToken); // Parses from a string
 
                 $o365UserId = $token->getClaim('oid');
+                $o365Email = $token->getClaim('unique_name');
 
                 if (Auth::check()) {
+
+                    //A local user must link to and o365 account that is not linked.
+                    if(User::where('o365Email',$o365Email)->first())
+                        return back()->with('msg','Failed to link accounts. The Office 365 account '. $o365Email .' is already linked to another local account.');
+
+
                     //Local user is login and then link to o365 user.
                     //todo: need to check if this o365 email is linked to a local user or not.
+
                     $localUser = Auth::user();
                     $localUser->o365UserId=$o365UserId;
-                    $localUser->o365Email=$token->getClaim('unique_name');
+                    $localUser->o365Email=$o365Email;
                     $localUser->firstName = $token->getClaim('given_name');
                     $localUser->lastName = $token->getClaim('family_name');
                     $localUser->save();
@@ -118,7 +126,7 @@ class O365AuthController extends Controller
                 }
                 else{
                     $_SESSION[SiteConstants::Session_O365_User_ID] = $o365UserId;
-                    $_SESSION[SiteConstants::Session_O365_User_Email] = $token->getClaim('unique_name');
+                    $_SESSION[SiteConstants::Session_O365_User_Email] = $o365Email;
                     $_SESSION[SiteConstants::Session_O365_User_First_name] = $token->getClaim('given_name');
                     $_SESSION[SiteConstants::Session_O365_User_Last_name] = $token->getClaim('family_name');
                     return redirect('/link');
