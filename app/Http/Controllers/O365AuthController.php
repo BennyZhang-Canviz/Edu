@@ -46,7 +46,7 @@ class O365AuthController extends Controller
             exit();
         } elseif ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['code'])) {
             // Validate the OAuth state parameter
-            if (empty($_GET['state']) || ($_GET['state'] !== $_SESSION['state'])) {
+            if (!isset($_GET['state']) || ($_GET['state'] !== $_SESSION['state'])) {
                 unset($_SESSION['state']);
                 exit('State value does not match the one initially sent');
 
@@ -84,6 +84,18 @@ class O365AuthController extends Controller
                 $token = (new Parser())->parse((string) $idToken); // Parses from a string
 
                 $o365UserId = $token->getClaim('oid');
+
+                if (Auth::check()) {
+                    //Local user is login and then link to o365 user.
+                    //todo: need to check if this o365 email is linked to a local user or not.
+                    $localUser = Auth::user();
+                    $localUser->o365UserId=$o365UserId;
+                    $localUser->o365Email=$token->getClaim('unique_name');
+                    $localUser->firstName = $token->getClaim('given_name');
+                    $localUser->lastName = $token->getClaim('family_name');
+                    $localUser->save();
+                    return redirect("/schools");
+                }
 
                 $user  = User::where('o365UserId',$o365UserId)->first();
 

@@ -32,11 +32,10 @@ Route::group(['middleware' => ['web','auth.basic']], function () {
     Route::get('/home', 'HomeController@index');
 });
 
+Route::get('/schools', 'HomeController@index');
 
 //link
 Route::group(['middleware' => ['web']], function () {
-
-
     Route::get('/link', 'LinkController@index');
     Route::any('/link/createlocalaccount', 'LinkController@createLocalAccount');
     Route::any('/link/loginlocal', 'LinkController@loginLocal');

@@ -18,6 +18,7 @@ class LinkController extends Controller
 
         $isLocalUserExists = false;
         $areAccountsLinked = false;
+        $showLinkToExistingO365Account = false;
         $localUserEmail = '';
         //If session exists for O365 user, it's the first time that an O365 user login.
         $o365userId = $_SESSION[SiteConstants::Session_O365_User_ID];
@@ -31,12 +32,22 @@ class LinkController extends Controller
 
         //check if a user is login.
         if (Auth::check()) {
-
+            $user = Auth::user();
+            $o365UserIdInDB= $user->o365UserId;
+            $o365UserEmailInDB=$user->o365Email;
+            if( !$o365UserEmailInDB || ! $o365UserEmailInDB || $o365UserEmailInDB==='' || $o365UserIdInDB==='') {
+                //Local user login but not linked. Should show link to existing o365 account link and then login to o365.
+                $showLinkToExistingO365Account = true;
+            }else{
+                //Accounts are linked. Will show user basic information and  allow user to update favorite color.
+                $areAccountsLinked = true;
+            }
         }
         $arrData = array(
             'isLocalUserExists'=>$isLocalUserExists,
             'areAccountsLinked'=>$areAccountsLinked,
-            'localUserEmail' =>$localUserEmail
+            'localUserEmail' =>$localUserEmail,
+            'showLinkToExistingO365Account' =>$showLinkToExistingO365Account
         );
         return view("link.index",$arrData);
     }
