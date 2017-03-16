@@ -102,6 +102,7 @@ class O365AuthController extends Controller
                     $localUser->firstName = $token->getClaim('given_name');
                     $localUser->lastName = $token->getClaim('family_name');
                     $localUser->save();
+                    (new TokenCache)->UpdateOrInsertCache($o365UserId,$refreshToken,$tokensArray);
                     return redirect("/schools");
                 }
 
