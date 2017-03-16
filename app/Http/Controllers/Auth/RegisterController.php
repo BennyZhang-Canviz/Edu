@@ -6,6 +6,8 @@ use App\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;
+use Illuminate\Support\Facades\Crypt;
+
 
 class RegisterController extends Controller
 {
@@ -67,7 +69,7 @@ class RegisterController extends Controller
         return User::create([
         'favorite_color' => $data['FavoriteColor'],
             'email' => $data['email'],
-            'password' => bcrypt($data['password']),
+            'password' => encrypt($data['password']),
         ]);
     }
 }

@@ -63,7 +63,7 @@
                         </div>
 
                         <p>
-                            <a href="/Account/Register?class=registerlink">Register as a new user</a>
+                            <a class="registerlink" href="{{url("/register")}}">Register as a new user</a>
                         </p>
                     </form>
                 </div>
