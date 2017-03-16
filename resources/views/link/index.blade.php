@@ -7,6 +7,9 @@
         <p>This page will enable you to link your Office 365 &amp; Local Account together to successfully use the demo application.</p>
         <hr>
         <div class="form-horizontal">
+            @if($isLocalUserExists)
+                <p>There is a local account: {{$localUserEmail}} matching your O365 account.</p>
+            @endif
             <p>
                 @if($isLocalUserExists)
                     <a class="btn btn-primary" disabled="disabled" href="javascript:void(0)">Continue with new Local Account</a>

@@ -39,6 +39,5 @@ Route::group(['middleware' => ['web']], function () {
 
     Route::get('/link', 'LinkController@index');
     Route::any('/link/createlocalaccount', 'LinkController@createLocalAccount');
-
-    Route::get('/link/loginlocal', 'LinkController@loginLocal');
+    Route::any('/link/loginlocal', 'LinkController@loginLocal');
 });

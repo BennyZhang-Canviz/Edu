@@ -69,7 +69,7 @@ class RegisterController extends Controller
         return User::create([
         'favorite_color' => $data['FavoriteColor'],
             'email' => $data['email'],
-            'password' => encrypt($data['password']),
+            'password' => bcrypt($data['password']),
         ]);
     }
 }

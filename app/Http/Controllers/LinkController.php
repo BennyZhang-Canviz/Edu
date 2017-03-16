@@ -17,12 +17,14 @@ class LinkController extends Controller
 
         $isLocalUserExists = false;
         $areAccountsLinked = false;
+        $localUserEmail = '';
         //If session exists for O365 user, it's the first time that an O365 user login.
         $o365userId = $_SESSION[SiteConstants::Session_O365_User_ID];
         if($o365userId){
             $user  = User::where('email', $_SESSION[SiteConstants::Session_O365_User_Email])->first();
             if($user){
                 $isLocalUserExists = true;
+                $localUserEmail = $_SESSION[SiteConstants::Session_O365_User_Email];
             }
         }
 
@@ -32,7 +34,8 @@ class LinkController extends Controller
         }
         $arrData = array(
             'isLocalUserExists'=>$isLocalUserExists,
-            'areAccountsLinked'=>$areAccountsLinked
+            'areAccountsLinked'=>$areAccountsLinked,
+            'localUserEmail' =>$localUserEmail
         );
         return view("link.index",$arrData);
     }
@@ -64,22 +67,52 @@ class LinkController extends Controller
 
     public function loginLocal()
     {
-
         $o365email = $_SESSION[SiteConstants::Session_O365_User_Email];
-        $user  = User::where('email', $o365email)->first();
+        if($input =Input::all()){ //post from page.
+           $email = $input['email'];
+           $password = $input['password'];
+            $credentials = [
+                'email' => $email,
+                'password' => $password,
+            ];
+            if (Auth::attempt($credentials)) {
+               $user = Auth::user();
+                $user->o365UserId=$_SESSION[SiteConstants::Session_O365_User_ID];
+                $user->o365Email=$o365email;
+                $user->firstName = $_SESSION[SiteConstants::Session_O365_User_First_name];
+                $user->lastName = $_SESSION[SiteConstants::Session_O365_User_Last_name];
+                $user->save();
+                Auth::loginUsingId($user->id);
+                //todo: need to handel cache here.
+                if (Auth::check()) {
+                    return redirect("/schools");
+                }
+            }else{
+                return back()->with('msg','Invalid login attempt.');
+            }
 
-        //If there's a local user with same email as o365 email on db, link this account to o365 account directly and then go to schools page.
-        if($user){
-            $user->o365UserId=$_SESSION[SiteConstants::Session_O365_User_ID];
-            $user->o365Email=$o365email;
-            $user->save();
-
-            //Todo:login and then go to schools page.
         }
-        //If there's no local account with same email as o365 email, go to login local page.
         else{
-            echo 'go to login page';
+
+            $user  = User::where('email', $o365email)->first();
+
+            //If there's a local user with same email as o365 email on db, link this account to o365 account directly and then go to schools page.
+            if($user){
+                $user->o365UserId=$_SESSION[SiteConstants::Session_O365_User_ID];
+                $user->o365Email=$o365email;
+                $user->firstName = $_SESSION[SiteConstants::Session_O365_User_First_name];
+                $user->lastName = $_SESSION[SiteConstants::Session_O365_User_Last_name];
+                $user->save();
+                Auth::loginUsingId($user->id);
+                //todo need to handle cache here.
+                if (Auth::check()) {
+                    return redirect("/schools");
+                }
+
+            }
+            return view('link.loginlocal');
         }
+
 
     }
 }
