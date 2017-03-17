@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
 use App\User;
 use App\Model\TokenCache;
-
+require_once 'app/Services/TokenCacheServices.php';
 
 class LinkController extends Controller
 {
@@ -76,7 +76,7 @@ class LinkController extends Controller
                 'favorite_color'=>$favoriteColor
             ]);
             Auth::loginUsingId($user->id);
-            (new TokenCache)->UpdateOrInsertCache($o365UserId,$_SESSION[SiteConstants::Session_Refresh_Token],$_SESSION[SiteConstants::Session_Tokens_Array]);
+            (new TokenCacheServices)->UpdateOrInsertCache($o365UserId,$_SESSION[SiteConstants::Session_Refresh_Token],$_SESSION[SiteConstants::Session_Tokens_Array]);
             return redirect('/schools');
         }else{
             return view("link.createlocalaccount");
@@ -105,7 +105,7 @@ class LinkController extends Controller
                 $user->save();
                 Auth::loginUsingId($user->id);
 
-                (new TokenCache)->UpdateOrInsertCache($_SESSION[SiteConstants::Session_O365_User_ID],$_SESSION[SiteConstants::Session_Refresh_Token],$_SESSION[SiteConstants::Session_Tokens_Array]);
+                (new TokenCacheServices)->UpdateOrInsertCache($_SESSION[SiteConstants::Session_O365_User_ID],$_SESSION[SiteConstants::Session_Refresh_Token],$_SESSION[SiteConstants::Session_Tokens_Array]);
                 if (Auth::check()) {
                     return redirect("/schools");
                 }
@@ -126,7 +126,7 @@ class LinkController extends Controller
                 $user->password = '';
                 $user->save();
                 Auth::loginUsingId($user->id);
-                (new TokenCache)->UpdateOrInsertCache($_SESSION[SiteConstants::Session_O365_User_ID],$_SESSION[SiteConstants::Session_Refresh_Token],$_SESSION[SiteConstants::Session_Tokens_Array]);
+                (new TokenCacheServices)->UpdateOrInsertCache($_SESSION[SiteConstants::Session_O365_User_ID],$_SESSION[SiteConstants::Session_Refresh_Token],$_SESSION[SiteConstants::Session_Tokens_Array]);
                 if (Auth::check()) {
                     return redirect("/schools");
                 }

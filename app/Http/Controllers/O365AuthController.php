@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 
+use App\Http\Services\TokenCacheServices;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -13,6 +14,8 @@ use App\Config\SiteConstants;
 use App\User;
 use Illuminate\Support\Facades\Crypt;
 use App\Model\TokenCache;
+
+require_once 'app/Services/TokenCacheServices.php';
 
 
 class O365AuthController extends Controller
@@ -99,7 +102,7 @@ class O365AuthController extends Controller
                     $localUser->lastName = $token->getClaim('family_name');
                     $localUser->password = '';
                     $localUser->save();
-                    (new TokenCache)->UpdateOrInsertCache($o365UserId,$refreshToken,$tokensArray);
+                    (new TokenCacheServices)->UpdateOrInsertCache($o365UserId,$refreshToken,$tokensArray);
                     return redirect("/schools");
                 }
 
@@ -116,7 +119,7 @@ class O365AuthController extends Controller
                         Auth::loginUsingId($user->id);
                         if (Auth::check()) {
 
-                            (new TokenCache)->UpdateOrInsertCache($o365UserIdInDB,$refreshToken,$tokensArray);
+                            (new TokenCacheServices)->UpdateOrInsertCache($o365UserIdInDB,$refreshToken,$tokensArray);
 
                             return redirect("/schools");
                         }
