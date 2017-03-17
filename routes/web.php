@@ -40,3 +40,9 @@ Route::group(['middleware' => ['web']], function () {
     Route::any('/link/createlocalaccount', 'LinkController@createLocalAccount');
     Route::any('/link/loginlocal', 'LinkController@loginLocal');
 });
+
+//link
+Route::group(['middleware' => ['web','Admin.Login']], function () {
+    Route::get('/admin', 'AdminController@index');
+
+});

@@ -92,10 +92,6 @@ class O365AuthController extends Controller
                     if(User::where('o365Email',$o365Email)->first())
                         return back()->with('msg','Failed to link accounts. The Office 365 account '. $o365Email .' is already linked to another local account.');
 
-
-                    //Local user is login and then link to o365 user.
-                    //todo: need to check if this o365 email is linked to a local user or not.
-
                     $localUser = Auth::user();
                     $localUser->o365UserId=$o365UserId;
                     $localUser->o365Email=$o365Email;
