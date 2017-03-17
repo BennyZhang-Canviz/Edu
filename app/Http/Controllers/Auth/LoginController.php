@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
@@ -25,7 +26,19 @@ class LoginController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/home';
+    protected function redirectTo()
+    {
+        if (Auth::check()) {
+            $user = Auth::user();
+            $o365UserIdInDB= $user->o365UserId;
+            $o365UserEmailInDB=$user->o365Email;
+            if( !$o365UserEmailInDB || ! $o365UserEmailInDB || $o365UserEmailInDB==='' || $o365UserIdInDB==='' ){
+                return '/link';
+            }
+        }
+
+        return '/schools';
+    }
 
     /**
      * Create a new controller instance.

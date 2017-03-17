@@ -21,14 +21,18 @@ class LinkController extends Controller
         $showLinkToExistingO365Account = false;
         $localUserEmail = '';
         //If session exists for O365 user, it's the first time that an O365 user login.
-        $o365userId = $_SESSION[SiteConstants::Session_O365_User_ID];
-        if($o365userId){
-            $user  = User::where('email', $_SESSION[SiteConstants::Session_O365_User_Email])->first();
-            if($user){
-                $isLocalUserExists = true;
-                $localUserEmail = $_SESSION[SiteConstants::Session_O365_User_Email];
+
+        if(isset($_SESSION[SiteConstants::Session_O365_User_ID])){
+            $o365userId = $_SESSION[SiteConstants::Session_O365_User_ID];
+            if($o365userId){
+                $user  = User::where('email', $_SESSION[SiteConstants::Session_O365_User_Email])->first();
+                if($user){
+                    $isLocalUserExists = true;
+                    $localUserEmail = $_SESSION[SiteConstants::Session_O365_User_Email];
+                }
             }
         }
+
 
         //check if a user is login.
         if (Auth::check()) {

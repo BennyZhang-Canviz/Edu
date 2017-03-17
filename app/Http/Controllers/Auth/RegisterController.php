@@ -41,7 +41,7 @@ class RegisterController extends Controller
             }
         }
 
-        return '/home';
+        return '/schools';
     }
     /**
      * Create a new controller instance.
