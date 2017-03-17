@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 
-use App\Http\Services\TokenCacheServices;
+
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -14,8 +14,8 @@ use App\Config\SiteConstants;
 use App\User;
 use Illuminate\Support\Facades\Crypt;
 use App\Model\TokenCache;
+use App\Services\TokenCacheServices;
 
-require_once 'app/Services/TokenCacheServices.php';
 
 
 class O365AuthController extends Controller
