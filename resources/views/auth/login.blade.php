@@ -16,7 +16,7 @@
                         <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
 
 
-                            <div class="col-md-6">
+                            <div class="col-md-12">
                                 <input id="email" type="email" class="form-control logincontrol" name="email" value="{{ old('email') }}" required autofocus placeholder="Email">
 
                                 @if ($errors->has('email'))
@@ -30,7 +30,7 @@
                         <div class="form-group{{ $errors->has('password') ? ' has-error' : '' }}">
 
 
-                            <div class="col-md-6">
+                            <div class="col-md-12">
                                 <input id="password" type="password" class="form-control logincontrol" name="password" required placeholder="Password">
 
                                 @if ($errors->has('password'))

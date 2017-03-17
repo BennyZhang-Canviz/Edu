@@ -66,16 +66,16 @@ class LinkController extends Controller
             $o365Email = $_SESSION[SiteConstants::Session_O365_User_Email];
             $firstName = $_SESSION[SiteConstants::Session_O365_User_First_name];
             $lastName = $_SESSION[SiteConstants::Session_O365_User_Last_name];
-           User::create([
+          $user =  User::create([
                 'firstName' => $firstName,
                 'lastName' => $lastName,
-                'password' => bcrypt('secret'),
+               // 'password' => bcrypt('secret'),
                 'o365UserId' =>$o365UserId,
                 'o365Email'=>$o365Email,
                 'email' =>$o365Email,
                 'favorite_color'=>$favoriteColor
             ]);
-
+            Auth::loginUsingId($user->id);
             (new TokenCache)->UpdateOrInsertCache($o365UserId,$_SESSION[SiteConstants::Session_Refresh_Token],$_SESSION[SiteConstants::Session_Tokens_Array]);
             return redirect('/schools');
         }else{
@@ -101,6 +101,7 @@ class LinkController extends Controller
                 $user->o365Email=$o365email;
                 $user->firstName = $_SESSION[SiteConstants::Session_O365_User_First_name];
                 $user->lastName = $_SESSION[SiteConstants::Session_O365_User_Last_name];
+                $user->password = '';
                 $user->save();
                 Auth::loginUsingId($user->id);
 
@@ -122,6 +123,7 @@ class LinkController extends Controller
                 $user->o365Email=$o365email;
                 $user->firstName = $_SESSION[SiteConstants::Session_O365_User_First_name];
                 $user->lastName = $_SESSION[SiteConstants::Session_O365_User_Last_name];
+                $user->password = '';
                 $user->save();
                 Auth::loginUsingId($user->id);
                 (new TokenCache)->UpdateOrInsertCache($_SESSION[SiteConstants::Session_O365_User_ID],$_SESSION[SiteConstants::Session_Refresh_Token],$_SESSION[SiteConstants::Session_Tokens_Array]);
