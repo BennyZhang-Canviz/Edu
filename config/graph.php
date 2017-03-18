@@ -37,7 +37,7 @@ class Constants
     const AADGraph           = 'https://graph.windows.net';
     const BINGMAPKEY         = '';
     const SENDMAIL_ENDPOINT  = '/v1.0/me/sendmail';
-    const SCOPES             = 'profile openid email offline_access User.Read Mail.Send';
+   // const SCOPES             = 'https://graph.microsoft.com/profile https://graph.microsoft.com/openid https://graph.microsoft.com/email https://graph.microsoft.com/offline_access https://graph.microsoft.com/User.Read Mail.Send';
 
 
 

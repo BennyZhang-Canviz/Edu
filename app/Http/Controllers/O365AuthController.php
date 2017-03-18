@@ -34,8 +34,8 @@ class O365AuthController extends Controller
             'redirectUri'             => Constants::REDIRECT_URI,
             'urlAuthorize'            => Constants::AUTHORITY_URL . Constants::AUTHORIZE_ENDPOINT,
             'urlAccessToken'          => Constants::AUTHORITY_URL . Constants::TOKEN_ENDPOINT,
-            'urlResourceOwnerDetails' => '',
-            'scopes'                  => Constants::SCOPES
+            'urlResourceOwnerDetails' => ''
+            //'scopes'                  => Constants::SCOPES
         ]);
 
         if ($_SERVER['REQUEST_METHOD'] === 'GET' && !isset($_GET['code'])) {
@@ -59,11 +59,13 @@ class O365AuthController extends Controller
             // With the authorization code, we can retrieve access tokens and other data.
             try {
                 // Get an access token using the authorization code grant
+                //token for get resource like /api/me
                 $microsoftToken = $provider->getAccessToken('authorization_code', [
-                    'code'     => $_GET['code']
+                    'code'     => $_GET['code'],
+                    'resource' =>Constants::RESOURCE_ID
                 ]);
 
-
+                //token for enable user access or admin ..
                 $aadGraphToken = $provider->getAccessToken('refresh_token', [
                     'refresh_token'     => $microsoftToken->getRefreshToken(),
                     'resource' =>Constants::AADGraph
@@ -83,6 +85,9 @@ class O365AuthController extends Controller
                 $refreshToken = $aadGraphToken->getRefreshToken();
                 $_SESSION[SiteConstants::Session_Refresh_Token] = $refreshToken;
 
+
+                //This is the correct token.
+               $aaa= $microsoftToken->getToken();
                 $idToken = $microsoftToken->getValues()['id_token'];
                 $token = (new Parser())->parse((string) $idToken); // Parses from a string
 

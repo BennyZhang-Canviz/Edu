@@ -43,6 +43,6 @@ Route::group(['middleware' => ['web']], function () {
 
 //link
 Route::group(['middleware' => ['web','Admin.Login']], function () {
-    Route::get('/admin', 'AdminController@index');
+   // Route::get('/admin', 'AdminController@index');
 
 });
