@@ -93,6 +93,11 @@ class O365AuthController extends Controller
                 $o365UserId = $parsedToken->getClaim('oid');
                 $o365Email = $parsedToken->getClaim('unique_name');
 
+               $graph = new AADGraphClient;
+                $tenant =  $graph->GetTenantByToken($microsoftToken->getToken());
+                $tenantId = $graph->GetTenantId($tenant);
+                (new OrganizationsServices)->CreateByTenant($tenant,$tenantId);
+
                 if (Auth::check()) {
 
                     //A local user must link to and o365 account that is not linked.

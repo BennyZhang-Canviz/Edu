@@ -46,4 +46,15 @@ class AADGraphClient
         $array  =json_decode( json_encode($tenant[0]));
         return $array->id;
     }
+
+    public function GetTenantIdByUserId($userId)
+    {
+        $tenant = $this->GetTenantByUserId($userId);
+        return $this->GetTenantId($tenant);
+    }
+
+    public function GetDirectoryAdminRole()
+    {
+        
+    }
 }

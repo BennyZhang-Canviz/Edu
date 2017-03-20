@@ -9,7 +9,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
 use App\User;
 use App\Model\TokenCache;
-require_once 'app/Services/TokenCacheServices.php';
+use App\Services\TokenCacheServices;
+
+
 
 class LinkController extends Controller
 {

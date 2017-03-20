@@ -47,6 +47,7 @@ class CreateUsersTable extends Migration
             $table->string('name')->nullable();
             $table->string('tenantId')->nullable();
             $table->integer('isAdminConsented');
+            $table->string('created')->nullable();
             $table->timestamps();
         });
 

@@ -7,23 +7,26 @@
  */
 
 namespace App\Services;
-use App\Model\Organization;
+use App\Model\Organizations;
 
 class OrganizationsServices
 {
 
-
-    public function CreateBy($tenant,$tenantId)
+    public function CreateByTenant($tenant,$tenantId)
     {
-//        $graph = new AADGraphClient;
-//        $tenant =  $graph->GetTenantByUserId($o365UserId);
-//        $tenantId = $graph->GetTenantId($tenant);
-//        (new OrganizationsServices)->Create($tenant,$tenantId);
-        $org = new Organization();
-        $org->name = $tenant->getDisplayName();
-        $org->tenantId = $tenantId;
-        $org->isAdminConsented =false;
-        $org->created = date("Y-m-d h:i:s");
-        $org->save();
+        $org = Organizations::where('tenantId',$tenantId)->first();
+        if(!$org){
+            $org = new Organizations();
+            $org->name = $tenant[0]->getDisplayName();
+            $org->tenantId = $tenantId;
+            $org->isAdminConsented =false;
+            $org->created = date("Y-m-d h:i:s");
+            $org->save();
+        }
+    }
+
+    public function GetOrganization()
+    {
+
     }
 }
