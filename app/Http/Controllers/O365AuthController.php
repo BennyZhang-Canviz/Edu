@@ -35,7 +35,6 @@ class O365AuthController extends Controller
             'urlAuthorize'            => Constants::AUTHORITY_URL . Constants::AUTHORIZE_ENDPOINT,
             'urlAccessToken'          => Constants::AUTHORITY_URL . Constants::TOKEN_ENDPOINT,
             'urlResourceOwnerDetails' => ''
-            //'scopes'                  => Constants::SCOPES
         ]);
 
         if ($_SERVER['REQUEST_METHOD'] === 'GET' && !isset($_GET['code'])) {
@@ -86,13 +85,12 @@ class O365AuthController extends Controller
                 $_SESSION[SiteConstants::Session_Refresh_Token] = $refreshToken;
 
 
-                //This is the correct token.
-               $aaa= $microsoftToken->getToken();
-                $idToken = $microsoftToken->getValues()['id_token'];
-                $token = (new Parser())->parse((string) $idToken); // Parses from a string
 
-                $o365UserId = $token->getClaim('oid');
-                $o365Email = $token->getClaim('unique_name');
+                $idToken = $microsoftToken->getValues()['id_token'];
+                $parsedToken = (new Parser())->parse((string) $idToken); // Parses from a string
+
+                $o365UserId = $parsedToken->getClaim('oid');
+                $o365Email = $parsedToken->getClaim('unique_name');
 
                 if (Auth::check()) {
 
@@ -103,8 +101,8 @@ class O365AuthController extends Controller
                     $localUser = Auth::user();
                     $localUser->o365UserId=$o365UserId;
                     $localUser->o365Email=$o365Email;
-                    $localUser->firstName = $token->getClaim('given_name');
-                    $localUser->lastName = $token->getClaim('family_name');
+                    $localUser->firstName = $parsedToken->getClaim('given_name');
+                    $localUser->lastName = $parsedToken->getClaim('family_name');
                     $localUser->password = '';
                     $localUser->save();
                     (new TokenCacheServices)->UpdateOrInsertCache($o365UserId,$refreshToken,$tokensArray);
@@ -133,8 +131,8 @@ class O365AuthController extends Controller
                 else{
                     $_SESSION[SiteConstants::Session_O365_User_ID] = $o365UserId;
                     $_SESSION[SiteConstants::Session_O365_User_Email] = $o365Email;
-                    $_SESSION[SiteConstants::Session_O365_User_First_name] = $token->getClaim('given_name');
-                    $_SESSION[SiteConstants::Session_O365_User_Last_name] = $token->getClaim('family_name');
+                    $_SESSION[SiteConstants::Session_O365_User_First_name] = $parsedToken->getClaim('given_name');
+                    $_SESSION[SiteConstants::Session_O365_User_Last_name] = $parsedToken->getClaim('family_name');
                     return redirect('/link');
                 }
 
