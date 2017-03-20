@@ -9,8 +9,8 @@ use Illuminate\Support\Facades\Auth;
 use Microsoft\Graph\Connect\Constants;
 use Microsoft\Graph\Graph;
 use Microsoft\Graph\Model;
-use App\Services\TokenCacheServices;
 
+use App\Services\AADGraphClient;
 class HomeController extends Controller
 {
     /**
@@ -30,23 +30,21 @@ class HomeController extends Controller
      */
     public function index()
     {
-
-
         $user = Auth::user();
         $o365UserId = $user->o365UserId;
-        $token= (new TokenCacheServices)->GetMicrosoftToken($o365UserId);
 
-        if($token){
-            $graph = new Graph();
-            $graph->setAccessToken($token);
-            $me = $graph->createRequest("get", "/me")
-                ->setReturnType(Model\User::class)
-                ->execute();
+//$grapp = new AADGraphClient;
+//
+//        $user = Auth::user();
+//        $o365UserId = $user->o365UserId;
+//
+//       $result =  $grapp->GetTenantByUserId($o365UserId);
+        //dd($grapp->GetTenantId($result));
 
-            $name = $me->getGivenName();
-            dd($name);
-        }
+        $u = (new AADGraphClient)->GetCurrentUser($o365UserId);
 
         return view('home');
     }
+
+
 }

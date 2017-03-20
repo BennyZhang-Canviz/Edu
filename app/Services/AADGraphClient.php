@@ -53,7 +53,7 @@ class AADGraphClient
         return $this->GetTenantId($tenant);
     }
 
-    public function GetDirectoryAdminRole()
+    public function GetDirectoryAdminRole($userId,$token)
     {
         
     }
