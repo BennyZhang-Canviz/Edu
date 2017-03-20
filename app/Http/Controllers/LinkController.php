@@ -68,6 +68,7 @@ class LinkController extends Controller
             $o365Email = $_SESSION[SiteConstants::Session_O365_User_Email];
             $firstName = $_SESSION[SiteConstants::Session_O365_User_First_name];
             $lastName = $_SESSION[SiteConstants::Session_O365_User_Last_name];
+            $orgId =$_SESSION[SiteConstants::OrganizationId];
           $user =  User::create([
                 'firstName' => $firstName,
                 'lastName' => $lastName,
@@ -75,7 +76,8 @@ class LinkController extends Controller
                 'o365UserId' =>$o365UserId,
                 'o365Email'=>$o365Email,
                 'email' =>$o365Email,
-                'favorite_color'=>$favoriteColor
+                'favorite_color'=>$favoriteColor,
+               'OrganizationId'=>$orgId
             ]);
             Auth::loginUsingId($user->id);
             (new TokenCacheServices)->UpdateOrInsertCache($o365UserId,$_SESSION[SiteConstants::Session_Refresh_Token],$_SESSION[SiteConstants::Session_Tokens_Array]);
@@ -103,6 +105,7 @@ class LinkController extends Controller
                 $user->firstName = $_SESSION[SiteConstants::Session_O365_User_First_name];
                 $user->lastName = $_SESSION[SiteConstants::Session_O365_User_Last_name];
                 $user->password = '';
+                $user->OrganizationId =$_SESSION[SiteConstants::OrganizationId];
                 $user->save();
                 Auth::loginUsingId($user->id);
 
@@ -125,6 +128,7 @@ class LinkController extends Controller
                 $user->firstName = $_SESSION[SiteConstants::Session_O365_User_First_name];
                 $user->lastName = $_SESSION[SiteConstants::Session_O365_User_Last_name];
                 $user->password = '';
+                $user->OrganizationId =$_SESSION[SiteConstants::OrganizationId];
                 $user->save();
                 Auth::loginUsingId($user->id);
                 (new TokenCacheServices)->UpdateOrInsertCache($_SESSION[SiteConstants::Session_O365_User_ID],$_SESSION[SiteConstants::Session_Refresh_Token],$_SESSION[SiteConstants::Session_Tokens_Array]);

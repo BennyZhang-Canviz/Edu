@@ -11,6 +11,7 @@ class SiteConstants
     const Session_Refresh_Token         ='RefreshToken';
     const Session_Tokens_Array          ='TokensArray';
     const AADCompanyAdminRoleName       = "Company Administrator";
+    const OrganizationId                ='OrganizationId';
 }
 
 class O365ProductLicenses

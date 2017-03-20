@@ -23,6 +23,7 @@ class OrganizationsServices
             $org->created = date("Y-m-d h:i:s");
             $org->save();
         }
+        return $org->id;
     }
 
     public function GetOrganization()

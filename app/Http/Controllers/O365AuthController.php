@@ -93,10 +93,11 @@ class O365AuthController extends Controller
                 $o365UserId = $parsedToken->getClaim('oid');
                 $o365Email = $parsedToken->getClaim('unique_name');
 
-               $graph = new AADGraphClient;
+                $graph = new AADGraphClient;
                 $tenant =  $graph->GetTenantByToken($microsoftToken->getToken());
                 $tenantId = $graph->GetTenantId($tenant);
-                (new OrganizationsServices)->CreateByTenant($tenant,$tenantId);
+                $orgId  = (new OrganizationsServices)->CreateByTenant($tenant,$tenantId);
+                $_SESSION[SiteConstants::OrganizationId] = $orgId;
 
                 if (Auth::check()) {
 
@@ -110,6 +111,7 @@ class O365AuthController extends Controller
                     $localUser->firstName = $parsedToken->getClaim('given_name');
                     $localUser->lastName = $parsedToken->getClaim('family_name');
                     $localUser->password = '';
+                    $localUser->OrganizationId = $orgId;
                     $localUser->save();
                     (new TokenCacheServices)->UpdateOrInsertCache($o365UserId,$refreshToken,$tokensArray);
 
