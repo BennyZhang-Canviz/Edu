@@ -83,7 +83,6 @@ class LinkController extends Controller
         }
         }
 
-
     public function loginLocal()
     {
         $o365email = $_SESSION[SiteConstants::Session_O365_User_Email];
@@ -135,6 +134,11 @@ class LinkController extends Controller
             return view('link.loginlocal');
         }
 
+
+    }
+
+    private  function  isAdmin($userid)
+    {
 
     }
 }

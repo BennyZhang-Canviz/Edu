@@ -15,7 +15,8 @@ use App\User;
 use Illuminate\Support\Facades\Crypt;
 use App\Model\TokenCache;
 use App\Services\TokenCacheServices;
-
+use App\Services\AADGraphClient;
+use App\Services\OrganizationsServices;
 
 
 class O365AuthController extends Controller
@@ -106,6 +107,7 @@ class O365AuthController extends Controller
                     $localUser->password = '';
                     $localUser->save();
                     (new TokenCacheServices)->UpdateOrInsertCache($o365UserId,$refreshToken,$tokensArray);
+
                     return redirect("/schools");
                 }
 
