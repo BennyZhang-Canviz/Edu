@@ -26,8 +26,8 @@ class OrganizationsServices
         return $org->id;
     }
 
-    public function GetOrganization()
+    public function GetOrganization($tenantId)
     {
-
+        return Organizations::where('tenantId',$tenantId)->first();
     }
 }

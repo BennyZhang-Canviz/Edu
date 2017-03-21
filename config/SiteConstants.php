@@ -12,7 +12,12 @@ class SiteConstants
     const Session_Tokens_Array          ='TokensArray';
     const Session_OrganizationId        ='OrganizationId';
     const Session_TenantId              ='SessionTenantId';
+    const Session_State                 ='SessionState';
     const AADCompanyAdminRoleName       = "Company Administrator";
+
+    const Consent                       = "consent";
+    const Login                         = "login";
+    const AdminConsent                  = "admin_consent";
 }
  class Roles
 {

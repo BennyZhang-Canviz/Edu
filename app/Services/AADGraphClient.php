@@ -8,6 +8,7 @@ use App\Config\SiteConstants;
 use App\Config\Roles;
 use App\Config\O365ProductLicenses;
 use App\Services\UserRolesServices;
+use Microsoft\Graph\Connect\Constants;
 
 class AADGraphClient
 {
@@ -91,7 +92,7 @@ class AADGraphClient
     private function GetDirectoryAdminRole($userId,$tenantId,$token)
     {
 
-        $url = 'https://graph.windows.net/'.$tenantId .'/directoryRoles?api-version=1.6';
+        $url = Constants::AADGraph .'/'.$tenantId .'/directoryRoles?api-version=1.6';
         $client = new \GuzzleHttp\Client();
 
         $result = $client->request('GET', $url, [
@@ -114,7 +115,7 @@ class AADGraphClient
 
     private function GetAdminDirectoryMembers($tenantId,$roleId, $token)
     {
-        $url  = 'https://graph.windows.net/'.$tenantId.'/directoryRoles/'.$roleId.'/$links/members?api-version=1.6';
+        $url  =  Constants::AADGraph .'/'.$tenantId.'/directoryRoles/'.$roleId.'/$links/members?api-version=1.6';
         $client = new \GuzzleHttp\Client();
 
         $result = $client->request('GET', $url, [

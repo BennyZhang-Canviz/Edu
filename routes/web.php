@@ -41,6 +41,11 @@ Route::group(['middleware' => ['web']], function () {
     Route::any('/link/loginlocal', 'LinkController@loginLocal');
 });
 
+Route::group(['namespace'=>'Admin'], function () {
+    Route::get('/admin/consent','AdminController@consent');
+    Route::post('/admin/adminconsent', 'AdminController@AdminConsent');
+    Route::get('/admin/processcode','AdminController@ProcessCode');
+});
 //Admin functions.
 Route::group(['middleware' => ['web','auth','Admin.Login'],'namespace'=>'Admin'], function () {
     Route::get('/admin', 'AdminController@index');
