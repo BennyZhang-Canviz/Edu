@@ -13,4 +13,11 @@ class UserRolesServices
             $userRole->save();
         }
     }
+
+    public function IsUserAdmin($userId){
+       $role = UserRoles::where('UserId',  $userId)->first();
+       if($role)
+           return true;
+        return false;
+    }
 }

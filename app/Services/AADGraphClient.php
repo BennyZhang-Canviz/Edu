@@ -11,7 +11,7 @@ use App\Services\UserRolesServices;
 
 class AADGraphClient
 {
-
+    //Get current user and roles from AAD. Update user roles to database.
     public function GetCurrentUser($userId)
     {
        $token =  (new TokenCacheServices)->GetMicrosoftToken($userId);
@@ -32,9 +32,9 @@ class AADGraphClient
            if($this->IsUserTeacher($licenses))
                array_push($roles,Roles::Faculty);
            (new UserRolesServices)->CreateOrUpdateUserRoles($roles,$userId);
-           return $me;
+
        }
-       return null;
+
     }
 
     public function GetTenantByUserId($userId)

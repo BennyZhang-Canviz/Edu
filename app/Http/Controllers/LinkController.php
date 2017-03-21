@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Input;
 use App\User;
 use App\Model\TokenCache;
 use App\Services\TokenCacheServices;
-
+use App\Services\AADGraphClient;
 
 
 class LinkController extends Controller
@@ -32,6 +32,9 @@ class LinkController extends Controller
                     $isLocalUserExists = true;
                     $localUserEmail = $_SESSION[SiteConstants::Session_O365_User_Email];
                 }
+
+
+                (new AADGraphClient)->GetCurrentUser($o365userId);
             }
         }
 

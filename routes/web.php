@@ -41,8 +41,8 @@ Route::group(['middleware' => ['web']], function () {
     Route::any('/link/loginlocal', 'LinkController@loginLocal');
 });
 
-//link
-Route::group(['middleware' => ['web','Admin.Login']], function () {
-   // Route::get('/admin', 'AdminController@index');
+//Admin functions.
+Route::group(['middleware' => ['web','auth','Admin.Login'],'namespace'=>'Admin'], function () {
+    Route::get('/admin', 'AdminController@index');
 
 });
