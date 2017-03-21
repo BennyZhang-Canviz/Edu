@@ -73,7 +73,7 @@ class LinkController extends Controller
             $user->firstName = $_SESSION[SiteConstants::Session_O365_User_First_name];
             $user->lastName = $_SESSION[SiteConstants::Session_O365_User_Last_name];
             $user->password = '';
-            $user->OrganizationId =$_SESSION[SiteConstants::OrganizationId];
+            $user->OrganizationId =$_SESSION[SiteConstants::Session_OrganizationId];
             $user->favorite_color   =$favoriteColor;
             $user->email=$o365Email;
             $user->save();
@@ -103,7 +103,7 @@ class LinkController extends Controller
                 $user->firstName = $_SESSION[SiteConstants::Session_O365_User_First_name];
                 $user->lastName = $_SESSION[SiteConstants::Session_O365_User_Last_name];
                 $user->password = '';
-                $user->OrganizationId =$_SESSION[SiteConstants::OrganizationId];
+                $user->OrganizationId =$_SESSION[SiteConstants::Session_OrganizationId];
                 $user->save();
                 Auth::loginUsingId($user->id);
 
@@ -126,7 +126,7 @@ class LinkController extends Controller
                 $user->firstName = $_SESSION[SiteConstants::Session_O365_User_First_name];
                 $user->lastName = $_SESSION[SiteConstants::Session_O365_User_Last_name];
                 $user->password = '';
-                $user->OrganizationId =$_SESSION[SiteConstants::OrganizationId];
+                $user->OrganizationId =$_SESSION[SiteConstants::Session_OrganizationId];
                 $user->save();
                 Auth::loginUsingId($user->id);
                 (new TokenCacheServices)->UpdateOrInsertCache($_SESSION[SiteConstants::Session_O365_User_ID],$_SESSION[SiteConstants::Session_Refresh_Token],$_SESSION[SiteConstants::Session_Tokens_Array]);

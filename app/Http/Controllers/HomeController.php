@@ -33,7 +33,7 @@ class HomeController extends Controller
         $user = Auth::user();
         $o365UserId = $user->o365UserId;
 
-//$grapp = new AADGraphClient;
+$grapp = new AADGraphClient;
 //
 //        $user = Auth::user();
 //        $o365UserId = $user->o365UserId;

@@ -97,7 +97,8 @@ class O365AuthController extends Controller
                 $tenant =  $graph->GetTenantByToken($microsoftToken->getToken());
                 $tenantId = $graph->GetTenantId($tenant);
                 $orgId  = (new OrganizationsServices)->CreateByTenant($tenant,$tenantId);
-                $_SESSION[SiteConstants::OrganizationId] = $orgId;
+                $_SESSION[SiteConstants::Session_OrganizationId] = $orgId;
+                $_SESSION[SiteConstants::Session_TenantId] = $tenantId;
 
                 if (Auth::check()) {
 
