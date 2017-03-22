@@ -15,7 +15,7 @@
         <div class="form-group">
             <form method="post" action="{{url('/admin/adminconsent')}}">
             {{csrf_field()}}
-            <input type="submit" value="Consent" class="btn btn-primary" />
+            <input type="submit" value="Admin Consent" class="btn btn-default" />
         </form>
         </div>
 
@@ -28,13 +28,14 @@
        <div class="form-group">
        <form method="post" action="{{url('/admin/adminconsent')}}">
            {{csrf_field()}}
-           <input type="submit" value="Consent" class="btn btn-primary" />
+           <input type="submit" value="Admin Consent" class="btn btn-default" />
        </form>
-
+       </div>
+       <div class="form-group">
        <p>Please click the button below to cancel the admin consent.</p>
        <form method="post" action="{{url('/admin/adminunconsent')}}">
            {{csrf_field()}}
-           <input type="submit" value="Admin Unconsent" class="btn btn-primary" />
+           <input type="submit" value="Admin Unconsent" class="btn btn-default" />
        </form>
        <p>Note: It will take a few minutes to effect.</p>
        </div>
