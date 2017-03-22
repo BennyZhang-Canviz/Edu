@@ -90,5 +90,12 @@
 
     <!-- Scripts -->
     <script src="{{ asset('/public/js/app.js') }}"></script>
+
+    <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.1.1.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.message-container').fadeOut(5000);
+        });
+    </script>
 </body>
 </html>

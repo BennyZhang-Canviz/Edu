@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 
-
+use App\Services\AuthenticationHelper;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -29,14 +29,7 @@ class O365AuthController extends Controller
             session_start();
         }
 
-        $provider = new \League\OAuth2\Client\Provider\GenericProvider([
-            'clientId'                => Constants::CLIENT_ID,
-            'clientSecret'            => Constants::CLIENT_SECRET,
-            'redirectUri'             => Constants::REDIRECT_URI,
-            'urlAuthorize'            => Constants::AUTHORITY_URL . Constants::AUTHORIZE_ENDPOINT,
-            'urlAccessToken'          => Constants::AUTHORITY_URL . Constants::TOKEN_ENDPOINT,
-            'urlResourceOwnerDetails' => ''
-        ]);
+        $provider = AuthenticationHelper::GetProvider();
 
         if ($_SERVER['REQUEST_METHOD'] === 'GET' && !isset($_GET['code'])) {
             $authorizationUrl = $provider->getAuthorizationUrl();
@@ -60,15 +53,16 @@ class O365AuthController extends Controller
             try {
                 // Get an access token using the authorization code grant
                 //token for get resource like /api/me
+
                 $microsoftToken = $provider->getAccessToken('authorization_code', [
-                    'code'     => $_GET['code'],
-                    'resource' =>Constants::RESOURCE_ID
+                    'code' => $_GET['code'],
+                    'resource' => Constants::RESOURCE_ID
                 ]);
 
                 //token for enable user access or admin ..
                 $aadGraphToken = $provider->getAccessToken('refresh_token', [
-                    'refresh_token'     => $microsoftToken->getRefreshToken(),
-                    'resource' =>Constants::AADGraph
+                    'refresh_token' => $microsoftToken->getRefreshToken(),
+                    'resource' => Constants::AADGraph
                 ]);
 
 
@@ -77,75 +71,72 @@ class O365AuthController extends Controller
                 $aadTokenExpires = $date->format('Y-m-d H:i:s');
                 $ts = $microsoftToken->getExpires();
                 $date = new \DateTime("@$ts");
-                $microsoftTokenExpires =  $date->format('Y-m-d H:i:s');
+                $microsoftTokenExpires = $date->format('Y-m-d H:i:s');
                 $format = '{"https://graph.windows.net":{"expiresOn":"%s","value":"%s"},"https://graph.microsoft.com":{"expiresOn":"%s","value":"%s"}}';
-                $tokensArray = sprintf($format, $aadTokenExpires,$aadGraphToken->getToken(), $microsoftTokenExpires,$microsoftToken->getToken());
+                $tokensArray = sprintf($format, $aadTokenExpires, $aadGraphToken->getToken(), $microsoftTokenExpires, $microsoftToken->getToken());
                 $_SESSION[SiteConstants::Session_Tokens_Array] = $tokensArray;
 
                 $refreshToken = $aadGraphToken->getRefreshToken();
                 $_SESSION[SiteConstants::Session_Refresh_Token] = $refreshToken;
 
 
-
                 $idToken = $microsoftToken->getValues()['id_token'];
-                $parsedToken = (new Parser())->parse((string) $idToken); // Parses from a string
+                $parsedToken = (new Parser())->parse((string)$idToken); // Parses from a string
 
                 $o365UserId = $parsedToken->getClaim('oid');
                 $o365Email = $parsedToken->getClaim('unique_name');
 
                 $graph = new AADGraphClient;
-                $tenant =  $graph->GetTenantByToken($microsoftToken->getToken());
+                $tenant = $graph->GetTenantByToken($microsoftToken->getToken());
                 $tenantId = $graph->GetTenantId($tenant);
-                $orgId  = (new OrganizationsServices)->CreateByTenant($tenant,$tenantId);
+                $orgId = (new OrganizationsServices)->CreateByTenant($tenant, $tenantId);
                 $_SESSION[SiteConstants::Session_OrganizationId] = $orgId;
                 $_SESSION[SiteConstants::Session_TenantId] = $tenantId;
 
                 if (Auth::check()) {
 
                     //A local user must link to and o365 account that is not linked.
-                    if(User::where('o365Email',$o365Email)->first())
-                        return back()->with('msg','Failed to link accounts. The Office 365 account '. $o365Email .' is already linked to another local account.');
+                    if (User::where('o365Email', $o365Email)->first())
+                        return back()->with('msg', 'Failed to link accounts. The Office 365 account ' . $o365Email . ' is already linked to another local account.');
 
                     $localUser = Auth::user();
-                    $localUser->o365UserId=$o365UserId;
-                    $localUser->o365Email=$o365Email;
+                    $localUser->o365UserId = $o365UserId;
+                    $localUser->o365Email = $o365Email;
                     $localUser->firstName = $parsedToken->getClaim('given_name');
                     $localUser->lastName = $parsedToken->getClaim('family_name');
                     $localUser->password = '';
                     $localUser->OrganizationId = $orgId;
                     $localUser->save();
-                    (new TokenCacheServices)->UpdateOrInsertCache($o365UserId,$refreshToken,$tokensArray);
+                    (new TokenCacheServices)->UpdateOrInsertCache($o365UserId, $refreshToken, $tokensArray);
 
                     return redirect("/schools");
                 }
 
-                $user  = User::where('o365UserId',$o365UserId)->first();
+                $user = User::where('o365UserId', $o365UserId)->first();
 
                 //If user exists on db, check if this user is linked. If linked, go to schools/index page, otherwise go to link page.
                 //If user doesn't exists on db, add user information like o365 user id, first name, last name to session and then go to link page.
-                if($user){
-                     $o365UserIdInDB= $user->o365UserId;
-                    $o365UserEmailInDB=$user->o365Email;
-                    if($o365UserEmailInDB==='' || $o365UserIdInDB===''){
+                if ($user) {
+                    $o365UserIdInDB = $user->o365UserId;
+                    $o365UserEmailInDB = $user->o365Email;
+                    if ($o365UserEmailInDB === '' || $o365UserIdInDB === '') {
                         return redirect('/link');
-                    }else{
+                    } else {
                         Auth::loginUsingId($user->id);
                         if (Auth::check()) {
 
-                            (new TokenCacheServices)->UpdateOrInsertCache($o365UserIdInDB,$refreshToken,$tokensArray);
+                            (new TokenCacheServices)->UpdateOrInsertCache($o365UserIdInDB, $refreshToken, $tokensArray);
 
                             return redirect("/schools");
                         }
                     }
-                }
-                else{
+                } else {
                     $_SESSION[SiteConstants::Session_O365_User_ID] = $o365UserId;
                     $_SESSION[SiteConstants::Session_O365_User_Email] = $o365Email;
                     $_SESSION[SiteConstants::Session_O365_User_First_name] = $parsedToken->getClaim('given_name');
                     $_SESSION[SiteConstants::Session_O365_User_Last_name] = $parsedToken->getClaim('family_name');
                     return redirect('/link');
                 }
-
 
 
             } catch (Exception $e) {

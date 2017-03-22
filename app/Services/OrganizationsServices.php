@@ -26,6 +26,15 @@ class OrganizationsServices
         return $org->id;
     }
 
+    public  function  SetTenantConsented($tenantId)
+    {
+        $org = Organizations::where('tenantId',$tenantId)->first();
+        if($org){
+            $org->isAdminConsented =true;
+            $org->save();
+        }
+     }
+
     public function GetOrganization($tenantId)
     {
         return Organizations::where('tenantId',$tenantId)->first();

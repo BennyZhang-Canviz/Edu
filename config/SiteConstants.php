@@ -13,8 +13,8 @@ class SiteConstants
     const Session_OrganizationId        ='OrganizationId';
     const Session_TenantId              ='SessionTenantId';
     const Session_State                 ='SessionState';
+    const Session_RedirectURL           ='SessionRedirectURL';
     const AADCompanyAdminRoleName       = "Company Administrator";
-
     const Consent                       = "consent";
     const Login                         = "login";
     const AdminConsent                  = "admin_consent";
