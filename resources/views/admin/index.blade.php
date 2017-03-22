@@ -37,7 +37,25 @@
            {{csrf_field()}}
            <input type="submit" value="Admin Unconsent" class="btn btn-default" />
        </form>
+           <br/>
        <p>Note: It will take a few minutes to effect.</p>
        </div>
+        <hr/>
+        <div class="form-group">
+            <p>If you want to view your linked account or unlink accounts, please click the button below.</p>
+            <p><a class="btn btn-default" href="/Admin/LinkedAccounts">Manage Linked Accounts</a></p>
+        </div>
+        <hr/>
+        <div class="form-group">
+            <p>Click the button below to enable access to all your tenant users.</p>
+            <form method="post" action="{{url('/admin/adminunconsent')}}">
+                {{csrf_field()}}
+                <input type="submit" value="Admin Unconsent" class="btn btn-default" />
+            </form>
+            <br/>
+            <p>Note: The App will take a while to effect.</p>
+        </div>
+        <hr />
+       <p><a class="btn btn-default" href="/">Return to home</a></p>
     @endif
 @endsection
