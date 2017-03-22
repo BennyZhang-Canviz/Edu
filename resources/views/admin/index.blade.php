@@ -1,5 +1,8 @@
 @extends('layouts.app')
 @section('content')
+    @if(session('msg') || $msg)
+        <div class="message-container bg-danger"> <p>{{session('msg') }} <?php echo $msg; ?></p>  </div>
+    @endif
     <h2>Admin</h2>
     @if (!$IsAdminConsented)
     <div>
@@ -18,6 +21,6 @@
 
     </div>
     @else
-        1231221
+       <p>Admin Consent has been applied.</p>
     @endif
 @endsection

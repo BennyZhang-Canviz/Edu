@@ -18,6 +18,7 @@ class SiteConstants
     const Consent                       = "consent";
     const Login                         = "login";
     const AdminConsent                  = "admin_consent";
+    const AdminConsentSucceedMessage    ='Admin consented successfully!';
 }
  class Roles
 {

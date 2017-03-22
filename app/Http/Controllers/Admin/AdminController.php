@@ -32,8 +32,13 @@ class AdminController extends Controller
               $_SESSION[SiteConstants::Session_RedirectURL] = '/admin';
             }
         }
+        $msg='';
+        if(Input::get('consented')){
+            $msg = SiteConstants::AdminConsentSucceedMessage;
+        }
         $arrData = array(
-            'IsAdminConsented'=>$IsAdminConsented
+            'IsAdminConsented'=>$IsAdminConsented,
+            'msg'=>$msg
         );
 
         return view('admin.index',$arrData);
@@ -43,11 +48,14 @@ class AdminController extends Controller
     {
         $_SESSION[SiteConstants::Session_RedirectURL] = '/admin/consent';
         $consented = false;
+        $msg = '';
         if(Input::get('consented')){
             $consented=true;
+            $msg = SiteConstants::AdminConsentSucceedMessage;
         }
         $arrData = array(
-            'consented'=>$consented
+            'consented'=>$consented,
+            'msg'=>$msg
         );
         return view('admin.consent',$arrData);
 
@@ -106,12 +114,12 @@ class AdminController extends Controller
              (new OrganizationsServices)->SetTenantConsented( $tenantId);
         }
 
-        $redirectURL='/';
+        $redirectUrl='/';
         if(isset($_SESSION[SiteConstants::Session_RedirectURL])) {
-            $redirectURL = $_SESSION[SiteConstants::Session_RedirectURL];
+            $redirectUrl = $_SESSION[SiteConstants::Session_RedirectURL];
             unset($_SESSION[SiteConstants::Session_RedirectURL]);
         }
-        header('Location: ' . $redirectURL .'?consented=true');
+        header('Location: ' . $redirectUrl .'?consented=true');
         exit();
     }
 
