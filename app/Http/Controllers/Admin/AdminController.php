@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Model\Organizations;
 use App\Services\AuthenticationHelper;
 use App\Services\OrganizationsServices;
+use App\Services\TokenCacheServices;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
@@ -33,8 +34,12 @@ class AdminController extends Controller
             }
         }
         $msg='';
-        if(Input::get('consented')){
-            $msg = SiteConstants::AdminConsentSucceedMessage;
+        $consented = Input::get('consented');
+        if($consented !=null ){
+            if( $consented==='true')
+                $msg = SiteConstants::AdminConsentSucceedMessage;
+            else
+                $msg = SiteConstants::AdminUnconsentMessage;
         }
         $arrData = array(
             'IsAdminConsented'=>$IsAdminConsented,
@@ -111,7 +116,7 @@ class AdminController extends Controller
             $idToken  = $microsoftToken->getValues()['id_token'];
             $parsedToken = (new Parser())->parse((string)$idToken);
             $tenantId =  $parsedToken->getClaim('tid');
-             (new OrganizationsServices)->SetTenantConsented( $tenantId);
+             (new OrganizationsServices)->SetTenantConsentResult( $tenantId,true);
         }
 
         $redirectUrl='/';
@@ -123,5 +128,34 @@ class AdminController extends Controller
         exit();
     }
 
+    public function  AdminUnconsent()
+    {
+        $user = Auth::user();
+        $o365UserId = $user->o365UserId;
+        $token = (new TokenCacheServices)->GetAADToken($o365UserId);
+        $tenantId = (new AADGraphClient)->GetTenantIdByUserId($o365UserId);
+        $url='https://graph.windows.net/'.$tenantId.'/servicePrincipals/?api-version=1.6&$filter=appId%20eq%20\''.Constants::CLIENT_ID . '\'';
+        $client = new \GuzzleHttp\Client();
+        $result = $client->request('GET', $url, [
+            'headers' => [
+                'Content-Type' => 'application/json;odata.metadata=minimal;odata.streaming=true',
+                'Authorization' => 'Bearer ' . $token
+            ]
+        ]);
+       $app= json_decode($result->getBody())->value;
+       $appId = $app[0]->objectId;
+       $url ='https://graph.windows.net/'.$tenantId.'/servicePrincipals/'.$appId.'?api-version=1.6';
+        $result = $client->request('DELETE', $url, [
+            'headers' => [
+                'Content-Type' => 'application/json;odata.metadata=minimal;odata.streaming=true',
+                'Authorization' => 'Bearer ' . $token
+            ]
+        ]);
+        (new OrganizationsServices)->SetTenantConsentResult( $tenantId,false);
+
+        header('Location: '  . '/admin?consented=false');
+        exit();
+
+    }
 
 }

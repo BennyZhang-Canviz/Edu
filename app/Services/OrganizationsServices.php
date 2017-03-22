@@ -26,11 +26,11 @@ class OrganizationsServices
         return $org->id;
     }
 
-    public  function  SetTenantConsented($tenantId)
+    public  function  SetTenantConsentResult($tenantId,$isConstented)
     {
         $org = Organizations::where('tenantId',$tenantId)->first();
         if($org){
-            $org->isAdminConsented =true;
+            $org->isAdminConsented =$isConstented;
             $org->save();
         }
      }

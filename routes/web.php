@@ -50,5 +50,5 @@ Route::group(['namespace'=>'Admin'], function () {
 //Admin functions.
 Route::group(['middleware' => ['web','auth','Admin.Login'],'namespace'=>'Admin'], function () {
     Route::get('/admin', 'AdminController@index');
-
+    Route::post('/admin/adminunconsent', 'AdminController@AdminUnconsent');
 });
