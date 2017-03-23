@@ -48,9 +48,9 @@
         <hr/>
         <div class="form-group">
             <p>Click the button below to enable access to all your tenant users.</p>
-            <form method="post" action="{{url('/admin/adminunconsent')}}">
+            <form method="post" action="{{url('/admin/enableuseraccess')}}">
                 {{csrf_field()}}
-                <input type="submit" value="Admin Unconsent" class="btn btn-default" />
+                <input type="submit" value="Enable User Access" class="btn btn-default" />
             </form>
             <br/>
             <p>Note: The App will take a while to effect.</p>

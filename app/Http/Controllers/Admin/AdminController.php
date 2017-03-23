@@ -158,4 +158,126 @@ class AdminController extends Controller
 
     }
 
+    public function EnableUserAccess()
+    {
+        $user = Auth::user();
+        $o365UserId = $user->o365UserId;
+        $token = (new TokenCacheServices)->GetAADToken($o365UserId);
+        $tenantId = (new AADGraphClient)->GetTenantIdByUserId($o365UserId);
+        $url=Constants::AADGraph .'/'.$tenantId.'/servicePrincipals/?api-version=1.6&$filter=appId%20eq%20\''.Constants::CLIENT_ID . '\'';
+        $client = new \GuzzleHttp\Client();
+        $app=null;
+        $appId='';
+        $appName='';
+        $authHeader= [
+            'headers' => [
+                'Content-Type' => 'application/json;odata.metadata=minimal;odata.streaming=true',
+                'Authorization' => 'Bearer ' . $token
+            ]
+        ];
+        try{
+            $result = $client->request('GET', $url, $authHeader);
+            $app= json_decode($result->getBody())->value;
+            $servicePrincipalId = $app[0]->objectId;
+            $servicePrincipalName = $app[0]->appDisplayName;
+        }
+        catch(\Exception $e){
+            return back()->with('msg',SiteConstants::NoPrincipalError);
+        }
+        $this->AddAppRoleAssignmentForUsers($authHeader,null,$tenantId,$servicePrincipalId,$servicePrincipalName);
+        try{
+            // $this->AddAppRoleAssignmentForUsers($authHeader,null,$tenantId,$servicePrincipalId,$servicePrincipalName);
+        }
+        catch(\Exception $e){
+             return back()->with('msg',SiteConstants::EnableUserAccessFailed);
+          }
+    }
+
+    private function AddAppRoleAssignmentForUsers($authHeader, $nextLink,$tenantId,$servicePrincipalId,$servicePrincipalName)
+    {
+
+        $url = Constants::AADGraph .'/'.$tenantId.'/users?api-version=1.6&$expand=appRoleAssignments';
+        if ($nextLink) {
+            $url = $url . "&" . $this->GetSkipToken($nextLink);
+        }
+        $client = new \GuzzleHttp\Client();
+        $result = $client->request('GET', $url, $authHeader);
+        $response = json_decode($result->getBody());
+        $users = $response->value;
+        //todo: not completed.
+        //$this->AddAppRoleAssignment($authHeader,$users,$servicePrincipalId,$servicePrincipalName,$tenantId);
+        if(isset(get_object_vars($response)['odata.nextLink']))
+            $nextLink =get_object_vars($response)['odata.nextLink'];
+        else{
+            $nextLink=null;
+        }
+        if($nextLink){
+          $this->  AddAppRoleAssignmentForUsers($authHeader,$nextLink,$tenantId,$servicePrincipalId,$servicePrincipalName);
+        }
+
+    }
+
+    private function AddAppRoleAssignment($authHeader,$users,$servicePrincipalId,$servicePrincipalName,$tenantId)
+    {
+        $count = count($users);
+        $client = new \GuzzleHttp\Client();
+
+        for($i=0;$i<$count;$i++){
+            $user = $users[$i];
+            if($user->objectId !='adbd9250-c0a9-46a9-addf-743fc6b31ed6')
+                continue;
+            $roleAssignment = $user->appRoleAssignments;
+            $roles = count($roleAssignment);
+            $servicePrincipalExists = false;
+            for($j=0;$j<$roles;$j++)
+            {
+                if($roleAssignment[$j]->resourceId == $servicePrincipalId){
+                   return;
+                }
+            }
+           if(!$servicePrincipalExists){
+
+             if(!isset($roleAssignment['odata.nextLink'])){
+                $this->DoAddRole($authHeader,$user,$servicePrincipalId,$servicePrincipalName,$tenantId);
+             }else{
+                $url = Constants::AADGraph .'/'.$tenantId.'/users/'.$user->objectId.'/appRoleAssignments?api-version=1.6&$filter=resourceId%20eq%20guid\''.$servicePrincipalId.'\'';
+                $result = $client->request('GET', $url, $authHeader);
+                 $response = json_decode($result->getBody());
+                 if(! $response->value){
+                     $this->DoAddRole($authHeader,$user,$servicePrincipalId,$servicePrincipalName,$tenantId);
+                 }
+             }
+           }
+        }
+    }
+
+    private function DoAddRole($authHeader,$user,$servicePrincipalId,$servicePrincipalName,$tenantId)
+    {
+
+        $client = new \GuzzleHttp\Client();
+        $body = [
+            'odata.type'=> 'Microsoft.DirectoryServices.AppRoleAssignment',
+            'creationTimestamp'=> gmdate(date("Y-m-d h:i:s")),
+            'principalDisplayName'=> $user->displayName,
+            'principalId'=> $user->objectId,
+            'principalType'=> 'User',
+            'resourceId'=> $servicePrincipalId,
+            'resourceDisplayName'=> $servicePrincipalName
+        ];
+        $url =  Constants::AADGraph .'/'.$tenantId .'/users/'.$user->objectId.'/appRoleAssignments?api-version=1.6';
+        $res =  $client->request('POST', $url, $authHeader,$body);
+        $a=1;
+    }
+
+
+    private function GetSkipToken($nextLink)
+    {
+        $pattern = '/\$skiptoken=[^&]+/';
+        preg_match($pattern, $nextLink, $match);
+        if(count($match)==0)
+            return '';
+        return $match[0];
+    }
+
+
 }

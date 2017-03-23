@@ -20,6 +20,8 @@ class SiteConstants
     const AdminConsent                  = "admin_consent";
     const AdminConsentSucceedMessage    ='Admin consented successfully!';
     const AdminUnconsentMessage         ='Admin unconsented successfully!';
+    const NoPrincipalError              ='Could not found the service principal. Please provdie the admin consent.';
+    const EnableUserAccessFailed        ='Enable user access failed.';
 }
  class Roles
 {
