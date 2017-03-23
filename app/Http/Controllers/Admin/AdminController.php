@@ -170,14 +170,30 @@ class AdminController extends Controller
         $org = (new OrganizationsServices)->GetOrganization($tenantId);
         $users=[];
         if($org){
-          $users =  User::where('OrganizationId',$org->id)->get();
+          $users =  User::where('OrganizationId',$org->id)
+                    ->where('o365UserId','!=',null)
+                    ->where('o365UserId','!=','')->get();
         }
         return view('admin.manageaccounts',compact('users'));
     }
 
     public function UnlinkAccount($userId)
     {
-        return view('admin.unlinkaccount');
+        $user = User::where('id',$userId)->first();
+        if(!$user)
+          return  redirect('/admin/linkedaccounts');
+        return view('admin.unlinkaccount',compact('user'));
+    }
+
+    public function DoUnlink($userId)
+    {
+        $user = User::where('id',$userId)->first();
+        if(!$user)
+            return  redirect('/admin/linkedaccounts');
+        $user->o365Email=null;
+        $user->o365UserId = null;
+        $user->save();
+        return  redirect('/admin/linkedaccounts');
     }
 
     public function EnableUserAccess()

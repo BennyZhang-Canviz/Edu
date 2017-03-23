@@ -54,4 +54,5 @@ Route::group(['middleware' => ['web','auth','Admin.Login'],'namespace'=>'Admin']
     Route::post('/admin/enableuseraccess','AdminController@EnableUserAccess');
     Route::get('/admin/linkedaccounts','AdminController@MangeLinkedAccounts');
     Route::get('/admin/unlinkaccounts/{userId}','AdminController@UnlinkAccount');
+    Route::post('/admin/dounlink/{userId}','AdminController@DoUnlink');
 });
