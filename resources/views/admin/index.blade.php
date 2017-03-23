@@ -43,7 +43,7 @@
         <hr/>
         <div class="form-group">
             <p>If you want to view your linked account or unlink accounts, please click the button below.</p>
-            <p><a class="btn btn-default" href="/Admin/LinkedAccounts">Manage Linked Accounts</a></p>
+            <p><a class="btn btn-default" href="/admin/linkedaccounts">Manage Linked Accounts</a></p>
         </div>
         <hr/>
         <div class="form-group">

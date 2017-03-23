@@ -14,6 +14,7 @@ class SiteConstants
     const Session_TenantId              ='SessionTenantId';
     const Session_State                 ='SessionState';
     const Session_RedirectURL           ='SessionRedirectURL';
+    const Session_EnabledUserCount      ='SessionEnabledUserCount';
     const AADCompanyAdminRoleName       = "Company Administrator";
     const Consent                       = "consent";
     const Login                         = "login";
