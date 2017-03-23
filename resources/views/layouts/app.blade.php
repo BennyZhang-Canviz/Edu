@@ -1,3 +1,6 @@
+<?php
+use App\Config\SiteConstants;use App\Services\UserRolesServices;
+?>
 <!DOCTYPE html>
 <html lang="{{ config('app.locale') }}">
 <head>
@@ -47,19 +50,44 @@
                         &nbsp;<li><a href="{{ url('admin') }}">Admin</a></li>
                     </ul>
 
+
                     <!-- Right Side Of Navbar -->
                     <ul class="nav navbar-nav navbar-right">
-                        <!-- Authentication Links -->
-                        @if (Auth::guest())
-                            <li><a href="{{ route('login') }}">Login</a></li>
-                            <li><a href="{{ route('register') }}">Register</a></li>
-                        @else
                             <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-                                    {{ Auth::user()->name }} <span class="caret"></span>
+                                    <?php
+
+                                    $role='';
+                                    $o365userId=null;
+                                    if(Auth::user())
+                                        $o365userId=Auth::user()->o365UserId;
+                                    if(isset($_SESSION[SiteConstants::Session_O365_User_ID])){
+                                        $o365userId = $_SESSION[SiteConstants::Session_O365_User_ID];
+                                    }
+
+                                    if($o365userId)
+                                        $role = (new UserRolesServices)->GetUserRole($o365userId);
+                                    if($role)
+                                        {
+                                            $msg='Logged in as: '.$role .'. ';
+                                            echo $msg;
+                                        }
+                                    if(Auth::user()){
+                                        echo 'Hello ' . Auth::user()->firstName .' '. Auth::user()->lastName;
+                                    }
+                                    else{
+                                        if(isset($_SESSION[SiteConstants::Session_O365_User_First_name] ) && isset( $_SESSION[SiteConstants::Session_O365_User_Last_name]))
+                                            echo  'Hello '.  $_SESSION[SiteConstants::Session_O365_User_First_name] .' '. $_SESSION[SiteConstants::Session_O365_User_Last_name] ;
+                                    }
+                                    //todo: user bjones@canvizedu.onmicrosoft.com could not show user role. And change Faculty to teacher.
+                                    ?>
+
+                                   <span class="caret"></span>
                                 </a>
 
                                 <ul class="dropdown-menu" role="menu">
+                                    <li><a href="/auth/aboutme">About Me</a></li>
+                                    <li><a href="/link">Link</a></li>
                                     <li>
                                         <a href="{{ route('logout') }}"
                                             onclick="event.preventDefault();
@@ -73,8 +101,9 @@
                                     </li>
                                 </ul>
                             </li>
-                        @endif
+
                     </ul>
+
                 </div>
             </div>
         </nav>

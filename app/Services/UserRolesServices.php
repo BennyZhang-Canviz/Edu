@@ -20,4 +20,11 @@ class UserRolesServices
            return true;
         return false;
     }
+
+    public function GetUserRole($userId){
+        $role = UserRoles::where('UserId',  $userId)->first();
+        if($role)
+            return $role->name;
+        return '';
+    }
 }

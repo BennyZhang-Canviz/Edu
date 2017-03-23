@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 
 use App\Model\TokenCache;
+use App\Services\TokenCacheServices;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Microsoft\Graph\Connect\Constants;
@@ -30,19 +31,23 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $user = Auth::user();
-        $o365UserId = $user->o365UserId;
 
-//$grapp = new AADGraphClient;
-//
+        //Below code can get information from Microsoft graph.
 //        $user = Auth::user();
 //        $o365UserId = $user->o365UserId;
+//        $token = (new TokenCacheServices)-> GetMicrosoftToken ($o365UserId);
+//        $client = new \GuzzleHttp\Client();
+//        $authHeader = [
+//            'headers' => [
+//                'Content-Type' => 'application/json;odata.metadata=minimal;odata.streaming=true',
+//                'Authorization' => 'Bearer ' . $token
+//            ]
+//        ];
+//        $url ='https://graph.microsoft.com/v1.0/me/';
+//        $result = $client->request('GET', $url, $authHeader);
+//      $body =  $result->getBody();
 //
-//       $result =  $grapp->GetTenantByUserId($o365UserId);
-        //dd($grapp->GetTenantId($result));
-
-       // $u = (new AADGraphClient)->GetCurrentUser($o365UserId);
-
+//      $a=json_decode($body);
         return view('home');
     }
 

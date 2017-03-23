@@ -542,3 +542,19 @@ max-width: 140px;
 #studoc .header:nth-child(5){background-position-x:105px;}
 
 .blanktr th{border:none !important;height:20px;visibility:hidden}
+
+
+/*Overwrite bootstrap*/
+.navbar-inverse .navbar-nav > .open > a,
+.navbar-inverse .navbar-nav > .open > a:hover,
+.navbar-inverse .navbar-nav > .open > a:focus,
+a.dropdown-toggle:hover
+{
+    background-color: transparent !important;
+}
+.navbar-nav > li > .dropdown-menu {
+    margin-top: -10px;
+
+}
+ul.dropdown-menu{padding-bottom: 20px;}
+ul.dropdown-menu li{padding-top: 12px;}
