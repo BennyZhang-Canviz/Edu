@@ -43,13 +43,29 @@ use App\Config\Roles;use App\Config\SiteConstants;use App\Services\UserRolesServ
                         {{ config('app.name', 'Laravel') }}
                     </a>
                 </div>
+                <?php
 
+                $role='';
+                $o365userId=null;
+                if(Auth::user())
+                    $o365userId=Auth::user()->o365UserId;
+
+                if(isset($_SESSION[SiteConstants::Session_O365_User_ID])){
+                    $o365userId = $_SESSION[SiteConstants::Session_O365_User_ID];
+                }
+
+                if($o365userId)
+                    $role = (new UserRolesServices)->GetUserRole($o365userId);
+                ?>
                 <div class="collapse navbar-collapse" id="app-navbar-collapse">
                     <!-- Left Side Of Navbar -->
-                    <ul class="nav navbar-nav">
-                        &nbsp;<li><a href="{{ url('admin') }}">Admin</a></li>
-                    </ul>
-
+                    <?php
+                    if($role && $role==Roles::Admin){
+                    ?>
+                        <ul class="nav navbar-nav">
+                            &nbsp;<li><a href="{{ url('admin') }}">Admin</a></li>
+                        </ul>
+                    <?php  }?>
 
                     <!-- Right Side Of Navbar -->
                     <ul class="nav navbar-nav navbar-right">
@@ -57,17 +73,6 @@ use App\Config\Roles;use App\Config\SiteConstants;use App\Services\UserRolesServ
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
                                     <?php
 
-                                    $role='';
-                                    $o365userId=null;
-                                    if(Auth::user())
-                                        $o365userId=Auth::user()->o365UserId;
-
-                                    if(isset($_SESSION[SiteConstants::Session_O365_User_ID])){
-                                        $o365userId = $_SESSION[SiteConstants::Session_O365_User_ID];
-                                    }
-
-                                    if($o365userId)
-                                        $role = (new UserRolesServices)->GetUserRole($o365userId);
                                     if($role)
                                         {
                                             if($role ===Roles::Faculty)

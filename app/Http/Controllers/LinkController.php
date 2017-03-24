@@ -40,15 +40,17 @@ class LinkController extends Controller
 
 
         //check if a user is login.
+        $o365UserEmailInDB='';
         if (Auth::check()) {
             $user = Auth::user();
             $o365UserIdInDB= $user->o365UserId;
             $o365UserEmailInDB=$user->o365Email;
+            $localUserEmail = $user->email;
             if( !$o365UserEmailInDB || ! $o365UserEmailInDB || $o365UserEmailInDB==='' || $o365UserIdInDB==='') {
                 //Local user login but not linked. Should show link to existing o365 account link and then login to o365.
                 $showLinkToExistingO365Account = true;
             }else{
-                //Accounts are linked. Will show user basic information and  allow user to update favorite color.
+
                 $areAccountsLinked = true;
             }
         }
@@ -56,6 +58,7 @@ class LinkController extends Controller
             'isLocalUserExists'=>$isLocalUserExists,
             'areAccountsLinked'=>$areAccountsLinked,
             'localUserEmail' =>$localUserEmail,
+            'o365UserEmail'=>$o365UserEmailInDB,
             'showLinkToExistingO365Account' =>$showLinkToExistingO365Account
         );
         return view("link.index",$arrData);

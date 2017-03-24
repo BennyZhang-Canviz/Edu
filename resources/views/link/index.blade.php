@@ -5,7 +5,16 @@
     @endif
     <h2>Link Office 365 & Local Account</h2>
     @if ($areAccountsLinked)
-        accounts are linked
+        <div>
+            <p>Your local account and Office 365 account are now linked.</p>
+            <p>
+            </p><ul>
+                <li>Local account: {{$localUserEmail}}</li>
+                <li>Office 365 account: {{$o365UserEmail}}</li>
+            </ul>
+            <p></p>
+            <p><a class="btn btn-default" href="/">Return to home</a></p>
+        </div>
     @else
         <p>This page will enable you to link your Office 365 &amp; Local Account together to successfully use the demo application.</p>
         <hr>
