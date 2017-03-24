@@ -39,7 +39,7 @@ Route::group(['middleware' => ['web','auth.basic']], function () {
     Route::get('/home', 'HomeController@index');
 });
 
-Route::get('/schools', 'HomeController@index');
+Route::get('/schools', 'SchoolsController@index');
 
 //link
 Route::group(['middleware' => ['web']], function () {

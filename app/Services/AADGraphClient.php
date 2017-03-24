@@ -2,6 +2,12 @@
 namespace App\Services;
 
 use App\Services\TokenCacheServices;
+use App\ViewModel\EducationUser;
+use App\ViewModel\School;
+use App\ViewModel\Student;
+use App\ViewModel\Teacher;
+use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Auth;
 use Microsoft\Graph\Graph;
 use Microsoft\Graph\Model;
 use App\Config\SiteConstants;
@@ -12,6 +18,16 @@ use Microsoft\Graph\Connect\Constants;
 
 class AADGraphClient
 {
+    /**
+     * Create a new instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->tokenCacheService = new TokenCacheServices();
+    }
+
     //Get current user and roles from AAD. Update user roles to database.
     public function GetCurrentUser($userId)
     {
@@ -69,6 +85,47 @@ class AADGraphClient
         return $this->GetTenantId($tenant);
     }
 
+    /**
+     * Get the current user.
+     *
+     * @return Model\User The current user
+     */
+    public function getMe()
+    {
+        $json = $this->getResponse("get", "/me?api-version=1.5");
+        $assignedLicenses = array_map(function($license){return new Model\AssignedLicense($license);}, $json["assignedLicenses"]);
+        $isStudent = $this->IsUserStudent($assignedLicenses);
+        $isTeacher = $this->IsUserTeacher($assignedLicenses);
+        $user = new EducationUser();
+        if ($isStudent)
+        {
+            $user = new Student();
+        }
+        else if ($isTeacher)
+        {
+            $user = new Teacher();
+        }
+        $user->parse($json);
+        return $user;
+    }
+
+    public function getSchools()
+    {
+        $json = $this->getResponse("get", "/administrativeUnits?api-version=beta");
+        $value = $json["value"];
+        $schools = [];
+        if (is_array($value) && !empty($value))
+        {
+            foreach($value as $json)
+            {
+                $school = new School();
+                $school->parse($json);
+                array_push($schools, $school);
+            }
+        }
+        return $schools;
+    }
+
     private function IsUserAdmin($userId)
     {
         $tenantId='';
@@ -93,7 +150,7 @@ class AADGraphClient
     {
 
         $url = Constants::AADGraph .'/'.$tenantId .'/directoryRoles?api-version=1.6';
-        $client = new \GuzzleHttp\Client();
+        $client = new Client();
 
         $result = $client->request('GET', $url, [
             'headers' => [
@@ -116,7 +173,7 @@ class AADGraphClient
     private function GetAdminDirectoryMembers($tenantId,$roleId, $token)
     {
         $url  =  Constants::AADGraph .'/'.$tenantId.'/directoryRoles/'.$roleId.'/$links/members?api-version=1.6';
-        $client = new \GuzzleHttp\Client();
+        $client = new Client();
 
         $result = $client->request('GET', $url, [
             'headers' => [
@@ -137,6 +194,7 @@ class AADGraphClient
          }
          return false;
      }
+
     private function IsUserTeacher($licenses)
     {
         while ($license = each($licenses)) {
@@ -146,4 +204,60 @@ class AADGraphClient
         }
         return false;
     }
+
+    /**
+     * Get response of AAD Graph API
+     *
+     * @param string $requestType The HTTP method to use, e.g. "GET" or "POST"
+     * @param string $endpoint    The Graph endpoint to call*
+     *
+     * @return mixed Response of AAD Graph API
+     */
+    private function getResponse($requestType, $endpoint)
+    {
+        $token =  $this->getToken();
+        if($token)
+        {
+            $client = new Client();
+            $authHeader = $this->getAuthHeader($token);
+            $url = Constants::AADGraph . '/' . $_SESSION[SiteConstants::Session_TenantId] . $endpoint;
+            $result = $client->request($requestType, $url, $authHeader);
+            return json_decode($result->getBody(), true);
+        }
+        return null;
+    }
+
+    /**
+     * Get access token
+     *
+     * @return string The access token
+     */
+    private function getToken()
+    {
+        $user = Auth::user();
+        if (strlen($user->o365UserId) == 0)
+        {
+            return null;
+        }
+        return $this->tokenCacheService-> GetAADToken($user->o365UserId);
+    }
+
+    /**
+     * Get authorization header for http request
+     *
+     * @param string $token The access token
+     *
+     * @return array The authorization header for http request
+     */
+    private function getAuthHeader($token)
+    {
+        return [
+            'headers' => [
+                'Content-Type' => 'application/json;odata.metadata=minimal;odata.streaming=true',
+                'Authorization' => 'Bearer ' . $token
+            ]
+        ];
+    }
+
+    private $tokenCacheService;
 }

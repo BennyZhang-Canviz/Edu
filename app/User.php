@@ -23,4 +23,9 @@ class User extends Authenticatable
     protected $hidden = [
         'password', 'remember_token',
     ];
+
+    public function isLinked()
+    {
+        return strlen($this->o365UserId) > 0 and strlen($this->o365Email) > 0;
+    }
 }
