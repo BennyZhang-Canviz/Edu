@@ -65,3 +65,4 @@ Route::group(['middleware' => ['web','auth','Admin.Login'],'namespace'=>'Admin']
 });
 
 Route::get('/auth/aboutme', 'Auth\AboutMeController@index');
+Route::post('/auth/savefavoritecolor', 'Auth\AboutMeController@SaveFavoriteColor');
