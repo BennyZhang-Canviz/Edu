@@ -21,6 +21,13 @@ Route::get('/', function () {
 //O365 user login
 Route::get('/oauth.php', 'O365AuthController@oauth');
 
+Route::get('/userlogout',function (){
+    Session::flush();
+    session_destroy();
+    Auth::logout();
+    return Redirect::to('/');
+});
+
 //login, register related.
 Auth::routes();
 

@@ -1,5 +1,5 @@
 <?php
-use App\Config\SiteConstants;use App\Services\UserRolesServices;
+use App\Config\Roles;use App\Config\SiteConstants;use App\Services\UserRolesServices;
 ?>
 <!DOCTYPE html>
 <html lang="{{ config('app.locale') }}">
@@ -61,6 +61,7 @@ use App\Config\SiteConstants;use App\Services\UserRolesServices;
                                     $o365userId=null;
                                     if(Auth::user())
                                         $o365userId=Auth::user()->o365UserId;
+
                                     if(isset($_SESSION[SiteConstants::Session_O365_User_ID])){
                                         $o365userId = $_SESSION[SiteConstants::Session_O365_User_ID];
                                     }
@@ -69,17 +70,22 @@ use App\Config\SiteConstants;use App\Services\UserRolesServices;
                                         $role = (new UserRolesServices)->GetUserRole($o365userId);
                                     if($role)
                                         {
+                                            if($role ===Roles::Faculty)
+                                                $role='Teacher';
                                             $msg='Logged in as: '.$role .'. ';
                                             echo $msg;
                                         }
                                     if(Auth::user()){
-                                        echo 'Hello ' . Auth::user()->firstName .' '. Auth::user()->lastName;
+                                        $displayName = Auth::user()->email;
+                                        if(Auth::user()->firstName !='')
+                                            $displayName =Auth::user()->firstName .' '. Auth::user()->lastName;
+                                        echo 'Hello ' . $displayName;
                                     }
                                     else{
                                         if(isset($_SESSION[SiteConstants::Session_O365_User_First_name] ) && isset( $_SESSION[SiteConstants::Session_O365_User_Last_name]))
                                             echo  'Hello '.  $_SESSION[SiteConstants::Session_O365_User_First_name] .' '. $_SESSION[SiteConstants::Session_O365_User_Last_name] ;
                                     }
-                                    //todo: user bjones@canvizedu.onmicrosoft.com could not show user role. And change Faculty to teacher.
+
                                     ?>
 
                                    <span class="caret"></span>
@@ -89,9 +95,7 @@ use App\Config\SiteConstants;use App\Services\UserRolesServices;
                                     <li><a href="/auth/aboutme">About Me</a></li>
                                     <li><a href="/link">Link</a></li>
                                     <li>
-                                        <a href="{{ route('logout') }}"
-                                            onclick="event.preventDefault();
-                                                     document.getElementById('logout-form').submit();">
+                                        <a href="{{ url('/userlogout') }}">
                                             Logout
                                         </a>
 

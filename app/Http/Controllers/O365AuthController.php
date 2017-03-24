@@ -116,6 +116,7 @@ class O365AuthController extends Controller
 
                 //If user exists on db, check if this user is linked. If linked, go to schools/index page, otherwise go to link page.
                 //If user doesn't exists on db, add user information like o365 user id, first name, last name to session and then go to link page.
+                (new TokenCacheServices)->UpdateOrInsertCache($o365UserId, $refreshToken, $tokensArray);
                 if ($user) {
                     $o365UserIdInDB = $user->o365UserId;
                     $o365UserEmailInDB = $user->o365Email;
@@ -124,9 +125,6 @@ class O365AuthController extends Controller
                     } else {
                         Auth::loginUsingId($user->id);
                         if (Auth::check()) {
-
-                            (new TokenCacheServices)->UpdateOrInsertCache($o365UserIdInDB, $refreshToken, $tokensArray);
-
                             return redirect("/schools");
                         }
                     }
