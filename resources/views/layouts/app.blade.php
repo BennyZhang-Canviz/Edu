@@ -59,14 +59,14 @@ use App\Config\Roles;use App\Config\SiteConstants;use App\Services\UserRolesServ
                 ?>
                 <div class="collapse navbar-collapse" id="app-navbar-collapse">
                     <!-- Left Side Of Navbar -->
+                    <ul class="nav navbar-nav">
+                        <li><a href="{{ url('/') }}">Home</a></li>
                     <?php
                     if($role && $role==Roles::Admin){
                     ?>
-                        <ul class="nav navbar-nav">
-                            &nbsp;<li><a href="{{ url('admin') }}">Admin</a></li>
-                        </ul>
+                        <li><a href="{{ url('admin') }}">Admin</a></li>
                     <?php  }?>
-
+                    </ul>
                     <!-- Right Side Of Navbar -->
                     <ul class="nav navbar-nav navbar-right">
                             <li class="dropdown">
