@@ -63,3 +63,5 @@ Route::group(['middleware' => ['web','auth','Admin.Login'],'namespace'=>'Admin']
     Route::get('/admin/unlinkaccounts/{userId}','AdminController@UnlinkAccount');
     Route::post('/admin/dounlink/{userId}','AdminController@DoUnlink');
 });
+
+Route::get('/auth/aboutme', 'Auth\AboutMeController@index');
