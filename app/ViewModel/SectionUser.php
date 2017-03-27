@@ -3,7 +3,7 @@
 namespace App\ViewModel;
 
 
-class EducationUser extends ParsableObject
+class SectionUser extends ParsableObject
 {
     /**
      * Create a new instance.
