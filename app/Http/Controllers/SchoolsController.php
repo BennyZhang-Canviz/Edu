@@ -36,9 +36,9 @@ class SchoolsController extends Controller
         $user = Auth::user();
 
 
-        $graphClient = new EducationServiceClient();
-        $me = $graphClient->getMe();
-        $schools = $graphClient->getSchools();
+        $educationServiceClient = new EducationServiceClient();
+        $me = $educationServiceClient->getMe();
+        $schools = $educationServiceClient->getSchools();
         foreach($schools as $school)
         {
             $school->isMySchool = $school->schoolId === $me->schoolId;

@@ -41,6 +41,11 @@ class  EducationServiceClient
         return $schools;
     }
 
+    public function getSchool($objectId)
+    {
+
+    }
+
     /**
      * Get the current user.
      *
