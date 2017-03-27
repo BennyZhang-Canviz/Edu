@@ -40,9 +40,11 @@ Route::group(['middleware' => ['web','auth.basic']], function () {
 });
 Route::group(['middleware' => ['web','auth','SchoolMiddleware']], function () {
     Route::get('/schools', 'SchoolsController@index');
+    Route::get('/users/{objectId}/{schoolId}', 'UsersController@index');
+    Route::get('/myclasses/{objectId}/{schoolId}', 'TempSchoolController@myclasses');
 });
 
-Route::get('/users/{objectId}/{schoolId}', 'UsersController@index');
+
 
 //link
 Route::group(['middleware' => ['web']], function () {
