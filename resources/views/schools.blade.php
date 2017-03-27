@@ -53,13 +53,13 @@
                                 </div>
                                 @if($school->longitude && $school->latitude)
                                     <div class="schoolmap" >
-                                        <a class="bingMapLink" href="javascript:void(0)" longitude="{{$school->longitude}}" latitude="{{$school->latitude}}"><img src="{{$school->isMySchool ? 'Images/icon-map_30x28px-WHT.png' : 'Images/icon-map_30x28px-BLU.png'}}"></a>
+                                        <a class="bingMapLink" href="javascript:void(0)" longitude="{{$school->longitude}}" latitude="{{$school->latitude}}"><img src="{{$school->isMySchool ? '../public/Images/icon-map_30x28px-WHT.png' : '../public/Images/icon-map_30x28px-BLU.png'}}"></a>
                                     </div>
                                 @endif
                             </td>
                             <td>
-                                <a class="btnlink" target="_self" href="/classes/{{$school->objectId}}">Classes</a>
-                                <a class="btnlink" target="_self" href="/users/{{$school->objectId}}">Teachers/students</a>
+                                <a class="btnlink" target="_self" href="/classes/{{$school->objectId}}/{{$school->schoolId}}">Classes</a>
+                                <a class="btnlink" target="_self" href="/users/{{$school->objectId}}/{{$school->schoolId}}">Teachers/students</a>
                             </td>
                         </tr>
                     @endforeach
@@ -67,6 +67,9 @@
                 @endif
             </table>
         </div>
-        <div id="myMap" style="top: 0px; left: 0px; display: none;"></div>
+        <div id="myMap"></div>
+        <input type="hidden" name="bingMapKey" id="bingMapKey" value="{{$bingMapKey}}" />
+        <script type='text/javascript' src='//www.bing.com/api/maps/mapcontrol' async defer></script>
+        <script src="{{ asset('/public/js/schools.js') }}"></script>
     </div>
 @endsection

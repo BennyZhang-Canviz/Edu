@@ -36,7 +36,7 @@ class Constants
     const TOKEN_ENDPOINT       = '/oauth2/token';
     const RESOURCE_ID          = 'https://graph.microsoft.com';
     const AADGraph             = 'https://graph.windows.net';
-    const BINGMAPKEY           = '';
+    const BINGMAPKEY           = 'AgWV4amBPg2dzbgGPB8Ya5GDfGqBnueTJUfu1oAAilDje_vXB0RpKGF4mDabOmwB';
     const SENDMAIL_ENDPOINT    = '/v1.0/me/sendmail';
    // const SCOPES             = 'https://graph.microsoft.com/profile https://graph.microsoft.com/openid https://graph.microsoft.com/email https://graph.microsoft.com/offline_access https://graph.microsoft.com/User.Read Mail.Send';
 

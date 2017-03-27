@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 
 use App\Model\TokenCache;
+use App\Services\MapService;
 use App\Services\TokenCacheServices;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -39,7 +40,17 @@ class SchoolsController extends Controller
         $graphClient = new AADGraphClient();
         $me = $graphClient->getMe();
         $schools = $graphClient->getSchools();
-        $data = ["me" => $me, "schools" => $schools];
+        foreach($schools as $school)
+        {
+            $school->isMySchool = $school->schoolId === $me->schoolId;
+            $ll = MapService::getLatitudeAndLongitude($school->state, $school->city, $school->address);
+            if ($ll)
+            {
+                $school->latitude = $ll[0];
+                $school->longitude = $ll[1];
+            }
+        }
+        $data = ["me" => $me, "schools" => $schools, "bingMapKey" => Constants::BINGMAPKEY];
 
         return view('schools', $data);
     }

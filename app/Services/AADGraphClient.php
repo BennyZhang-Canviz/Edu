@@ -218,10 +218,8 @@ class AADGraphClient
         $token =  $this->getToken();
         if($token)
         {
-            $client = new Client();
-            $authHeader = $this->getAuthHeader($token);
             $url = Constants::AADGraph . '/' . $_SESSION[SiteConstants::Session_TenantId] . $endpoint;
-            $result = $client->request($requestType, $url, $authHeader);
+            $result = HttpService::getHttpResponse($requestType, $token, $url);
             return json_decode($result->getBody(), true);
         }
         return null;
@@ -240,23 +238,6 @@ class AADGraphClient
             return null;
         }
         return $this->tokenCacheService-> GetAADToken($user->o365UserId);
-    }
-
-    /**
-     * Get authorization header for http request
-     *
-     * @param string $token The access token
-     *
-     * @return array The authorization header for http request
-     */
-    private function getAuthHeader($token)
-    {
-        return [
-            'headers' => [
-                'Content-Type' => 'application/json;odata.metadata=minimal;odata.streaming=true',
-                'Authorization' => 'Bearer ' . $token
-            ]
-        ];
     }
 
     private $tokenCacheService;

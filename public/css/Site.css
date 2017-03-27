@@ -206,6 +206,7 @@ textarea {
 .table-green .tr-content td{padding-top:10px;padding-bottom:10px; vertical-align: inherit; border-bottom:1px solid white;}
 .table-green > tbody > tr > td{border-top:1px solid white;}
 .table-green .td-green, .table-green .td-green a{font-family:'Helvetica Neue LT Std Bold'; background-color:#277F79; color:white;}
+.table-green tr.tr-content.td-green{background-color:#277F79}
 .table-green  a.btnlink{
     color:black;text-transform: uppercase;
     font-family:'Helvetica Neue LT Std Bold';

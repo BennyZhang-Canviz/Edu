@@ -18,6 +18,7 @@ use App\Config\Roles;use App\Config\SiteConstants;use App\Services\UserRolesServ
     <link href="{{ asset('/public/css/bootstrap.css') }}" rel="stylesheet">
     <link href="{{ asset('/public/css/site.css') }}" rel="stylesheet">
     <!-- Scripts -->
+    <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.1.1.min.js"></script>
     <script>
         window.Laravel = {!! json_encode([
             'csrfToken' => csrf_token(),
@@ -128,8 +129,6 @@ use App\Config\Roles;use App\Config\SiteConstants;use App\Services\UserRolesServ
 
     <!-- Scripts -->
     <script src="{{ asset('/public/js/app.js') }}"></script>
-
-    <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.1.1.min.js"></script>
     <script type="text/javascript">
         $(document).ready(function () {
             $('.message-container').fadeOut(5000);
