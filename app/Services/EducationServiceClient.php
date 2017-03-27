@@ -24,6 +24,14 @@ class  EducationServiceClient
         $user = Auth::user();
         $this->o365UserId = $user->o365UserId;
     }
+
+    /*
+     * <summary>
+     * Get all schools that exist in the Azure Active Directory tenant.
+     * Reference URL: https://msdn.microsoft.com/office/office365/api/school-rest-operations#get-all-schools
+     * </summary>
+     * <returns></returns>
+     */
     public function getSchools()
     {
         $json = $this->getResponse("get", "/administrativeUnits?api-version=beta");
@@ -41,9 +49,20 @@ class  EducationServiceClient
         return $schools;
     }
 
+    /*
+     * <summary>
+     * Get a school by using the object_id.
+     * Reference URL: https://msdn.microsoft.com/office/office365/api/school-rest-operations#get-a-school.
+     * </summary>
+     * <param name="objectId">The Object ID of the school administrative unit in Azure Active Directory.</param>
+     * <returns></returns>
+     */
     public function getSchool($objectId)
     {
-
+        $json = $this->getResponse("get", '/administrativeUnits/'.$objectId.'?api-version=beta');
+        $school = new School();
+        $school->parse($json);
+        return $school;
     }
 
     /**

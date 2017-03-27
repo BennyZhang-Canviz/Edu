@@ -37,7 +37,7 @@ Route::group(['middleware' => ['web','auth','SchoolMiddleware']], function () {
 //    Route::get('/home', 'SchoolsController@index');
     Route::get('/schools', 'SchoolsController@index');
     Route::get('/users/{objectId}/{schoolId}', 'UsersController@index');
-    Route::get('/myclasses/{objectId}/{schoolId}', 'TempSchoolController@myclasses');
+    Route::get('/classes/{objectId}/{schoolId}', 'TempSchoolController@classes');
 });
 
 
