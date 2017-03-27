@@ -25,7 +25,7 @@ class AADGraphClient
      */
     public function __construct()
     {
-        $this->tokenCacheService = new TokenCacheServices();
+
     }
 
     //Get current user and roles from AAD. Update user roles to database.
@@ -85,46 +85,7 @@ class AADGraphClient
         return $this->GetTenantId($tenant);
     }
 
-    /**
-     * Get the current user.
-     *
-     * @return Model\User The current user
-     */
-    public function getMe()
-    {
-        $json = $this->getResponse("get", "/me?api-version=1.5");
-        $assignedLicenses = array_map(function($license){return new Model\AssignedLicense($license);}, $json["assignedLicenses"]);
-        $isStudent = $this->IsUserStudent($assignedLicenses);
-        $isTeacher = $this->IsUserTeacher($assignedLicenses);
-        $user = new EducationUser();
-        if ($isStudent)
-        {
-            $user = new Student();
-        }
-        else if ($isTeacher)
-        {
-            $user = new Teacher();
-        }
-        $user->parse($json);
-        return $user;
-    }
 
-    public function getSchools()
-    {
-        $json = $this->getResponse("get", "/administrativeUnits?api-version=beta");
-        $value = $json["value"];
-        $schools = [];
-        if (is_array($value) && !empty($value))
-        {
-            foreach($value as $json)
-            {
-                $school = new School();
-                $school->parse($json);
-                array_push($schools, $school);
-            }
-        }
-        return $schools;
-    }
 
     private function IsUserAdmin($userId)
     {
@@ -185,7 +146,7 @@ class AADGraphClient
        return $members = json_decode($result->getBody())->value;
      }
 
-     private function IsUserStudent($licenses)
+     public function IsUserStudent($licenses)
      {
          while ($license = each($licenses)) {
              if($license['value']->getSkuId() ===O365ProductLicenses::Student || $license['value']->getSkuId() ===O365ProductLicenses::StudentPro){
@@ -195,7 +156,7 @@ class AADGraphClient
          return false;
      }
 
-    private function IsUserTeacher($licenses)
+    public function IsUserTeacher($licenses)
     {
         while ($license = each($licenses)) {
             if($license['value']->getSkuId() ===O365ProductLicenses::Faculty || $license['value']->getSkuId() ===O365ProductLicenses::FacultyPro){
@@ -205,40 +166,4 @@ class AADGraphClient
         return false;
     }
 
-    /**
-     * Get response of AAD Graph API
-     *
-     * @param string $requestType The HTTP method to use, e.g. "GET" or "POST"
-     * @param string $endpoint    The Graph endpoint to call*
-     *
-     * @return mixed Response of AAD Graph API
-     */
-    private function getResponse($requestType, $endpoint)
-    {
-        $token =  $this->getToken();
-        if($token)
-        {
-            $url = Constants::AADGraph . '/' . $_SESSION[SiteConstants::Session_TenantId] . $endpoint;
-            $result = HttpService::getHttpResponse($requestType, $token, $url);
-            return json_decode($result->getBody(), true);
-        }
-        return null;
-    }
-
-    /**
-     * Get access token
-     *
-     * @return string The access token
-     */
-    private function getToken()
-    {
-        $user = Auth::user();
-        if (strlen($user->o365UserId) == 0)
-        {
-            return null;
-        }
-        return $this->tokenCacheService-> GetAADToken($user->o365UserId);
-    }
-
-    private $tokenCacheService;
 }

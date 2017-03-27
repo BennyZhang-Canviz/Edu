@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 
 use App\Model\TokenCache;
+use App\Services\EducationServiceClient;
 use App\Services\MapService;
 use App\Services\TokenCacheServices;
 use Illuminate\Http\Request;
@@ -35,7 +36,7 @@ class SchoolsController extends Controller
         $user = Auth::user();
 
 
-        $graphClient = new AADGraphClient();
+        $graphClient = new EducationServiceClient();
         $me = $graphClient->getMe();
         $schools = $graphClient->getSchools();
         foreach($schools as $school)

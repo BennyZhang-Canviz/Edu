@@ -9,6 +9,7 @@ class TempSchoolController extends Controller
     //
     public function  myclasses($objectId,$schoolId)
     {
+       // $data = ["me" => $me, "schools" => $schools, "bingMapKey" => Constants::BINGMAPKEY];
         return view('schools.myclasses');
     }
 }
