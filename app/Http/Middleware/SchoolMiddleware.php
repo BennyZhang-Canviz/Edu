@@ -3,10 +3,9 @@
 namespace App\Http\Middleware;
 
 use Closure;
-use App\Services\UserRolesServices;
 use Illuminate\Support\Facades\Auth;
 
-class AdminLogin
+class SchoolMiddleware
 {
     /**
      * Handle an incoming request.
@@ -18,9 +17,10 @@ class AdminLogin
     public function handle($request, Closure $next)
     {
         $user = Auth::user();
-       $isAdmin = (new UserRolesServices)->IsUserAdmin($user->o365UserId);
-       if(!$isAdmin)
-           return redirect("/login");
+        if (!$user->isLinked()){
+            return redirect('/link');
+        }
+
         return $next($request);
     }
 }

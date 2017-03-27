@@ -33,9 +33,7 @@ class SchoolsController extends Controller
     public function index()
     {
         $user = Auth::user();
-        if (!$user->isLinked()){
-            return redirect('/link');
-        }
+
 
         $graphClient = new AADGraphClient();
         $me = $graphClient->getMe();

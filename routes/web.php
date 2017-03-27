@@ -38,8 +38,10 @@ Route::group(['middleware' => ['web','auth.basic']], function () {
     //add school related routers.
     Route::get('/home', 'HomeController@index');
 });
+Route::group(['middleware' => ['web','auth','SchoolMiddleware']], function () {
+    Route::get('/schools', 'SchoolsController@index');
+});
 
-Route::get('/schools', 'SchoolsController@index');
 Route::get('/users/{objectId}/{schoolId}', 'UsersController@index');
 
 //link
