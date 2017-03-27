@@ -13,7 +13,9 @@ class TempSchoolController extends Controller
         $educationServiceClient = new EducationServiceClient();
         $me = $educationServiceClient->getMe();
         $school = $educationServiceClient->getSchool($objectId);
+        //$myClasses =  $educationServiceClient->getMySectionsOfCurrentSchool($schoolId);
+        $allClasses = $educationServiceClient->getAllSections($schoolId,12,null);
         $data = ["me" => $me, "school" => $school];
-        return view('schools.myclasses',$data);
+        return view('schools.classes',$data);
     }
 }

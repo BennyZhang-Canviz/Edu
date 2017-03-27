@@ -30,7 +30,8 @@ class Section extends ParsableObject
                 "SchoolId" =>"extension_fe2174665583431c953114ff7268b7b3_Education_SyncSource_SchoolId",
                 "SyncSource" =>"extension_fe2174665583431c953114ff7268b7b3_Education_SyncSource",
                 "AnchorId" =>"extension_fe2174665583431c953114ff7268b7b3_Education_AnchorId",
-                "EducationStatus" =>"extension_fe2174665583431c953114ff7268b7b3_Education_Status"
+                "EducationStatus" =>"extension_fe2174665583431c953114ff7268b7b3_Education_Status",
+                "Users" => "members"
             ];
     }
 
@@ -57,6 +58,7 @@ class Section extends ParsableObject
     public $SyncSource;
     public $AnchorId;
     public $EducationStatus;
+    public $Users;
 
     public function CombinedCourseNumber()
     {
@@ -65,7 +67,7 @@ class Section extends ParsableObject
 
     private function GetCourseNumber($courseNumber)
     {
-        $pattern = '\d+';
+        $pattern = '/\d+/';
         preg_match($pattern, $courseNumber, $match);
         if (count($match) == 0)
             return '';

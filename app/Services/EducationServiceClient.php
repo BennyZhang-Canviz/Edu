@@ -5,6 +5,7 @@ use App\Config\O365ProductLicenses;
 use App\Config\SiteConstants;
 use App\ViewModel\EducationUser;
 use App\ViewModel\School;
+use App\ViewModel\Section;
 use App\ViewModel\Student;
 use App\ViewModel\Teacher;
 use Illuminate\Support\Facades\Auth;
@@ -17,13 +18,6 @@ class  EducationServiceClient
     private $tokenCacheService;
     private $o365UserId;
     private $AADGraphClient;
-
-    /**
-     * Create a new instance.
-     *
-     * @return void
-     */
-
     public function __construct()
     {
         $this->tokenCacheService = new TokenCacheServices();
@@ -32,30 +26,150 @@ class  EducationServiceClient
         $this->o365UserId = $user->o365UserId;
     }
 
-    /**
-     * Get all schools that exist in the Azure Active Directory tenant
+    /*
+     * <summary>
+     * Get all schools that exist in the Azure Active Directory tenant.
      * Reference URL: https://msdn.microsoft.com/office/office365/api/school-rest-operations#get-all-schools
-     *
-     * @return array all schools that exist in the Azure Active Directory tenant
+     * </summary>
+     * <returns></returns>
      */
     public function getSchools()
     {
-        return $this->getResponse("get", "/administrativeUnits?api-version=beta", School::class);
+        $json = $this->getResponse("get", "/administrativeUnits?api-version=beta");
+        $value = $json["value"];
+        $schools = [];
+        if (is_array($value) && !empty($value))
+        {
+            foreach($value as $json)
+            {
+                $school = new School();
+                $school->parse($json);
+                array_push($schools, $school);
+            }
+        }
+        return $schools;
     }
 
-    /**
-     * Get the school with the object id.
+    /*
+     * <summary>
+     * Get a school by using the object_id.
      * Reference URL: https://msdn.microsoft.com/office/office365/api/school-rest-operations#get-a-school.
-     *
-     * @param string $objectId he Object ID of the school administrative unit in Azure Active Directory
-     *
-     * @return The school with the object id
+     * </summary>
+     * <param name="objectId">The Object ID of the school administrative unit in Azure Active Directory.</param>
+     * <returns></returns>
      */
     public function getSchool($objectId)
     {
-        return $this->getResponse("get", '/administrativeUnits/'.$objectId.'?api-version=beta', School::class);
+        $json = $this->getResponse("get", '/administrativeUnits/'.$objectId.'?api-version=beta');
+        $school = new School();
+        $school->parse($json);
+        return $school;
     }
 
+    public function getAllMySections($loadMembers)
+    {
+        $relativeUrl = "/me/memberOf?api-version=1.5";
+        $json = $this->getResponse("get", $relativeUrl)["value"];
+        $sections = [];
+        if (is_array($json) && !empty($json))
+        {
+            foreach($json as $sec)
+            {
+                $section = new Section();
+                $section->parse($sec);
+                if($section->objectType == 'Group' && $section->EducationObjectType =='Section')
+                    array_push($sections, $section);
+            }
+        }
+
+
+        if(!$loadMembers)
+            return $sections;
+        $results=[];
+        foreach ($sections as $section)
+        {
+            $sec = $this->getASectionWithMembers($section->objectId);
+            array_push($results, $sec);
+        }
+        return $results;
+    }
+
+    private function getASectionWithMembers($sectionId){
+        $relativeUrl = '/groups/'.$sectionId.'?api-version=beta&$expand=members';
+        $json = $this->getResponse("get", $relativeUrl);
+        $section = new Section();
+        $section->parse($json);
+        $usersArray=[];
+        foreach ($section->Users as $user) {
+            $u = new EducationUser();
+            $u->parse($user);
+            array_push($usersArray, $u);
+        }
+        $section->Users = $usersArray;
+        return $section;
+    }
+
+
+    public function getMySectionsOfCurrentSchool($schoolId)
+    {
+        $sections= $this->getAllMySections(true);
+        $result =  array_filter($sections, function ($var)  use ($schoolId){
+            return ($var->SchoolId== $schoolId);
+        });
+
+        $flag = true;
+        $temp=0;
+        $count = count($result)-1;
+
+        while ( $flag )
+        {
+            $flag = false;
+            for( $j=0;  $j < $count ; $j++)
+            {
+                if ( $result[$j]->CombinedCourseNumber() > $result[$j+1]->CombinedCourseNumber() )
+                {
+                    $temp = $result[$j];
+                    $result[$j] = $result[$j+1];
+                    $result[$j+1]=$temp;
+                    $flag = true;
+                }
+            }
+        }
+        return $result;
+    }
+
+    public  function getAllSections($schoolId,$top,$nextLink)
+    {
+
+        $relativeUrl = '/groups?api-version=beta&$filter=extension_fe2174665583431c953114ff7268b7b3_Education_ObjectType%20eq%20\'Section\'%20and%20extension_fe2174665583431c953114ff7268b7b3_Education_SyncSource_SchoolId%20eq%20\''.$schoolId.'\'';
+
+        $this->HttpGetArrayAsync($relativeUrl,$top,$nextLink);
+        $a=1;
+        return $a;
+    }
+
+    private function HttpGetArrayAsync($relativeUrl,$top,$nextLink)
+    {
+        $str = strpos($relativeUrl,'?')>=0?'&':'?';
+        $relativeUrl =$relativeUrl . $str.'$top='.$top;
+        if($nextLink && strpos($nextLink,'?')>=0)
+        {
+            $token = $this->GetSkipToken($nextLink);
+            if($token){
+                $relativeUrl =$relativeUrl . "&" .$token;
+            }
+        }
+        $json = $this->getResponse("get", $relativeUrl);
+        $a=1;
+    }
+    private function GetSkipToken($nextLink)
+    {
+        $pattern = '/\$skiptoken=[^&]+/';
+        preg_match($pattern, $nextLink, $match);
+        if (count($match) == 0)
+            return '';
+        return $match[0];
+    }
     /**
      * Get the current user.
      *
@@ -63,7 +177,7 @@ class  EducationServiceClient
      */
     public function getMe()
     {
-        $json = $this->getResponse("get", "/me?api-version=1.5", null);
+        $json = $this->getResponse("get", "/me?api-version=1.5");
         $assignedLicenses = array_map(function($license){return new Model\AssignedLicense($license);}, $json["assignedLicenses"]);
         $isStudent = $this->IsUserStudent($assignedLicenses);
         $isTeacher = $this->IsUserTeacher($assignedLicenses);
@@ -95,41 +209,20 @@ class  EducationServiceClient
      *
      * @param string $requestType The HTTP method to use, e.g. "GET" or "POST"
      * @param string $endpoint    The Graph endpoint to call*
-     * @param string $returnType The type of the return object or object of an array
      *
      * @return mixed Response of AAD Graph API
      */
-    private function getResponse($requestType, $endpoint, $returnType)
+    private function getResponse($requestType, $endpoint)
     {
+        $user = Auth::user();
+        $o365UserId = $user->o365UserId;
+        $tenantId = $this->AADGraphClient->GetTenantIdByUserId($o365UserId);
         $token =  $this->getToken();
         if($token)
         {
-            $url = Constants::AADGraph . '/' . $_SESSION[SiteConstants::Session_TenantId] . $endpoint;
+            $url = Constants::AADGraph . '/' . $tenantId . $endpoint;
             $result = HttpService::getHttpResponse($requestType, $token, $url);
-            $json = json_decode($result->getBody(), true);
-            if ($returnType)
-            {
-                if (array_key_exists('value', $json))
-                {
-                    $values = $json['value'];
-                    //Check that this is an object array instead of a value called "value"
-                    if ($values && is_array($values))
-                    {
-                        $objArray = array();
-                        foreach ($values as $obj)
-                        {
-                            $targetObj = new $returnType();
-                            $targetObj->parse($obj);
-                            $objArray[] = $targetObj;
-                        }
-                        return $objArray;
-                    }
-                }
-                $retObj = new $returnType();
-                $retObj->parse($result);
-                return $retObj;
-            }
-            return $json;
+            return json_decode($result->getBody(), true);
         }
         return null;
     }
