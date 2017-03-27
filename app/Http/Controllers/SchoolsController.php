@@ -50,6 +50,6 @@ class SchoolsController extends Controller
         }
         $data = ["me" => $me, "schools" => $schools, "bingMapKey" => Constants::BINGMAPKEY];
 
-        return view('schools', $data);
+        return view('schools.schools', $data);
     }
 }
