@@ -9,7 +9,7 @@
 namespace App\ViewModel;
 
 
-class Student extends EducationUser
+class Student extends SectionUser
 {
     /**
      * Create a new instance.

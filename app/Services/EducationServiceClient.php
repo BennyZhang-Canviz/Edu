@@ -58,18 +58,8 @@ class  EducationServiceClient
      */
     public function getSchools()
     {
-        $json = $this->getResponse("get", "/administrativeUnits?api-version=beta");
-        $value = $json["value"];
-        $schools = [];
-        if (is_array($value) && !empty($value))
-        {
-            foreach($value as $json)
-            {
-                $school = new School();
-                $school->parse($json);
-                array_push($schools, $school);
-            }
-        }
+        $schools = $this->getResponse("get", "/administrativeUnits?api-version=beta",School::class);
+
         return $schools;
     }
 
@@ -90,16 +80,15 @@ class  EducationServiceClient
     public function getAllMySections($loadMembers)
     {
         $relativeUrl = "/me/memberOf?api-version=1.5";
-        $json = $this->getResponse("get", $relativeUrl)["value"];
-        $sections = [];
+        //$json = $this->getResponse("get", $relativeUrl)["value"];
+        $json = $this->getResponse("get", $relativeUrl,Section::class);
+        $sections=[];
         if (is_array($json) && !empty($json))
         {
             foreach($json as $sec)
             {
-                $section = new Section();
-                $section->parse($sec);
-                if($section->objectType == 'Group' && $section->EducationObjectType =='Section')
-                    array_push($sections, $section);
+                if($sec->objectType == 'Group' && $sec->EducationObjectType =='Section')
+                    array_push($sections, $sec);
             }
         }
 
@@ -117,12 +106,11 @@ class  EducationServiceClient
 
     private function getASectionWithMembers($sectionId){
         $relativeUrl = '/groups/'.$sectionId.'?api-version=beta&$expand=members';
-        $json = $this->getResponse("get", $relativeUrl);
-        $section = new Section();
-        $section->parse($json);
+        $section = $this->getResponse("get", $relativeUrl,Section::class);
+
         $usersArray=[];
         foreach ($section->Users as $user) {
-            $u = new EducationUser();
+            $u = new SectionUser();
             $u->parse($user);
             array_push($usersArray, $u);
         }
@@ -166,6 +154,7 @@ class  EducationServiceClient
 
         $this->HttpGetArrayAsync($relativeUrl,$top,$nextLink);
         $a=1;
+        $b=4322433422;
         return $a;
     }
 
@@ -180,7 +169,7 @@ class  EducationServiceClient
                 $relativeUrl =$relativeUrl . "&" .$token;
             }
         }
-        $json = $this->getResponse("get", $relativeUrl);
+        $json = $this->getResponse("get", $relativeUrl,Section::class);
         $a=1;
     }
     private function GetSkipToken($nextLink)
@@ -254,7 +243,7 @@ class  EducationServiceClient
         $token =  $this->getToken();
         if($token)
         {
-            $url = Constants::AADGraph . '/' . $_SESSION[SiteConstants::Session_TenantId] . $endpoint;
+            $url = Constants::AADGraph . '/' . $this->getTenantId() . $endpoint;
             $result = HttpService::getHttpResponse($requestType, $token, $url);
             $json = json_decode($result->getBody(), true);
             if ($returnType)
@@ -276,13 +265,15 @@ class  EducationServiceClient
                     }
                 }
                 $retObj = new $returnType();
-                $retObj->parse($result);
+                $retObj->parse($json);
                 return $retObj;
             }
             return $json;
         }
         return null;
     }
+
+
 
     /**
      * Get access token
@@ -297,6 +288,13 @@ class  EducationServiceClient
             return null;
         }
         return $this->tokenCacheService-> GetAADToken($this->o365UserId);
+    }
+
+    private function  getTenantId()
+    {
+       $user = Auth::user();
+       $o365UserId = $user->o365UserId;
+       return $this->AADGraphClient->GetTenantIdByUserId($o365UserId);
     }
 
 

@@ -2,7 +2,7 @@
 namespace App\Services;
 
 use App\Services\TokenCacheServices;
-use App\ViewModel\EducationUser;
+use App\ViewModel\SectionUser;
 use App\ViewModel\School;
 use App\ViewModel\Student;
 use App\ViewModel\Teacher;
