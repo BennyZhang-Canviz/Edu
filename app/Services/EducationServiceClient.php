@@ -4,6 +4,7 @@ namespace App\Services;
 use App\Config\O365ProductLicenses;
 use App\Config\Roles;
 use App\Config\SiteConstants;
+use App\ViewModel\ArrayResult;
 use App\ViewModel\SectionUser;
 use App\ViewModel\School;
 use App\ViewModel\Section;
@@ -13,12 +14,19 @@ use Illuminate\Support\Facades\Auth;
 use Microsoft\Graph\Connect\Constants;
 use Microsoft\Graph\Graph;
 use Microsoft\Graph\Model;
+use Prophecy\Util\StringUtil;
 
 class  EducationServiceClient
 {
     private $tokenCacheService;
     private $o365UserId;
     private $AADGraphClient;
+
+    /**
+     * Create a new instance.
+     *
+     * @return void
+     */
     public function __construct()
     {
         $this->tokenCacheService = new TokenCacheServices();
@@ -34,7 +42,7 @@ class  EducationServiceClient
      */
     public function getMe()
     {
-        $json = $this->getResponse("get", "/me?api-version=1.5", null);
+        $json = $this->getResponse("get", "/me?api-version=1.5", null, null, null);
         $assignedLicenses = array_map(function($license){return new Model\AssignedLicense($license);}, $json["assignedLicenses"]);
         $isStudent = $this->IsUserStudent($assignedLicenses);
         $isTeacher = $this->IsUserTeacher($assignedLicenses);
@@ -58,18 +66,16 @@ class  EducationServiceClient
     /**
      * Get all schools that exist in the Azure Active Directory tenant
      * Reference URL: https://msdn.microsoft.com/office/office365/api/school-rest-operations#get-all-schools
-     * </summary>
-     * <returns></returns>
+     *
+     * @return array all schools that exist in the Azure Active Directory tenant
      */
     public function getSchools()
     {
-        $schools = $this->getResponse("get", "/administrativeUnits?api-version=beta",School::class);
-
-        return $schools;
+        return $this->getAllPages("get", "/administrativeUnits?api-version=beta", School::class);
     }
 
-    /*
-     * <summary>
+    /**
+     *
      * Get a school by using the object_id.
      * Reference URL: https://msdn.microsoft.com/office/office365/api/school-rest-operations#get-a-school.
      *
@@ -79,7 +85,7 @@ class  EducationServiceClient
      */
     public function getSchool($objectId)
     {
-        return $this->getResponse("get", "/administrativeUnits/" . $objectId . "?api-version=beta", School::class);
+        return $this->getResponse("get", "/administrativeUnits/" . $objectId . "?api-version=beta", School::class, null, null);
     }
 
     public function getAllMySections($loadMembers)
@@ -170,7 +176,7 @@ class  EducationServiceClient
                 $relativeUrl =$relativeUrl . "&" .$token;
             }
         }
-       return $json = $this->getResponse("get", $relativeUrl,Section::class);
+       return $json = $this->getResponse("get", $relativeUrl,Section::class, null, null);
     }
     private function GetSkipToken($nextLink)
     {
@@ -185,12 +191,14 @@ class  EducationServiceClient
      * Reference URL: https://msdn.microsoft.com/en-us/office/office365/api/school-rest-operations#get-school-members
      *
      * @param string $objectId the object id of the school administrative unit in Azure Active Directory
+     * @param int $top The number of items to return in a result set.
+     * @param int $skipToken The token used to retrieve the next subset of the requested collection
      *
      * @return array members within the school
      */
-    public function getMembers($objectId)
+    public function getMembers($objectId, $top, $skipToken)
     {
-        return $this->getResponse("get", "/administrativeUnits/" . $objectId . "members?api-version=beta", SectionUser::class);
+        return $this->getResponse("get", "/administrativeUnits/" . $objectId . "/members?api-version=beta", SectionUser::class, $top, $skipToken);
     }
 
     /**
@@ -198,12 +206,14 @@ class  EducationServiceClient
      * Reference URL: https://msdn.microsoft.com/en-us/office/office365/api/school-rest-operations#get-school-members
      *
      * @param string $schoolId the id of the school administrative unit in Azure Active Directory
+     * @param int $top The number of items to return in a result set.
+     * @param int $skipToken The token used to retrieve the next subset of the requested collection
      *
      * @return array students within the school
      */
-    public function getStudents($schoolId)
+    public function getStudents($schoolId, $top, $skipToken)
     {
-        return $this->getResponse("get", "users?api-version=1.5&\$filter=extension_fe2174665583431c953114ff7268b7b3_Education_SyncSource_SchoolId eq '{$schoolId}' and extension_fe2174665583431c953114ff7268b7b3_Education_ObjectType eq 'Student'", SectionUser::class);
+        return $this->getResponse("get", "/users?api-version=1.5&\$filter=extension_fe2174665583431c953114ff7268b7b3_Education_SyncSource_SchoolId eq '$schoolId' and extension_fe2174665583431c953114ff7268b7b3_Education_ObjectType eq 'Student'", SectionUser::class, $top, $skipToken);
     }
 
     /**
@@ -211,12 +221,14 @@ class  EducationServiceClient
      * Reference URL: https://msdn.microsoft.com/en-us/office/office365/api/school-rest-operations#get-school-members
      *
      * @param string $schoolId the id of the school administrative unit in Azure Active Directory
+     * @param int $top The number of items to return in a result set.
+     * @param int $skipToken The token used to retrieve the next subset of the requested collection
      *
      * @return array teachers within the school
      */
-    public function getTeachers($schoolId)
+    public function getTeachers($schoolId, $top, $skipToken)
     {
-        return $this->getResponse("get", "users?api-version=1.5&\$filter=extension_fe2174665583431c953114ff7268b7b3_Education_SyncSource_SchoolId eq '{$schoolId}' and extension_fe2174665583431c953114ff7268b7b3_Education_ObjectType eq 'Teacher'", SectionUser::class);
+        return $this->getResponse("get", "/users?api-version=1.5&\$filter=extension_fe2174665583431c953114ff7268b7b3_Education_SyncSource_SchoolId eq '$schoolId' and extension_fe2174665583431c953114ff7268b7b3_Education_ObjectType eq 'Teacher'", SectionUser::class, $top, $skipToken);
     }
 
     private function IsUserStudent($licenses)
@@ -233,22 +245,32 @@ class  EducationServiceClient
      * Get response of AAD Graph API
      *
      * @param string $requestType The HTTP method to use, e.g. "GET" or "POST"
-     * @param string $endpoint    The Graph endpoint to call*
+     * @param string $endpoint The Graph endpoint to call*
      * @param string $returnType The type of the return object or object of an array
+     * @param int $top The number of items to return in a result set.
+     * @param int $skipToken The token used to retrieve the next subset of the requested collection
      *
      * @return mixed Response of AAD Graph API
      */
-    private function getResponse($requestType, $endpoint, $returnType)
+    private function getResponse($requestType, $endpoint, $returnType, $top, $skipToken)
     {
         $token =  $this->getToken();
         if($token)
         {
             $url = Constants::AADGraph . '/' . $this->getTenantId() . $endpoint;
+            if ($top)
+            {
+                $url = $this->appendParamToUrl($url, "\$top", $top);
+            }
+            if ($skipToken)
+            {
+                $url = $this->appendParamToUrl($url, "\$skiptoken", $skipToken);
+            }
             $result = HttpService::getHttpResponse($requestType, $token, $url);
             $json = json_decode($result->getBody(), true);
             if ($returnType)
             {
-                if (array_key_exists('value', $json))
+                if (array_key_exists('value', $json) and !$top)
                 {
                     $values = $json['value'];
                     //Check that this is an object array instead of a value called "value"
@@ -264,7 +286,7 @@ class  EducationServiceClient
                         return $objArray;
                     }
                 }
-                $retObj = new $returnType();
+                $retObj = $top ? new ArrayResult($returnType) : new $returnType();
                 $retObj->parse($json);
                 return $retObj;
             }
@@ -273,7 +295,27 @@ class  EducationServiceClient
         return null;
     }
 
-
+    /**
+     * Get all pages of data of AAD Graph API
+     *
+     * @param string $requestType The HTTP method to use, e.g. "GET" or "POST"
+     * @param string $endpoint    The Graph endpoint to call*
+     * @param string $returnType  The type of the return object or object of an array
+     *
+     * @return mixed All pages of data of AAD Graph API
+     */
+    private function getAllPages($requestType, $endpoint, $returnType)
+    {
+        $data = $this->getResponse($requestType, $endpoint, $returnType, 100, null);
+        while($data->skipToken)
+        {
+            $nextPage = $this->getResponse("get", "/administrativeUnits?api-version=beta", School::class, 100, $data->skipToken);
+            $data->value = array_merge($data->value, $nextPage->value);
+            $data->nextLink = $nextPage->nextLink;
+            $data->skipToken = $nextPage->skipToken;
+        }
+        return $data->value;
+    }
 
     /**
      * Get access token
@@ -288,6 +330,22 @@ class  EducationServiceClient
             return null;
         }
         return $this->tokenCacheService-> GetAADToken($this->o365UserId);
+    }
+
+    /**
+     * Append a parameter to a url
+     *
+     * @param string $url The url
+     * @param string $name The name of the parameter
+     * @param string $value The value of the parameter
+     *
+     * @return string The url with the appended parameter
+     */
+    private function appendParamToUrl($url, $name, $value)
+    {
+        $str = strrchr($url, '?') === false ? "?" : "&";
+        $url .= $str . $name . "=" . $value;
+        return $url;
     }
 
     private function  getTenantId()

@@ -36,11 +36,13 @@ Auth::routes();
 Route::group(['middleware' => ['web','auth','SchoolMiddleware']], function () {
 //    Route::get('/home', 'SchoolsController@index');
     Route::get('/schools', 'SchoolsController@index');
-    Route::get('/users/{objectId}/{schoolId}', 'UsersController@index');
+    Route::get('/users/{objectId}', 'SchoolsController@users');
+    Route::get('/users/next/{objectId}/{skipToken}', 'SchoolsController@usersNext');
+    Route::get('/students/next/{objectId}/{skipToken}', 'SchoolsController@studentsNext');
+    Route::get('/teachers/next/{objectId}/{skipToken}', 'SchoolsController@teachersNext');
+    Route::get('/userPhoto/{o365UserId}', 'SchoolsController@userPhoto');
     Route::get('/classes/{objectId}/{schoolId}', 'TempSchoolController@classes');
 });
-
-
 
 //link
 Route::group(['middleware' => ['web']], function () {

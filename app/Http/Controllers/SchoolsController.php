@@ -17,25 +17,12 @@ use App\Services\AADGraphClient;
 class SchoolsController extends Controller
 {
     /**
-     * Create a new schools controller instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
-
-    /**
-     * Show the application dashboard.
+     * Show all the schools.
      *
      * @return \Illuminate\Http\Response
      */
     public function index()
     {
-        $user = Auth::user();
-
-
         $educationServiceClient = new EducationServiceClient();
         $me = $educationServiceClient->getMe();
         $schools = $educationServiceClient->getSchools();
@@ -53,4 +40,89 @@ class SchoolsController extends Controller
 
         return view('schools.schools', $data);
     }
+
+    /**
+     * Show teachers and students of the specified school
+     *
+     * @param string $objectId The object id of the school
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function users($objectId)
+    {
+        $educationServiceClient = new EducationServiceClient();
+        $school = $educationServiceClient->getSchool($objectId);
+        $users = $educationServiceClient->getMembers($objectId, 12, null);
+        $students = $educationServiceClient->getStudents($school->schoolId, 12, null);
+        $teachers = $educationServiceClient->getTeachers($school->schoolId, 12, null);
+        $data = ["school" => $school, "users" => $users, "students" => $students, "teachers" => $teachers];
+
+        return view('schools.users', $data);
+    }
+
+    /**
+     * Get users of the specified school
+     *
+     * @param string $objectId The object id of the school
+     * @param string $skipToken The token used to retrieve the next subset of the requested collection
+     *
+     * @return mixed The next page of users
+     */
+    public function usersNext($objectId, $skipToken)
+    {
+        $educationServiceClient = new EducationServiceClient();
+        $users = $educationServiceClient->getMembers($objectId, 12, $skipToken);
+        return json_encode($users);
+    }
+
+    /**
+     * Get students of the specified school.
+     *
+     * @param string $objectId The object id of the school
+     * @param string $skipToken The token used to retrieve the next subset of the requested collection
+     *
+     * @return mixed The next page of students
+     */
+    public function studentsNext($objectId, $skipToken)
+    {
+        $educationServiceClient = new EducationServiceClient();
+        $school = $educationServiceClient->getSchool($objectId);
+        $students = $educationServiceClient->getStudents($school->schoolId, 12, $skipToken);
+        return json_encode($students);
+    }
+
+    /**
+     * Get teachers of the specified school.
+     *
+     * @param string $objectId The object id of the school
+     * @param string $skipToken The token used to retrieve the next subset of the requested collection
+     *
+     * @return mixed The next page of teachers
+     */
+    public function teachersNext($objectId, $skipToken)
+    {
+        $educationServiceClient = new EducationServiceClient();
+        $school = $educationServiceClient->getSchool($objectId);
+        $teachers = $educationServiceClient->getTeachers($school->schoolId, 12, $skipToken);
+        return json_encode($teachers);
+    }
+
+    /**
+     * Get photo of the specified user
+     *
+     * @param string $o365UserId The Office 365 user id of the user
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function userPhoto($o365UserId)
+    {
+
+    }
+
+    /**
+     * The education service
+     *
+     * @var string
+     */
+    private $educationServiceClient;
 }
