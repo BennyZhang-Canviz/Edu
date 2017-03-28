@@ -31,7 +31,8 @@ class Section extends ParsableObject
                 "SyncSource" =>"extension_fe2174665583431c953114ff7268b7b3_Education_SyncSource",
                 "AnchorId" =>"extension_fe2174665583431c953114ff7268b7b3_Education_AnchorId",
                 "EducationStatus" =>"extension_fe2174665583431c953114ff7268b7b3_Education_Status",
-                "Users" => "members"
+                "Users" => "members",
+                "NextLinkURL"=>"odata.nextLink"
             ];
     }
 
@@ -60,6 +61,8 @@ class Section extends ParsableObject
     public $EducationStatus;
     public $Users;
     public $IsMySection;
+    public $NextLinkURL;
+    public $CombinedCNumber;
 
     public function CombinedCourseNumber()
     {

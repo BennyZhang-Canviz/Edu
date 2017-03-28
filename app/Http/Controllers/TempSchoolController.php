@@ -16,7 +16,7 @@ class TempSchoolController extends Controller
         $myClasses =  $educationServiceClient->getMySectionsOfCurrentSchool($schoolId);
         $allClasses = $educationServiceClient->getAllSections($schoolId,12,null);
 
-        foreach ($allClasses as $class1) {
+        foreach ($allClasses->value as $class1) {
             $class1->IsMySection=false;
             foreach ($myClasses as $class2){
                 if($class1->Email == $class2->Email){
@@ -33,5 +33,18 @@ class TempSchoolController extends Controller
 //        $myClasses=[];
         $data = ["myClasses" => $myClasses, "allClasses"=>$allClasses,"school" => $school,"me"=>$me];
         return view('schools.classes',$data);
+    }
+
+    public function classesNext($schoolId,$nextLink)
+    {
+        $educationServiceClient = new EducationServiceClient();
+        $myClasses =  $educationServiceClient->getMySectionsOfCurrentSchool($schoolId);
+        $school = $educationServiceClient->getSchool($schoolId);
+        $allClasses = $educationServiceClient->getAllSections($school->schoolId,12,$nextLink);
+        foreach ($allClasses->value as $class) {
+            $class->CombinedCNumber = $class->CombinedCourseNumber();
+        }
+        return  response()->json(['Sections' => $allClasses,'MySections'=>$myClasses,'School'=>$school]);
+
     }
 }

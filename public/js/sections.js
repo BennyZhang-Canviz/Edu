@@ -2,6 +2,7 @@
  *   * Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license.  
  *   * See LICENSE in the project root for license information.  
  */
+
 $(document).ready(function () {
     function bindShowDetail(tiles) {
         tiles.hover(function inFn(e) {
@@ -36,22 +37,21 @@ $(document).ready(function () {
     });
 
     $("#see-more  span").click(function () {
-        search(true);
+
         var element = $(this);
         if (element.hasClass("disabled") || element.hasClass("nomore")) {
             return;
         }
 
         var schoolId = element.siblings("input#schoolid").val();
-        var url = "/Schools/" + schoolId + "/Classes/Next";
         var nextLinkElement = element.siblings("input#nextlink");
+        var url = "/classesnext/"+schoolId+"/"+ nextLinkElement.val();
 
         element.addClass("disabled");
         $.ajax({
             type: 'GET',
             url: url,
             dataType: 'json',
-            data: { schoolId: schoolId, nextLink: nextLinkElement.val() },
             contentType: "application/json; charset=utf-8",
             success: function (data) {
                 if (data.error === "AdalException" || data.error === "Unauthorized") {
@@ -62,14 +62,14 @@ $(document).ready(function () {
 
                 var tiles = element.parent().prev(".content");
                 var newTiles = $();
-                $.each(data.Sections.Value, function (i, s) {
+                $.each(data.Sections.value, function (i, s) {
                     var isMine = hasSection(s, data.MySections);
                     var newTile = $('<div class="tile-container"></div>');
                     var tileContainer = newTile;
                     if (isMine) {
                         tileContainer = $('<a class="mysectionlink" href="/Schools/' + schoolId + '/Classes/' + s.ObjectId + '"></a>').appendTo(newTile);
                     }
-                    var tile = $('<div class="tile"><h5>' + s.DisplayName + '</h5><h2>' + s.CombinedCourseNumber + '</h2></div>');
+                    var tile = $('<div class="tile"><h5>' + s.DisplayName + '</h5><h2>' + s.CombinedCNumber + '</h2></div>');
                     tile.appendTo(tileContainer);
                     var tileDetail = $('<div class="detail" style="display: none;">' +
                                             '<h5>Course Id:</h5>' +
@@ -102,7 +102,7 @@ $(document).ready(function () {
                 newTiles.appendTo(tiles).hide().fadeIn("slow");
                 bindShowDetail(newTiles);
 
-                var newNextLink = data.Sections.NextLink;
+                var newNextLink = data.Sections.skipToken;
                 nextLinkElement.val(newNextLink);
                 if (typeof (newNextLink) != "string" || newNextLink.length == 0) {
                     element.addClass("nomore");

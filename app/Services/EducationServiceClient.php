@@ -92,7 +92,7 @@ class  EducationServiceClient
     {
         $relativeUrl = "/me/memberOf?api-version=1.5";
         //$json = $this->getResponse("get", $relativeUrl)["value"];
-        $json = $this->getResponse("get", $relativeUrl,Section::class);
+        $json = $this->getResponse("get", $relativeUrl,Section::class,null,null);
         $sections=[];
         if (is_array($json) && !empty($json))
         {
@@ -117,7 +117,7 @@ class  EducationServiceClient
 
     private function getASectionWithMembers($sectionId){
         $relativeUrl = '/groups/'.$sectionId.'?api-version=beta&$expand=members';
-        $section = $this->getResponse("get", $relativeUrl,Section::class);
+        $section = $this->getResponse("get", $relativeUrl,Section::class,null,null);
 
         $usersArray=[];
         foreach ($section->Users as $user) {
@@ -158,25 +158,16 @@ class  EducationServiceClient
         return $result;
     }
 
-    public  function getAllSections($schoolId,$top,$nextLink)
+    public  function getAllSections($schoolId,$top,$token)
     {
         $relativeUrl = '/groups?api-version=beta&$filter=extension_fe2174665583431c953114ff7268b7b3_Education_ObjectType%20eq%20\'Section\'%20and%20extension_fe2174665583431c953114ff7268b7b3_Education_SyncSource_SchoolId%20eq%20\''.$schoolId.'\'';
-        return  $this->HttpGetArrayAsync($relativeUrl,$top,$nextLink);
+        return  $this->HttpGetArrayAsync($relativeUrl,$top,$token);
 
     }
 
-    private function HttpGetArrayAsync($relativeUrl,$top,$nextLink)
+    private function HttpGetArrayAsync($relativeUrl,$top,$token)
     {
-        $str = strpos($relativeUrl,'?')>=0?'&':'?';
-        $relativeUrl =$relativeUrl . $str.'$top='.$top;
-        if($nextLink && strpos($nextLink,'?')>=0)
-        {
-            $token = $this->GetSkipToken($nextLink);
-            if($token){
-                $relativeUrl =$relativeUrl . "&" .$token;
-            }
-        }
-       return $json = $this->getResponse("get", $relativeUrl,Section::class, null, null);
+       return $json = $this->getResponse("get", $relativeUrl,Section::class,$top,$token);
     }
     private function GetSkipToken($nextLink)
     {
@@ -316,6 +307,7 @@ class  EducationServiceClient
         }
         return $data->value;
     }
+
 
     /**
      * Get access token
