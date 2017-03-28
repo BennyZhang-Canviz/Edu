@@ -8,12 +8,6 @@ $(document).ready(function () {
             $(this).children().last().show();
         }, function outFn(e) {
             $(this).children().last().hide();
-        }).find(".detail #termdate").each(function (i, e) {
-            var $e = $(e);
-            var dateStr = $e.text();
-            if (dateStr) {
-                $e.text(moment.utc(dateStr).local().format('MMMM D YYYY'));
-            }
         });
     };
 

@@ -2,6 +2,7 @@
 namespace App\Services;
 
 use App\Config\O365ProductLicenses;
+use App\Config\Roles;
 use App\Config\SiteConstants;
 use App\ViewModel\SectionUser;
 use App\ViewModel\School;
@@ -41,10 +42,14 @@ class  EducationServiceClient
         if ($isStudent)
         {
             $user = new Student();
+            $user->userRole=Roles::Student;
         }
         else if ($isTeacher)
         {
             $user = new Teacher();
+            $user->userRole=Roles::Faculty;
+        }else{
+            $user->userRole=Roles::Admin;
         }
         $user->parse($json);
         return $user;

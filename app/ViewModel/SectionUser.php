@@ -38,4 +38,6 @@ class SectionUser extends ParsableObject
     public $position;
 
     public $favoriteColor;
+
+    public $userRole;
 }

@@ -1,5 +1,7 @@
 <?php
-use App\Config\Roles;use App\Config\SiteConstants;use App\Services\UserRolesServices;
+use App\Config\Roles;
+use App\Config\SiteConstants;
+use App\Services\UserRolesServices;
 ?>
 <!DOCTYPE html>
 <html lang="{{ config('app.locale') }}">
