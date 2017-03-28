@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 use App\Model\TokenCache;
 use App\Services\EducationServiceClient;
 use App\Services\MapService;
+use App\Services\MSGraphClient;
 use App\Services\TokenCacheServices;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -72,7 +73,7 @@ class SchoolsController extends Controller
     {
         $educationServiceClient = new EducationServiceClient();
         $users = $educationServiceClient->getMembers($objectId, 12, $skipToken);
-        return json_encode($users);
+        return response()->json($users);
     }
 
     /**
@@ -88,7 +89,7 @@ class SchoolsController extends Controller
         $educationServiceClient = new EducationServiceClient();
         $school = $educationServiceClient->getSchool($objectId);
         $students = $educationServiceClient->getStudents($school->schoolId, 12, $skipToken);
-        return json_encode($students);
+        return response()->json($students);
     }
 
     /**
@@ -104,7 +105,7 @@ class SchoolsController extends Controller
         $educationServiceClient = new EducationServiceClient();
         $school = $educationServiceClient->getSchool($objectId);
         $teachers = $educationServiceClient->getTeachers($school->schoolId, 12, $skipToken);
-        return json_encode($teachers);
+        return response()->json($teachers);
     }
 
     /**
@@ -116,7 +117,12 @@ class SchoolsController extends Controller
      */
     public function userPhoto($o365UserId)
     {
-
+        $msGraph = new MSGraphClient();
+        $stream = $msGraph->getUserPhoto($o365UserId);
+        if ($stream)
+        {
+            //return response()->stream()
+        }
     }
 
     /**
