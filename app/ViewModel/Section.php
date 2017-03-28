@@ -59,6 +59,7 @@ class Section extends ParsableObject
     public $AnchorId;
     public $EducationStatus;
     public $Users;
+    public $IsMySection;
 
     public function CombinedCourseNumber()
     {

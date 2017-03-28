@@ -154,13 +154,9 @@ class  EducationServiceClient
 
     public  function getAllSections($schoolId,$top,$nextLink)
     {
-
         $relativeUrl = '/groups?api-version=beta&$filter=extension_fe2174665583431c953114ff7268b7b3_Education_ObjectType%20eq%20\'Section\'%20and%20extension_fe2174665583431c953114ff7268b7b3_Education_SyncSource_SchoolId%20eq%20\''.$schoolId.'\'';
+        return  $this->HttpGetArrayAsync($relativeUrl,$top,$nextLink);
 
-        $this->HttpGetArrayAsync($relativeUrl,$top,$nextLink);
-        $a=1;
-        $b=4322433422;
-        return $a;
     }
 
     private function HttpGetArrayAsync($relativeUrl,$top,$nextLink)
@@ -174,8 +170,7 @@ class  EducationServiceClient
                 $relativeUrl =$relativeUrl . "&" .$token;
             }
         }
-        $json = $this->getResponse("get", $relativeUrl,Section::class);
-        $a=1;
+       return $json = $this->getResponse("get", $relativeUrl,Section::class);
     }
     private function GetSkipToken($nextLink)
     {
