@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
+    <link href="{{url('/public/css/register.css')}}" rel="stylesheet">
 <div class="container">
     <div class="row">
         <div class="col-md-8 col-md-offset-2">

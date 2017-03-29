@@ -49,7 +49,7 @@ use App\Services\UserRolesServices;
                 <?php
 
                 $role='';
-                $o365userId=null;
+                $o365userId='';
                 if(Auth::user())
                     $o365userId=Auth::user()->o365UserId;
 
@@ -93,11 +93,12 @@ use App\Services\UserRolesServices;
                                         if(isset($_SESSION[SiteConstants::Session_O365_User_First_name] ) && isset( $_SESSION[SiteConstants::Session_O365_User_Last_name]))
                                             echo  'Hello '.  $_SESSION[SiteConstants::Session_O365_User_First_name] .' '. $_SESSION[SiteConstants::Session_O365_User_Last_name] ;
                                     }
-
+                                    if($o365userId){
+                                        echo '<img src="/userPhoto/'.$o365userId.'"  />';
+                                    }
                                     ?>
-                                        @if($o365userId)
-                                            <img src="/userPhoto/{{$o365UserId}}"  />
-                                        @endif
+
+
                                    <span class="caret"></span>
                                 </a>
 
