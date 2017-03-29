@@ -73,7 +73,7 @@ use App\Services\UserRolesServices;
                     <!-- Right Side Of Navbar -->
                     <ul class="nav navbar-nav navbar-right">
                             <li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                                <a href="#" class="dropdown-toggle aboutme" data-toggle="dropdown" role="button" aria-expanded="false">
                                     <?php
 
                                     if($role)
@@ -95,7 +95,9 @@ use App\Services\UserRolesServices;
                                     }
 
                                     ?>
-
+                                        @if($o365userId)
+                                            <img src="/userPhoto/{{$o365UserId}}"  />
+                                        @endif
                                    <span class="caret"></span>
                                 </a>
 

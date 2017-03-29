@@ -6,6 +6,9 @@
         <div class="margin-top-12 margin-btm-12 aboutme">
             <b>Username:</b><br />
             {{$displayName}}
+            @if($o365UserId)
+                <img src="/userPhoto/{{$o365UserId}}"  />
+             @endif
         </div>
         <div class="margin-top-12 margin-btm-12">
 
@@ -37,7 +40,10 @@
                 <b>Classes:</b>
                 <br />
                 <div>
-
+                @foreach($classes as $class)
+                    {{$class->DisplayName}}
+                    <br/>
+                    @endforeach
                 </div>
             </div>
     </div>

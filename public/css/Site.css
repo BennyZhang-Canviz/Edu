@@ -318,7 +318,7 @@ border: 1px solid #e4e4e4;
 max-width: 50px;
 height: auto;
 }
-.userinfo img, .aboutme img{max-width:36px;}
+.userinfo img, .aboutme img{max-width:36px !important;}
 #lstproducts li{width:100%;min-height:60px;}
 #lstproducts li *{float:left;}
 #lstproducts li .disname{

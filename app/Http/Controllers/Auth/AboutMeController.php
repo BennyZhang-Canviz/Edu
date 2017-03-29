@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Config\SiteConstants;
+use App\Services\EducationServiceClient;
 use App\Services\UserRolesServices;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -20,12 +21,25 @@ class AboutMeController extends Controller
         if(isset($_GET['showSaveMessage'])){
             $showSaveMessage=true;
         }
-
+        //EducationServiceClient
+        $o365UserId='';
+        $classes=[];
+        if(Auth::check()){
+            if(Auth::user())
+                $o365UserId = Auth::user()->o365UserId;
+        }
+        if(isset($_SESSION[SiteConstants::Session_O365_User_ID]))
+            $o365UserId =$_SESSION[SiteConstants::Session_O365_User_ID];
+        if($o365UserId){
+           $classes =  (new EducationServiceClient)->getAllMySections(false);
+        }
         $arrData = array(
             'displayName'=>$displayName,
             'role'=>$role,
             'favoriteColor'=>$favoriteColor,
-            'showSaveMessage'=>$showSaveMessage
+            'showSaveMessage'=>$showSaveMessage,
+            'classes' =>$classes,
+            'o365UserId'=>$o365UserId
         );
         return view('auth.aboutme',$arrData);
 
