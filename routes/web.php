@@ -10,15 +10,24 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
+use App\Services\CookieService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 
 Route::get('/', function () {
-    //if there's cookies, redirect to o365 login.
+    if (Auth::check()) {
+        return redirect('/schools');
+    }
+    $cookieServices = new CookieService();
+    $userName = $cookieServices->GetCookiesOfUsername();
+    if($userName)
+        return redirect('/o365login');
     return redirect('/login');
 });
 
-//O365 user login
+Route::get('/o365login', 'O365AuthController@o365login');
+Route::get('/differentaccount', 'O365AuthController@differentAccountLogin');
 Route::get('/oauth.php', 'O365AuthController@oauth');
 
 Route::get('/userlogout',function (){

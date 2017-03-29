@@ -23,6 +23,8 @@ class SiteConstants
     const AdminUnconsentMessage         ='Admin unconsented successfully!';
     const NoPrincipalError              ='Could not found the service principal. Please provdie the admin consent.';
     const EnableUserAccessFailed        ='Enable user access failed.';
+    const UsernameCookie                ='O365CookieUsername';
+    const EmailCookie                   ='O365CookieEmail';
 }
  class Roles
 {

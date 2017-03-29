@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 
 use App\Services\AuthenticationHelper;
+use App\Services\CookieService;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -143,5 +144,21 @@ class O365AuthController extends Controller
         }
     }
 
+    public function o365login()
+    {
+        $cookieServices = new CookieService();
+        $email = $cookieServices->GetCookiesOfEmail();
+        $userName = $cookieServices->GetCookiesOfUsername();
+        $data = ["email" => $email, "userName" => $userName];
+        return view('auth.o365login', $data);
+
+    }
+
+    public function differentAccountLogin()
+    {
+        $cookieServices = new CookieService();
+        $cookieServices->ClearCookies();
+        return redirect('/login');
+    }
 
 }

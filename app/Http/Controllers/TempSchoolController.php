@@ -28,9 +28,7 @@ class TempSchoolController extends Controller
                 }
             }
         }
-        //moke data
-        //$allClasses=[];
-//        $myClasses=[];
+
         $data = ["myClasses" => $myClasses, "allClasses"=>$allClasses,"school" => $school,"me"=>$me];
         return view('schools.classes',$data);
     }
