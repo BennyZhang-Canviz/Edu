@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 
 use App\Model\TokenCache;
+use App\Services\CookieService;
 use App\Services\EducationServiceClient;
 use App\Services\MapService;
 use App\Services\MSGraphClient;
@@ -48,6 +49,10 @@ class SchoolsController extends Controller
                 return strcmp($a->displayName, $b->displayName);
             }
         });
+
+        $cookieServices = new CookieService();
+        $cookieServices->SetCookies($me->displayName,$me->mail);
+
         $data = ["me" => $me, "schools" => $schools, "bingMapKey" => Constants::BINGMAPKEY];
 
         return view('schools.schools', $data);
