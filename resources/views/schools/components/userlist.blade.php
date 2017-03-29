@@ -5,7 +5,7 @@
         @foreach ($users->value as $user)
             <div class="element {{$user->educationObjectType == "Teacher" ? "teacher-bg" : "student-bg"}}">
                 <div class="userimg">
-                    <img src="../public/images/header-default.jpg"  />
+                    <img src="../public/images/header-default.jpg"  realheader="/userPhoto/{{$user->o365UserId}}"/>
                 </div>
                 <div class="username">{{$user->displayName}}</div>
             </div>

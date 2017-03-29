@@ -37,6 +37,17 @@ class SchoolsController extends Controller
                 $school->longitude = $ll[1];
             }
         }
+        usort($schools, function($a, $b)
+        {
+            if ($a->isMySchool xor $b->isMySchool)
+            {
+                return $a->isMySchool ? -1 : 1;
+            }
+            else
+            {
+                return strcmp($a->displayName, $b->displayName);
+            }
+        });
         $data = ["me" => $me, "schools" => $schools, "bingMapKey" => Constants::BINGMAPKEY];
 
         return view('schools.schools', $data);
@@ -121,7 +132,21 @@ class SchoolsController extends Controller
         $stream = $msGraph->getUserPhoto($o365UserId);
         if ($stream)
         {
-            //return response()->stream()
+            $contents = $stream->getContents();
+            $headers = [
+                "Content-type" => "image/jpeg",
+                "Accept-Ranges" => "bytes",
+                "Content-Length" => strlen($contents)
+            ];
+            return response()->stream(function() use($stream, $contents){
+                $out = fopen('php://output', 'wb');
+                fwrite($out, $contents);
+                fclose($out);
+            }, 200, $headers);
+        }
+        else
+        {
+            return response()->file(realpath("./public/images/header-default.jpg"));
         }
     }
 

@@ -2,6 +2,7 @@
 namespace App\Services;
 
 use App\Services\TokenCacheServices;
+use Exception;
 use GuzzleHttp\Psr7\Stream;
 use Illuminate\Support\Facades\Auth;
 use Microsoft\Graph\Graph;
@@ -36,7 +37,7 @@ class MSGraphClient
             try
             {
                 return $this->graph->setAccessToken($token)
-                    ->createRequest("get", "/users/$o365UserId /photo/\$value")
+                    ->createRequest("get", "/users/$o365UserId/photo/\$value")
                     ->setReturnType(Stream::class)
                     ->execute();
             }
@@ -58,7 +59,7 @@ class MSGraphClient
         {
             return null;
         }
-        return $this->tokenCacheService->GetMicrosoftToken($this->o365UserId);
+        return $this->tokenCacheService->GetMicrosoftToken($user->o365UserId);
     }
 
     private $tokenCacheService;
