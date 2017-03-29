@@ -74,7 +74,7 @@
             <div id="socialLoginList">
                 <p>
 
-                   <a href="{{url('oauth.php ')}}"  >
+                   <a href="{{url('/o365login ')}}"  >
                     <button type="button" class="btn btn-default btn-ms-login" id="OpenIdConnect" name="provider" value="OpenIdConnect" title="Log in using your Microsoft Work or school account"></button>
                    </a>
                 </p>

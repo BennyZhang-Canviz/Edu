@@ -21,7 +21,7 @@
         <div class="form-horizontal">
             @if($showLinkToExistingO365Account)
                 <p>
-                    <a class="btn btn-primary" href="{{url("/oauth.php")}}">Link to existing O365 account</a>
+                    <a class="btn btn-primary" href="{{url("/o365login")}}">Link to existing O365 account</a>
                 </p>
             @else
                 @if($isLocalUserExists)

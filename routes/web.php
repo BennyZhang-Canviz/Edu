@@ -22,13 +22,14 @@ Route::get('/', function () {
     $cookieServices = new CookieService();
     $userName = $cookieServices->GetCookiesOfUsername();
     if($userName)
-        return redirect('/o365login');
+        return redirect('/o365loginhint');
     return redirect('/login');
 });
 
-Route::get('/o365login', 'O365AuthController@o365login');
+Route::get('/o365loginhint', 'O365AuthController@o365LoginHint');
 Route::get('/differentaccount', 'O365AuthController@differentAccountLogin');
 Route::get('/oauth.php', 'O365AuthController@oauth');
+Route::get('/o365login', 'O365AuthController@o365Login');
 
 Route::get('/userlogout',function (){
     Session::flush();

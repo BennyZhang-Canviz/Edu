@@ -1,6 +1,7 @@
 <?php
 namespace App\Services;
 use App\Model\TokenCache;
+use App\ViewModel\ArrayResult;
 use Microsoft\Graph\Connect\Constants;
 
 class TokenCacheServices
@@ -33,6 +34,8 @@ class TokenCacheServices
         return  $this->getToken($userId,Constants::AADGraph);
     }
 
+
+
     private function getToken($userId,$resource)
     {
         $tokenCache =TokenCache::where('UserId',$userId)->first();
@@ -45,7 +48,7 @@ class TokenCacheServices
 
             $date1 =  gmdate($expired);
             $date2 =  gmdate(date("Y-m-d h:i:s"));
-            if(strtotime($date1) < strtotime($date2)){
+            if(!$expired || (strtotime($date1) < strtotime($date2))){
                 return $this->RefreshToken($userId,$tokenCache->refreshToken,$resource);
             }
             else
@@ -56,7 +59,7 @@ class TokenCacheServices
     }
 
 
-    private  function  RefreshToken($userId, $refreshToken, $resource)
+    public  function  RefreshToken($userId, $refreshToken, $resource,$returnExpires=false)
     {
         $provider = new \League\OAuth2\Client\Provider\GenericProvider([
             'clientId'                => Constants::CLIENT_ID,
@@ -113,9 +116,13 @@ class TokenCacheServices
         $tokensArray = sprintf($format, $aadTokenExpires,$aadGraphTokenResult, $microsoftTokenExpires,$microsoftTokenResult);
         $this->UpdateOrInsertCache($userId,$newRefreshToken,$tokensArray);
         if($resource ===Constants::RESOURCE_ID){
+            if($returnExpires)
+                return  ["token" => $microsoftTokenResult, "expires" => $microsoftTokenExpires];
             return $microsoftTokenResult;
         }
         else{
+            if($returnExpires)
+                return  ["token" => $aadGraphTokenResult, "expires" => $aadTokenExpires];
             return $aadGraphTokenResult;
         }
     }

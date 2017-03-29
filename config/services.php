@@ -1,5 +1,7 @@
 <?php
 
+use Microsoft\Graph\Connect\Constants;
+
 return [
 
     /*
@@ -35,4 +37,9 @@ return [
         'secret' => env('STRIPE_SECRET'),
     ],
 
+    'O365' => [
+        'client_id' =>  Constants::CLIENT_ID,
+        'client_secret' => Constants::CLIENT_SECRET,
+        'redirect' => Constants::REDIRECT_URI,
+    ],
 ];
