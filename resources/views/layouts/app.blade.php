@@ -1,7 +1,7 @@
 <?php
 use App\Config\Roles;
 use App\Config\SiteConstants;
-use App\Services\UserRolesServices;
+use App\Services\UserRolesServices;use Illuminate\Http\Request;use Illuminate\Support\Facades\Input;use Illuminate\Support\Facades\Route;
 ?>
 <!DOCTYPE html>
 <html lang="{{ config('app.locale') }}">
@@ -40,9 +40,7 @@ use App\Services\UserRolesServices;
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <?php
-                    echo  Request::url();
-                    ?>
+
                     <!-- Branding Image -->
                     <a class="navbar-brand" href="{{ url('/') }}">
                         {{ config('app.name', 'Laravel') }}
@@ -61,6 +59,18 @@ use App\Services\UserRolesServices;
 
                 if($o365userId)
                     $role = (new UserRolesServices)->GetUserRole($o365userId);
+
+                $isInASchool=false;
+                $objectId='';
+                $schoolId='';
+                $route = Route::current();
+                $objectId = $route->parameters['objectId'];
+                $actionName = $route->getActionName();
+
+                if($actionName ==='App\Http\Controllers\SchoolsController@users' || $actionName==='App\Http\Controllers\SchoolsController@classes'
+                || $actionName==='App\Http\Controllers\SchoolsController@classDetail' ){
+                     $isInASchool=true;
+                }
                 ?>
                 <div class="collapse navbar-collapse" id="app-navbar-collapse">
                     <!-- Left Side Of Navbar -->
@@ -70,7 +80,16 @@ use App\Services\UserRolesServices;
                     if($role && $role==Roles::Admin){
                     ?>
                         <li><a href="{{ url('admin') }}">Admin</a></li>
-                    <?php  }?>
+                    <?php
+                    }
+                    if($isInASchool && $objectId){
+                    ?>
+                        <li><a href="{{ url('/classes/'.$objectId) }}">Classes</a></li>
+                        <li><a href="{{ url('/users/'.$objectId) }}">Teachers & Students</a></li>
+                    <?php
+                      }
+
+                    ?>
                     </ul>
                     <!-- Right Side Of Navbar -->
                     <ul class="nav navbar-nav navbar-right">

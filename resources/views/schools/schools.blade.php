@@ -58,7 +58,7 @@
                                 @endif
                             </td>
                             <td>
-                                <a class="btnlink" target="_self" href="/classes/{{$school->objectId}}/{{$school->schoolId}}">Classes</a>
+                                <a class="btnlink" target="_self" href="/classes/{{$school->objectId}}">Classes</a>
                                 <a class="btnlink" target="_self" href="/users/{{$school->objectId}}">Teachers/students</a>
                             </td>
                         </tr>

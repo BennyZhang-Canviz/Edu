@@ -168,11 +168,12 @@ class SchoolsController extends Controller
      * @param $schoolId
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function  classes($objectId,$schoolId)
+    public function  classes($objectId)
     {
         $educationServiceClient = new EducationServiceClient();
         $me = $educationServiceClient->getMe();
         $school = $educationServiceClient->getSchool($objectId);
+        $schoolId = $school->schoolId;
         $myClasses =  $educationServiceClient->getMySectionsOfCurrentSchool($schoolId);
         $allClasses = $educationServiceClient->getAllSections($schoolId,12,null);
 

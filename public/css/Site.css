@@ -522,3 +522,8 @@ a.dropdown-toggle:hover
 }
 ul.dropdown-menu li{padding-top: 12px;}
 ul.dropdown-menu{padding-bottom: 20px;}
+.navbar-nav > li > a{
+    padding-top: 7px;
+    padding-bottom: 0;}
+.navbar-nav > li > a img{
+    margin-left: 6px;}
