@@ -64,7 +64,8 @@ use App\Services\UserRolesServices;use Illuminate\Http\Request;use Illuminate\Su
                 $objectId='';
                 $schoolId='';
                 $route = Route::current();
-                $objectId = $route->parameters['objectId'];
+                if(isset($route->parameters['objectId']))
+                    $objectId = $route->parameters['objectId'];
                 $actionName = $route->getActionName();
 
                 if($actionName ==='App\Http\Controllers\SchoolsController@users' || $actionName==='App\Http\Controllers\SchoolsController@classes'
