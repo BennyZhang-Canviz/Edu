@@ -4,7 +4,7 @@
  */
 $(document).ready(function () {
     $(".bingMapLink").click(function (evnt) {
-        cancelBubble(evnt);schools.js
+        cancelBubble(evnt);
         var lat = $(this).attr("latitude");
         var lon = $(this).attr("longitude");
         if (lat && lon) {
