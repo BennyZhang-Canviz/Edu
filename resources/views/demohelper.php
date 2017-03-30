@@ -1,3 +1,20 @@
+<?php
+
+//use Illuminate\Routing\Route;
+//
+//$route = Route::current();
+//$actionName = $route->getActionName();
+//App\Http\Controllers\SchoolsController@users
+
+$json_string = file_get_contents('public/demo-pages.json');
+
+// 把JSON字符串转成PHP数组
+$data123 = json_decode($json_string);
+
+// 显示出来看看
+dd($data123);
+?>
+
 <div class="demo-helper-control collapsed">
     <div class="header">DEMO HELPER</div>
     <div class="header-right-shadow-mask"></div>
