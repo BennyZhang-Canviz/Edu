@@ -10,6 +10,7 @@ use App\Services\EducationServiceClient;
 use App\Services\MapService;
 use App\Services\MSGraphClient;
 use App\Services\TokenCacheServices;
+use App\ViewModel\Student;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;

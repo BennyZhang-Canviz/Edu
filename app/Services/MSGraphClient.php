@@ -109,7 +109,10 @@ class MSGraphClient
                 ->setReturnType($returnType);
             while(!$request->isEnd())
             {
-                $pages = array_merge($pages, $request->getPage());
+                $page = $request->getPage();
+                if (is_array($page)) {
+                    $pages = array_merge($pages, $page);
+                }
             }
         }
         return $pages;
