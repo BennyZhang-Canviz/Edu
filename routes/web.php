@@ -46,13 +46,15 @@ Auth::routes();
 Route::group(['middleware' => ['web','auth','SchoolMiddleware']], function () {
 //    Route::get('/home', 'SchoolsController@index');
     Route::get('/schools', 'SchoolsController@index');
-    Route::get('/users/{objectId}', 'SchoolsController@users');
-    Route::get('/users/next/{objectId}/{skipToken}', 'SchoolsController@usersNext');
+    Route::get('/users/{schoolOId}', 'SchoolsController@users');
+    Route::get('/users/next/{schoolOId}/{skipToken}', 'SchoolsController@usersNext');
     Route::get('/students/next/{objectId}/{skipToken}', 'SchoolsController@studentsNext');
     Route::get('/teachers/next/{objectId}/{skipToken}', 'SchoolsController@teachersNext');
-    Route::get('/userPhoto/{o365UserId}', 'SchoolsController@userPhoto');
     Route::get('/classes/{objectId}', 'SchoolsController@classes');
-    Route::get('/classesnext/{schoolId}/{nextLink}', 'SchoolsController@classesNext')->where('nextLink', '(.*)');
+    Route::get('/class/{objectId}/{classId}', 'SchoolsController@classDetail');
+    Route::get('/classesnext/{schoolId}/{nextLink}', 'SchoolsController@classesNext');
+    Route::get('/userPhoto/{o365UserId}', 'SchoolsController@userPhoto');
+    Route::post('/saveSeatingArrangements', 'SchoolsController@saveSeatingArrangements');
 });
 
 //link

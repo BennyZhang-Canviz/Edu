@@ -5,12 +5,14 @@ namespace App\Http\Controllers;
 
 use App\Model\TokenCache;
 use App\Services\CookieService;
+use App\Services\UserService;
 use App\Services\EducationServiceClient;
 use App\Services\MapService;
 use App\Services\MSGraphClient;
 use App\Services\TokenCacheServices;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Input;
 use Microsoft\Graph\Connect\Constants;
 use Microsoft\Graph\Graph;
 use Microsoft\Graph\Model;
@@ -38,6 +40,7 @@ class SchoolsController extends Controller
                 $school->longitude = $ll[1];
             }
         }
+        // sort schools: my schools will be in front of
         usort($schools, function($a, $b)
         {
             if ($a->isMySchool xor $b->isMySchool)
@@ -83,7 +86,7 @@ class SchoolsController extends Controller
      * @param string $objectId The object id of the school
      * @param string $skipToken The token used to retrieve the next subset of the requested collection
      *
-     * @return mixed The next page of users
+     * @return \Illuminate\Http\JsonResponse The next page of users
      */
     public function usersNext($objectId, $skipToken)
     {
@@ -98,7 +101,7 @@ class SchoolsController extends Controller
      * @param string $objectId The object id of the school
      * @param string $skipToken The token used to retrieve the next subset of the requested collection
      *
-     * @return mixed The next page of students
+     * @return \Illuminate\Http\JsonResponse The next page of students
      */
     public function studentsNext($objectId, $skipToken)
     {
@@ -114,7 +117,7 @@ class SchoolsController extends Controller
      * @param string $objectId The object id of the school
      * @param string $skipToken The token used to retrieve the next subset of the requested collection
      *
-     * @return mixed The next page of teachers
+     * @return \Illuminate\Http\JsonResponse The next page of teachers
      */
     public function teachersNext($objectId, $skipToken)
     {
@@ -122,6 +125,105 @@ class SchoolsController extends Controller
         $school = $educationServiceClient->getSchool($objectId);
         $teachers = $educationServiceClient->getTeachers($school->schoolId, 12, $skipToken);
         return response()->json($teachers);
+    }
+
+    /**
+     * Show details of a specified class
+     *
+     * @param string $objectId The object id of the school
+     * @param string $classId The object id of the class
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function classDetail($objectId, $classId)
+    {
+        $curUser = Auth::user();
+        $educationServiceClient = new EducationServiceClient();
+        $me = $educationServiceClient->getMe();
+        $school = $educationServiceClient->getSchool($objectId);
+        $section = $educationServiceClient->getSectionWithMembers($classId);
+        foreach($section->getStudents() as $student)
+        {
+            $student->position = UserService::getSeatPositionInClass($student->o365UserId, $classId);
+            $student->favoriteColor = UserService::getFavoriteColor($student->o365UserId);
+        }
+
+        $msGraph = new MSGraphClient();
+        $conversations = $msGraph->getGroupConversations($classId);
+        $seeMoreConversationsUrl = sprintf(Constants::O365GroupConversationsUrlFormat, $section->Email);
+        $driveItems = $msGraph->getGroupDriveItems($classId);
+        $seeMoreFilesUrl = $msGraph->getGroupDriveRoot($classId)->getWebUrl();
+        $data =
+            [
+                "school" => $school,
+                "section" => $section,
+                "conversations" => $conversations,
+                "seeMoreConversationsUrl" => $seeMoreConversationsUrl,
+                "driveItems" => $driveItems,
+                "seeMoreFilesUrl" => $seeMoreFilesUrl,
+                "isStudent" => $me instanceof Student,
+                "o365UserId" => $curUser->o365UserId,
+                "myFavoriteColor" => $curUser->favorite_color
+            ];
+
+        return view('schools.classdetail', $data);
+    }
+
+    /**
+     * The education service
+     *
+     * @var string
+     */
+    private $educationServiceClient;
+
+    /**
+     * Display all classes of a school.
+     * @param $objectId
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function classes($objectId)
+    {
+        $educationServiceClient = new EducationServiceClient();
+        $me = $educationServiceClient->getMe();
+        $school = $educationServiceClient->getSchool($objectId);
+        $schoolId = $school->schoolId;
+        $myClasses =  $educationServiceClient->getMySectionsOfCurrentSchool($schoolId);
+        $allClasses = $educationServiceClient->getAllSections($schoolId,12,null);
+
+        foreach ($allClasses->value as $class1) {
+            $class1->IsMySection=false;
+            foreach ($myClasses as $class2){
+                if($class1->Email == $class2->Email){
+                    {
+                        $class1->IsMySection=true;
+                        $class1->members = $class2->members;
+                        break;
+                    }
+                }
+            }
+        }
+
+        $data = ["myClasses" => $myClasses, "allClasses"=>$allClasses,"school" => $school,"me"=>$me];
+        return view('schools.classes',$data);
+    }
+
+    /**
+     * Show next 12 schools for classes page.
+     * @param $schoolId
+     * @param $nextLink
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function classesNext($schoolId,$nextLink)
+    {
+        $educationServiceClient = new EducationServiceClient();
+        $myClasses =  $educationServiceClient->getMySectionsOfCurrentSchool($schoolId);
+        $school = $educationServiceClient->getSchool($schoolId);
+        $allClasses = $educationServiceClient->getAllSections($school->schoolId,12,$nextLink);
+        foreach ($allClasses->value as $class) {
+            $class->CombinedCNumber = $class->CombinedCourseNumber();
+        }
+        return  response()->json(['Sections' => $allClasses,'MySections'=>$myClasses,'School'=>$school]);
+
     }
 
     /**
@@ -156,60 +258,13 @@ class SchoolsController extends Controller
     }
 
     /**
-     * The education service
+     * Save the seat arrangements
      *
-     * @var string
-     */
-    private $educationServiceClient;
-
-    /**
-     * Display all classes of a school.
-     * @param $objectId
-     * @param $schoolId
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
-     */
-    public function  classes($objectId)
-    {
-        $educationServiceClient = new EducationServiceClient();
-        $me = $educationServiceClient->getMe();
-        $school = $educationServiceClient->getSchool($objectId);
-        $schoolId = $school->schoolId;
-        $myClasses =  $educationServiceClient->getMySectionsOfCurrentSchool($schoolId);
-        $allClasses = $educationServiceClient->getAllSections($schoolId,12,null);
-
-        foreach ($allClasses->value as $class1) {
-            $class1->IsMySection=false;
-            foreach ($myClasses as $class2){
-                if($class1->Email == $class2->Email){
-                    {
-                        $class1->IsMySection=true;
-                        $class1->Users = $class2->Users;
-                        break;
-                    }
-                }
-            }
-        }
-
-        $data = ["myClasses" => $myClasses, "allClasses"=>$allClasses,"school" => $school,"me"=>$me];
-        return view('schools.classes',$data);
-    }
-
-    /**
-     * Show next 12 schools for classes page.
-     * @param $schoolId
-     * @param $nextLink
      * @return \Illuminate\Http\JsonResponse
      */
-    public function classesNext($schoolId,$nextLink)
+    public function saveSeatingArrangements()
     {
-        $educationServiceClient = new EducationServiceClient();
-        $myClasses =  $educationServiceClient->getMySectionsOfCurrentSchool($schoolId);
-        $school = $educationServiceClient->getSchool($schoolId);
-        $allClasses = $educationServiceClient->getAllSections($school->schoolId,12,$nextLink);
-        foreach ($allClasses->value as $class) {
-            $class->CombinedCNumber = $class->CombinedCourseNumber();
-        }
-        return  response()->json(['Sections' => $allClasses,'MySections'=>$myClasses,'School'=>$school]);
-
+        $succeeded = UserService::saveSeatingArrangements(Input::all());
+        return response()->json([], $succeeded ? 200 : 500);
     }
 }

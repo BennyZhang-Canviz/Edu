@@ -55,3 +55,15 @@ class O365ProductLicenses
     /// </summary>
     const StudentPro   = 'e82ae690-a2d5-4d76-8d30-7c6e01e6022e';
 }
+
+class EduConstants
+{
+    /// <summary>
+    /// Office 365 Education for faculty
+    /// </summary>
+    const  TeacherObjectType  = 'Teacher';
+    /// <summary>
+    /// Office 365 Education for students
+    /// </summary>
+    const StudentObjectType   = 'Student';
+}

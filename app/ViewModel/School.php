@@ -12,7 +12,7 @@ class School extends ParsableObject
      */
     public function __construct()
     {
-        $this->mappingTable =
+        $this->addPropertyMappings(
             [
                 "schoolId" => "extension_fe2174665583431c953114ff7268b7b3_Education_SyncSource_SchoolId",
                 "objectId" => "objectId",
@@ -32,7 +32,7 @@ class School extends ParsableObject
                 "anchorId" => "extension_fe2174665583431c953114ff7268b7b3_Education_AnchorId",
                 "stateId" => "extension_fe2174665583431c953114ff7268b7b3_Education_StateId",
                 "educationObjectType" => "extension_fe2174665583431c953114ff7268b7b3_Education_ObjectType"
-            ];
+            ]);
     }
 
     /**

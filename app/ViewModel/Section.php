@@ -2,11 +2,13 @@
 namespace App\ViewModel;
 
 
+use App\Config\EduConstants;
+
 class Section extends ParsableObject
 {
     public function __construct()
     {
-        $this->mappingTable =
+        $this->addPropertyMappings(
             [
                 "objectId" => "objectId",
                 "objectType" => "objectType",
@@ -31,9 +33,44 @@ class Section extends ParsableObject
                 "SyncSource" =>"extension_fe2174665583431c953114ff7268b7b3_Education_SyncSource",
                 "AnchorId" =>"extension_fe2174665583431c953114ff7268b7b3_Education_AnchorId",
                 "EducationStatus" =>"extension_fe2174665583431c953114ff7268b7b3_Education_Status",
-                "Users" => "members",
-                "NextLinkURL"=>"odata.nextLink"
-            ];
+                "NextLinkURL"=>"odata.nextLink",
+                "members" => "members"
+            ]);
+        $this->addArrayElementTypes(["members" => SectionUser::class]);
+    }
+
+    public function CombinedCourseNumber()
+    {
+        return strtoupper(substr($this->CourseName,3)) + $this->GetCourseNumber($this->CourseNumber);
+    }
+
+    /**
+     * Get student members
+     *
+     * @return array The student members
+     */
+    public function getStudents()
+    {
+        return collect($this->members)->where("educationObjectType", "=", EduConstants::StudentObjectType)->all();
+    }
+
+    /**
+     * Get teacher members
+     *
+     * @return array The teacher members
+     */
+    public function getTeachers()
+    {
+        return collect($this->members)->where("educationObjectType", "=", EduConstants::TeacherObjectType)->all();
+    }
+
+    private function GetCourseNumber($courseNumber)
+    {
+        $pattern = '/\d+/';
+        preg_match($pattern, $courseNumber, $match);
+        if (count($match) == 0)
+            return '';
+        return $match[0];
     }
 
     public $objectId;
@@ -59,22 +96,8 @@ class Section extends ParsableObject
     public $SyncSource;
     public $AnchorId;
     public $EducationStatus;
-    public $Users;
     public $IsMySection;
     public $NextLinkURL;
     public $CombinedCNumber;
-
-    public function CombinedCourseNumber()
-    {
-        return strtoupper(substr($this->CourseName,3)) + $this->GetCourseNumber($this->CourseNumber);
-    }
-
-    private function GetCourseNumber($courseNumber)
-    {
-        $pattern = '/\d+/';
-        preg_match($pattern, $courseNumber, $match);
-        if (count($match) == 0)
-            return '';
-        return $match[0];
-    }
+    public $members;
 }

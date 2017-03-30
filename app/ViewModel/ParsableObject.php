@@ -31,9 +31,66 @@ abstract class ParsableObject
             $class = new ReflectionClass(get_class($this));
             if ($class->hasProperty($key))
             {
-                $class->getProperty($key)->setValue($this, $data[$value]);
+                $property = $class->getProperty($key);
+                $dataValue = $data[$value];
+                $elementTypes = collect($this->arrayElementTypeTable);
+                if ($elementTypes && $elementTypes->has($key))
+                {
+                    if (!is_array($dataValue))
+                    {
+                        continue;
+                    }
+                    $proValue = $property->getValue($this);
+                    if (is_null($proValue))
+                    {
+                        $proValue = [];
+                    }
+                    foreach($dataValue as $_key => $_value)
+                    {
+                        $obj = new $elementTypes[$key]();
+                        $obj->parse($_value);
+                        $proValue[] = $obj;
+                    }
+                    $property->setValue($this, $proValue);
+                }
+                else
+                {
+                    $property->setValue($this, $dataValue);
+                }
             }
         }
+    }
+
+    /**
+     * Add mappings between json data and properties
+     *
+     * @param array $mappings The mappings between json data and properties
+     *
+     * @return void
+     */
+    public function addPropertyMappings($mappings)
+    {
+        if (!is_array($this->mappingTable))
+        {
+            $this->mappingTable = [];
+        }
+        $this->mappingTable = array_merge($this->mappingTable, $mappings);
+    }
+
+    /**
+     * Add array element types
+     *
+     * @param array $types The array element types
+     *
+     * @return void
+     */
+    public function addArrayElementTypes($types)
+    {
+        if (!is_array($this->arrayElementTypeTable))
+        {
+            $this->arrayElementTypeTable = [];
+        }
+        $this->arrayElementTypeTable = array_merge($this->arrayElementTypeTable, $types);
     }
 
     /**
@@ -42,4 +99,11 @@ abstract class ParsableObject
      * @var array
      */
     protected $mappingTable;
+
+    /**
+     * The table defining the element type of array properties
+     *
+     * @var array
+     */
+    protected $arrayElementTypeTable;
 }

@@ -21,11 +21,12 @@ class ArrayResult extends ParsableObject
     public function __construct($elementClass)
     {
         $this->value = [];
-        $this->mappingTable =
+        $this->addPropertyMappings(
             [
-                "nextLink" => "odata.nextLink"
-            ];
-        $this->elementType = $elementClass;
+                "nextLink" => "odata.nextLink",
+                "value" => "value"
+            ]);
+        $this->addArrayElementTypes(["value" => $elementClass]);
     }
 
     /**
@@ -39,20 +40,6 @@ class ArrayResult extends ParsableObject
     {
         parent::parse($json);
         $this->skipToken = $this->getSkipToken();
-
-        if (array_key_exists('value', $json))
-        {
-            $values = $json['value'];
-            if ($values && is_array($values))
-            {
-                foreach ($values as $obj)
-                {
-                    $targetObj = new $this->elementType();
-                    $targetObj->parse($obj);
-                    $this->value[] = $targetObj;
-                }
-            }
-        }
     }
 
     /**
@@ -73,7 +60,6 @@ class ArrayResult extends ParsableObject
     }
 
     public $value;
-    public $skipToken;
     public $nextLink;
-    private $elementType;
+    public $skipToken;
 }

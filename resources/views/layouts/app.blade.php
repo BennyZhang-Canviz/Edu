@@ -20,11 +20,16 @@ use App\Services\UserRolesServices;use Illuminate\Http\Request;use Illuminate\Su
     <link href="{{ asset('/public/css/bootstrap.css') }}" rel="stylesheet">
     <link href="{{ asset('/public/css/site.css') }}" rel="stylesheet">
     <!-- Scripts -->
-    <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.1.1.min.js"></script>
+    <script src="{{ asset('/public/js/app.js') }}"></script>
     <script>
         window.Laravel = {!! json_encode([
             'csrfToken' => csrf_token(),
         ]) !!};
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': window.Laravel.csrfToken
+            }
+        });
     </script>
 </head>
 <body>
@@ -155,7 +160,6 @@ use App\Services\UserRolesServices;use Illuminate\Http\Request;use Illuminate\Su
     </div>
     <?php include 'resources/views/demohelper.php';?>
     <!-- Scripts -->
-    <script src="{{ asset('/public/js/app.js') }}"></script>
     <script src="{{ asset('/public/js/site.js') }}"></script>
 </body>
 </html>

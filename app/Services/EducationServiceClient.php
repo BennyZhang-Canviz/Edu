@@ -1,6 +1,7 @@
 <?php
 namespace App\Services;
 
+use \DateTime;
 use App\Config\O365ProductLicenses;
 use App\Config\Roles;
 use App\Config\SiteConstants;
@@ -91,12 +92,11 @@ class  EducationServiceClient
     public function getAllMySections($loadMembers)
     {
         $relativeUrl = "/me/memberOf?api-version=1.5";
-        //$json = $this->getResponse("get", $relativeUrl)["value"];
-        $json = $this->getResponse("get", $relativeUrl,Section::class,null,null);
+        $memberOfs = $this->getAllPages("get", $relativeUrl,Section::class);
         $sections=[];
-        if (is_array($json) && !empty($json))
+        if (is_array($memberOfs) && !empty($memberOfs))
         {
-            foreach($json as $sec)
+            foreach($memberOfs as $sec)
             {
                 if($sec->objectType == 'Group' && $sec->EducationObjectType =='Section')
                     array_push($sections, $sec);
@@ -109,23 +109,15 @@ class  EducationServiceClient
         $results=[];
         foreach ($sections as $section)
         {
-            $sec = $this->getASectionWithMembers($section->objectId);
+            $sec = $this->getSectionWithMembers($section->objectId);
             array_push($results, $sec);
         }
         return $results;
     }
 
-    private function getASectionWithMembers($sectionId){
+    public function getSectionWithMembers($sectionId){
         $relativeUrl = '/groups/'.$sectionId.'?api-version=beta&$expand=members';
         $section = $this->getResponse("get", $relativeUrl,Section::class,null,null);
-
-        $usersArray=[];
-        foreach ($section->Users as $user) {
-            $u = new SectionUser();
-            $u->parse($user);
-            array_push($usersArray, $u);
-        }
-        $section->Users = $usersArray;
         return $section;
     }
 
@@ -162,7 +154,6 @@ class  EducationServiceClient
     {
         $relativeUrl = '/groups?api-version=beta&$filter=extension_fe2174665583431c953114ff7268b7b3_Education_ObjectType%20eq%20\'Section\'%20and%20extension_fe2174665583431c953114ff7268b7b3_Education_SyncSource_SchoolId%20eq%20\''.$schoolId.'\'';
         return  $this->HttpGetArrayAsync($relativeUrl,$top,$token);
-
     }
 
     private function HttpGetArrayAsync($relativeUrl,$top,$token)
@@ -236,7 +227,7 @@ class  EducationServiceClient
      * Get response of AAD Graph API
      *
      * @param string $requestType The HTTP method to use, e.g. "GET" or "POST"
-     * @param string $endpoint The Graph endpoint to call*
+     * @param string $endpoint The Graph endpoint to call
      * @param string $returnType The type of the return object or object of an array
      * @param int $top The number of items to return in a result set.
      * @param int $skipToken The token used to retrieve the next subset of the requested collection
@@ -261,23 +252,8 @@ class  EducationServiceClient
             $json = json_decode($result->getBody(), true);
             if ($returnType)
             {
-                if (array_key_exists('value', $json) and !$top)
-                {
-                    $values = $json['value'];
-                    //Check that this is an object array instead of a value called "value"
-                    if ($values && is_array($values))
-                    {
-                        $objArray = array();
-                        foreach ($values as $obj)
-                        {
-                            $targetObj = new $returnType();
-                            $targetObj->parse($obj);
-                            $objArray[] = $targetObj;
-                        }
-                        return $objArray;
-                    }
-                }
-                $retObj = $top ? new ArrayResult($returnType) : new $returnType();
+                $isArray = (array_key_exists('value', $json) and is_array($json['value']));
+                $retObj = $isArray ? new ArrayResult($returnType) : new $returnType();
                 $retObj->parse($json);
                 return $retObj;
             }
@@ -290,20 +266,18 @@ class  EducationServiceClient
      * Get all pages of data of AAD Graph API
      *
      * @param string $requestType The HTTP method to use, e.g. "GET" or "POST"
-     * @param string $endpoint    The Graph endpoint to call*
+     * @param string $endpoint    The Graph endpoint to call
      * @param string $returnType  The type of the return object or object of an array
      *
      * @return mixed All pages of data of AAD Graph API
      */
     private function getAllPages($requestType, $endpoint, $returnType)
     {
-        $data = $this->getResponse($requestType, $endpoint, $returnType, 100, null);
-        while($data->skipToken)
+        $data = $nextPage = $this->getResponse($requestType, $endpoint, $returnType, 100, null);
+        while($nextPage->skipToken)
         {
             $nextPage = $this->getResponse("get", "/administrativeUnits?api-version=beta", School::class, 100, $data->skipToken);
             $data->value = array_merge($data->value, $nextPage->value);
-            $data->nextLink = $nextPage->nextLink;
-            $data->skipToken = $nextPage->skipToken;
         }
         return $data->value;
     }

@@ -12,7 +12,7 @@ class SectionUser extends ParsableObject
      */
     public function __construct()
     {
-        $this->mappingTable =
+        $this->addPropertyMappings(
             [
                 "mail" => "mail",
                 "educationObjectType" => "extension_fe2174665583431c953114ff7268b7b3_Education_ObjectType",
@@ -20,7 +20,7 @@ class SectionUser extends ParsableObject
                 "educationGrade" => "extension_fe2174665583431c953114ff7268b7b3_Education_Grade",
                 "schoolId" => "extension_fe2174665583431c953114ff7268b7b3_Education_SyncSource_SchoolId",
                 "o365UserId" => "objectId"
-            ];
+            ]);
     }
 
     public $mail;

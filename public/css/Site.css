@@ -259,7 +259,7 @@ textarea {
 .students #stuconv.table-green{margin-top:40px; margin-bottom:40px}
 .students #stuconv.table-green tbody tr{font-family:'Helvetica Neue LT Std Th'}
 .students #studoc.table-green tr.tr-content:nth-child(2n+1), .students #conversations .table-green tr.tr-content:nth-child(2n+1){background-color:transparent}
-.students #studoc.table-green tbody tr.tr-content td:nth-child(3) a, .students #stuconv.table-green tbody tr.tr-content td:nth-child(3) a{display:inline-block; color:#000000; padding-left:68px; line-height:58px; background:url('/images/document_icon.png') center left no-repeat; background-size:contain}
+.students #studoc.table-green tbody tr.tr-content td:nth-child(3) a, .students #stuconv.table-green tbody tr.tr-content td:nth-child(3) a{display:inline-block; color:#000000; padding-left:68px; line-height:58px; background:url('/public/images/document_icon.png') center left no-repeat; background-size:contain}
 .students #stuconv.table-green tbody tr.tr-content td:nth-child(3) a{padding-left:64px; line-height:39px; background-image:url('/public/images/conversation_icon.png')}
 .students #studoc.table-green tbody tr.tr-content.selected td:nth-child(3) a, .students #stuconv.table-green tbody tr.tr-content.selected td:nth-child(3) a{color:#ffffff}
 .students #studoc.table-green tbody tr.tr-content:hover td:not(.space-holder):not(.border-holder), .students #stuconv.table-green tbody tr.tr-content:hover td:not(.space-holder):not(.border-holder){background-color:#f8f8f8}

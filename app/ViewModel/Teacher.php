@@ -19,7 +19,7 @@ class Teacher extends SectionUser
     public function __construct()
     {
         parent::__construct();
-        $this->mappingTable["teacherId"] = "extension_fe2174665583431c953114ff7268b7b3_Education_SyncSource_TeacherId";
+        $this->addPropertyMappings(["teacherId" => "extension_fe2174665583431c953114ff7268b7b3_Education_SyncSource_TeacherId"]);
     }
 
     /**

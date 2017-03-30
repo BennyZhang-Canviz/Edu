@@ -38,6 +38,7 @@ class Constants
     const AADGraph             = 'https://graph.windows.net';
     const BINGMAPKEY           = 'AgWV4amBPg2dzbgGPB8Ya5GDfGqBnueTJUfu1oAAilDje_vXB0RpKGF4mDabOmwB';
     const SOURCECODERESPOSITORYURL= 'https://github.com/hearticy888/Edu';
+    const O365GroupConversationsUrlFormat = "https://outlook.office.com/owa/?path=/group/%s/mail&exsvurl=1&ispopout=0";
 
 
 }

@@ -61,7 +61,7 @@
                             @foreach($allClasses->value as $class)
                                 <div class="tile-container">
                                     @if($class->IsMySection)
-                                        <a class="mysectionlink" href="{{url('/classdetails/'.$school->objectId.'/'.$class->objectId)}}">
+                                        <a class="mysectionlink" href="{{url('/class/'.$school->objectId.'/'.$class->objectId)}}">
                                     @endif
                                     <div class="tile">
                                         <h5>{{$class->DisplayName}}</h5>
@@ -76,8 +76,8 @@
                                             <h5>Description:</h5>
                                             <h6>{{$class->CourseDescription}}</h6>
                                             <h5>Teachers:</h5>
-                                            @if($class->Users)
-                                                @foreach($class->Users as $user)
+                                            @if($teachers = $class->getTeachers())
+                                                @foreach($teachers as $user)
                                                     @if($user->educationObjectType==='Teacher')
                                                         <h6>{{$user->displayName}}</h6>
                                                     @endif
@@ -113,7 +113,7 @@
                                 </div>
                             @endforeach
                         </div>
-                        @if(isset($allClasses->skipToken))
+                        @if($allClasses->skipToken)
                         <div class="seemore " id="see-more">
                             <input id="nextlink" type="hidden" value="{{$allClasses->skipToken}}" />
                             <input id="schoolid" type="hidden" value="{{$school->objectId}}" />
@@ -136,7 +136,7 @@
                         <div class="content clearfix">
                             @foreach($myClasses as $myClass)
                                 <div class="tile-container">
-                                    <a class="mysectionlink" href="{{url('/classdetails/'.$school->objectId.'/'.$myClass->objectId)}}">
+                                    <a class="mysectionlink" href="{{url('/class/'.$school->objectId.'/'.$myClass->objectId)}}">
                                     <div class="tile">
                                         <h5>{{$myClass->DisplayName}}</h5>
                                         <h2>{{$myClass->CombinedCourseNumber()}}</h2>
@@ -148,7 +148,7 @@
                                         <h5>Description:</h5>
                                         <h6>{{$myClass->CourseDescription}}</h6>
                                         <h5>Teachers:</h5>
-                                          @foreach($myClass->Users as $user)
+                                          @foreach($myClass->getTeachers() as $user)
                                            @if($user->educationObjectType==='Teacher')
                                                <h6>{{$user->displayName}}</h6>
                                             @endif
