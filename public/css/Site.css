@@ -331,9 +331,7 @@ max-width: 140px;
     margin:16px 6px 0 12px;
 }
 #lstproducts li .seated {margin:20px 0 0 0;}
-
 #dvleft .tip{font-weight:600;margin-bottom:20px;}
-
 .deskcontainer{width:100px;height:100px ; background-color:#f2f2f2;color:black; position:relative;   padding-top: 6px;}
 .deskicon{padding-top:6px;text-align:center;}
 .stuname{font-size:8px; padding:6px; text-align:center; text-overflow:ellipsis; overflow:hidden; white-space:nowrap; display:block;}
@@ -522,5 +520,5 @@ a.dropdown-toggle:hover
     margin-top: -10px;
 
 }
-ul.dropdown-menu{padding-bottom: 20px;}
 ul.dropdown-menu li{padding-top: 12px;}
+ul.dropdown-menu{padding-bottom: 20px;}

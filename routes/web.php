@@ -51,8 +51,8 @@ Route::group(['middleware' => ['web','auth','SchoolMiddleware']], function () {
     Route::get('/students/next/{objectId}/{skipToken}', 'SchoolsController@studentsNext');
     Route::get('/teachers/next/{objectId}/{skipToken}', 'SchoolsController@teachersNext');
     Route::get('/userPhoto/{o365UserId}', 'SchoolsController@userPhoto');
-    Route::get('/classes/{objectId}/{schoolId}', 'TempSchoolController@classes');
-    Route::get('/classesnext/{schoolId}/{nextLink}', 'TempSchoolController@classesNext')->where('nextLink', '(.*)');
+    Route::get('/classes/{objectId}/{schoolId}', 'SchoolsController@classes');
+    Route::get('/classesnext/{schoolId}/{nextLink}', 'SchoolsController@classesNext')->where('nextLink', '(.*)');
 });
 
 //link
