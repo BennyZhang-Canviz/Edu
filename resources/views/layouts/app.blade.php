@@ -152,13 +152,9 @@ use App\Services\UserRolesServices;use Illuminate\Http\Request;use Illuminate\Su
                 @yield('content')
             </div>
     </div>
-
+    <?php include 'resources/views/demohelper.php';?>
     <!-- Scripts -->
     <script src="{{ asset('/public/js/app.js') }}"></script>
-    <script type="text/javascript">
-        $(document).ready(function () {
-            $('.message-container').fadeOut(5000);
-        });
-    </script>
+    <script src="{{ asset('/public/js/site.js') }}"></script>
 </body>
 </html>
