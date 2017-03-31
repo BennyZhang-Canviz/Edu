@@ -252,10 +252,11 @@ class SchoolsController extends Controller
                 fclose($out);
             }, 200, $headers);
         }
-        else
+        if ($stream === null)
         {
             return response()->file(realpath("./public/images/header-default.jpg"));
         }
+        return response('', 403);
     }
 
     /**

@@ -296,8 +296,7 @@ class  EducationServiceClient
      */
     private function getToken()
     {
-
-        if (strlen($this->o365UserId) == 0)
+        if (!isset($this->o365UserId) or strlen($this->o365UserId) == 0)
         {
             return null;
         }
@@ -320,7 +319,7 @@ class  EducationServiceClient
         return $url;
     }
 
-    private function  getTenantId()
+    private function getTenantId()
     {
        return $this->AADGraphClient->GetTenantIdByUserId($this->o365UserId);
     }

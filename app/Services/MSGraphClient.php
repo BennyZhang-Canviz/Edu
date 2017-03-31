@@ -1,6 +1,7 @@
 <?php
 namespace App\Services;
 
+use App\Config\SiteConstants;
 use Exception;
 use GuzzleHttp\Psr7\Stream;
 use Illuminate\Support\Facades\Auth;
@@ -47,6 +48,7 @@ class MSGraphClient
                 return null;
             }
         }
+        return false;
     }
 
     /**
@@ -149,11 +151,12 @@ class MSGraphClient
     private function getToken()
     {
         $user = Auth::user();
-        if (strlen($user->o365UserId) == 0)
+        $o365UserId = isset($user->o365UserId) ? $user->o365UserId : (array_key_exists(SiteConstants::Session_O365_User_ID, $_SESSION) ? $_SESSION[SiteConstants::Session_O365_User_ID] : null);
+        if (!$o365UserId)
         {
             return null;
         }
-        return $this->tokenCacheService->GetMicrosoftToken($user->o365UserId);
+        return $this->tokenCacheService->GetMicrosoftToken($o365UserId);
     }
 
     private $tokenCacheService;
