@@ -32,8 +32,14 @@ class  EducationServiceClient
     {
         $this->tokenCacheService = new TokenCacheServices();
         $this->AADGraphClient = new AADGraphClient();
-        $user = Auth::user();
-        $this->o365UserId = $user->o365UserId;
+        if(isset($_SESSION[SiteConstants::Session_O365_User_ID]))
+        {
+            $this->o365UserId = $_SESSION[SiteConstants::Session_O365_User_ID];
+        }elseif (Auth::check()){
+            if(Auth::user())
+                $this->o365UserId = Auth::user()->o365UserId;
+        }
+
     }
 
     /**
@@ -316,9 +322,7 @@ class  EducationServiceClient
 
     private function  getTenantId()
     {
-       $user = Auth::user();
-       $o365UserId = $user->o365UserId;
-       return $this->AADGraphClient->GetTenantIdByUserId($o365UserId);
+       return $this->AADGraphClient->GetTenantIdByUserId($this->o365UserId);
     }
 
 

@@ -9,7 +9,7 @@
     "links": [
       {
         "title": "Controller",
-        "url": "/blob/Handle_cahce_here_and_then_login_/app/Http/Controllers/O365AuthController.php"
+        "url": "/blob/master/app/Http/Controllers/O365AuthController.php"
       },
       {
         "title": "View",
@@ -23,7 +23,7 @@
     "links": [
       {
         "title": "Controller",
-        "url": "/blob/Handle_cahce_here_and_then_login_/app/Http/Controllers/Auth/LoginController.php"
+        "url": "/blob/master/app/Http/Controllers/Auth/LoginController.php"
       },
       {
         "title": "View",
@@ -37,194 +37,119 @@
     "links": [
       {
         "title": "Controller",
-        "url": "/blob/Handle_cahce_here_and_then_login_/app/Http/Controllers/Auth/LoginController.php"
+        "url": "/blob/master/app/Http/Controllers/Auth/RegisterController.php"
       },
       {
         "title": "View",
-        "url": "/blob/master/resources/views/auth/login.blade.php"
+        "url": "/blob/master/resources/views/auth/register.blade.php"
       }
     ]
   },
   {
-    "controller": "schools",
+    "controller": "SchoolsController",
     "action": "index",
     "links": [
       {
         "title": "Controller",
-        "url": "/blob/master/src/EDUGraphAPI.Web/Controllers/SchoolsController.cs"
+        "url": "/blob/master/app/Http/Controllers/SchoolsController.php"
       },
       {
         "title": "View",
-        "url": "/blob/master/src/EDUGraphAPI.Web/Views/Schools/Index.cshtml"
+        "url": "/blob/master/resources/views/schools/schools.blade.php"
       },
       {
-        "title": "ApplicationService",
-        "url": "/blob/master/src/EDUGraphAPI.Web/Services/ApplicationService.cs"
+        "title": "EducationServiceClient",
+        "url": "/blob/master/app/Services/EducationServiceClient.php"
       },
-      {
-        "title": "SchoolsService",
-        "url": "/blob/master/src/EDUGraphAPI.Web/Services/SchoolsService.cs"
-      },
-      {
+     {
         "title": "SchoolsViewModel",
-        "url": "/blob/master/src/EDUGraphAPI.Web/Models/SchoolsViewModel.cs"
+        "url": "/blob/master/app/ViewModel/School.php"
       }
     ]
   },
   {
-    "controller": "schools",
+    "controller": "SchoolsController",
     "action": "classes",
     "links": [
       {
         "title": "Controller",
-        "url": "/blob/master/src/EDUGraphAPI.Web/Controllers/SchoolsController.cs"
+        "url": "/blob/master/app/Http/Controllers/SchoolsController.php"
       },
       {
         "title": "View",
-        "url": "/blob/master/src/EDUGraphAPI.Web/Views/Schools/Classes.cshtml"
+        "url": "/blob/master/resources/views/schools/classes.blade.php"
       },
       {
-        "title": "ApplicationService",
-        "url": "/blob/master/src/EDUGraphAPI.Web/Services/ApplicationService.cs"
-      },
-      {
-        "title": "SchoolsService",
-        "url": "/blob/master/src/EDUGraphAPI.Web/Services/SchoolsService.cs"
+        "title": "EducationServiceClient",
+        "url": "/blob/master/app/Services/EducationServiceClient.php"
       },
       {
         "title": "SectionsViewModel",
-        "url": "/blob/master/src/EDUGraphAPI.Web/Models/SectionsViewModel.cs"
+        "url": "/blob/master/app/ViewModel/Section.php"
+      },
+      {
+        "title": "SchoolsViewModel",
+        "url": "/blob/master/app/ViewModel/School.php"
       }
     ]
   },
   {
-    "controller": "schools",
-    "action": "myclasses",
-    "links": [
-      {
-        "title": "Controller",
-        "url": "/blob/master/src/EDUGraphAPI.Web/Controllers/SchoolsController.cs"
-      },
-      {
-        "title": "View",
-        "url": "/blob/master/src/EDUGraphAPI.Web/Views/Schools/Classes.cshtml"
-      },
-      {
-        "title": "ApplicationService",
-        "url": "/blob/master/src/EDUGraphAPI.Web/Services/ApplicationService.cs"
-      },
-      {
-        "title": "SchoolsService",
-        "url": "/blob/master/src/EDUGraphAPI.Web/Services/SchoolsService.cs"
-      },
-      {
-        "title": "SectionsViewModel",
-        "url": "/blob/master/src/EDUGraphAPI.Web/Models/SectionsViewModel.cs"
-      }
-    ]
-  },
-  {
-    "controller": "schools",
+    "controller": "SchoolsController",
     "action": "users",
     "links": [
       {
         "title": "Controller",
-        "url": "/blob/master/src/EDUGraphAPI.Web/Controllers/SchoolsController.cs"
+        "url": "/blob/master/app/Http/Controllers/SchoolsController.php"
       },
       {
         "title": "View",
-        "url": "/blob/master/src/EDUGraphAPI.Web/Views/Schools/Users.cshtml"
+        "url": "/blob/master/resources/views/schools/users.blade.php"
       },
       {
         "title": "SchoolsService",
-        "url": "/blob/master/src/EDUGraphAPI.Web/Services/SchoolsService.cs"
+        "url": "/blob/master/app/Services/EducationServiceClient.php"
       },
       {
         "title": "SchoolUsersViewModel",
-        "url": "/blob/master/src/EDUGraphAPI.Web/Models/SchoolUsersViewModel.cs"
+        "url": "/blob/master/app/ViewModel/SectionUser.php"
+      },
+      {
+        "title": "StudentViewModel",
+        "url": "/blob/master/app/ViewModel/Student.php"
+      },
+      {
+        "title": "TeacherViewModel",
+        "url": "/blob/master/app/ViewModel/Teacher.php"
+      },
+      {
+        "title": "SchoolsViewModel",
+        "url": "/blob/master/app/ViewModel/School.php"
       }
     ]
   },
   {
-    "controller": "schools",
-    "action": "classdetails",
+    "controller": "SchoolsController",
+    "action": "classDetail",
     "links": [
       {
         "title": "Controller",
-        "url": "/blob/master/src/EDUGraphAPI.Web/Controllers/SchoolsController.cs"
+        "url": "/blob/master/app/Http/Controllers/SchoolsController.php"
       },
       {
         "title": "View",
-        "url": "/blob/master/src/EDUGraphAPI.Web/Views/Schools/ClassDetails.cshtml"
-      },
-      {
-        "title": "ApplicationService",
-        "url": "/blob/master/src/EDUGraphAPI.Web/Services/ApplicationService.cs"
+        "url": "/blob/master/resources/views/schools/classdetail.blade.php"
       },
       {
         "title": "SchoolsService",
-        "url": "/blob/master/src/EDUGraphAPI.Web/Services/SchoolsService.cs"
+        "url": "/blob/master/app/Services/EducationServiceClient.php"
       },
       {
-        "title": "SectionDetailsViewModel",
-        "url": "/blob/master/src/EDUGraphAPI.Web/Models/SectionDetailsViewModel.cs"
-      },
-      {
-        "title": "SeatingViewModel",
-        "url": "/blob/master/src/EDUGraphAPI.Web/Models/SeatingViewModel.cs"
+        "title": "SchoolsViewModel",
+        "url": "/blob/master/app/ViewModel/School.php"
       }
     ]
   },
-  {
-    "controller": "account",
-    "action": "login",
-    "links": [
-      {
-        "title": "Controller",
-        "url": "/blob/master/src/EDUGraphAPI.Web/Controllers/AccountController.cs"
-      },
-      {
-        "title": "View",
-        "url": "/blob/master/src/EDUGraphAPI.Web/Views/Account/Login.cshtml"
-      },
-      {
-        "title": "LoginViewModel",
-        "url": "/blob/master/src/EDUGraphAPI.Web/Models/AccountViewModels.cs"
-      }
-    ]
-  },
-  {
-    "controller": "account",
-    "action": "O365login",
-    "links": [
-      {
-        "title": "Controller",
-        "url": "/blob/master/src/EDUGraphAPI.Web/Controllers/AccountController.cs"
-      },
-      {
-        "title": "View",
-        "url": "/blob/master/src/EDUGraphAPI.Web/Views/Account/O365login.cshtml"
-      }
-    ]
-  },
-  {
-    "controller": "account",
-    "action": "register",
-    "links": [
-      {
-        "title": "Controller",
-        "url": "/blob/master/src/EDUGraphAPI.Web/Controllers/AccountController.cs"
-      },
-      {
-        "title": "View",
-        "url": "/blob/master/src/EDUGraphAPI.Web/Views/Account/Register.cshtml"
-      },
-      {
-        "title": "EducationRegisterViewModel",
-        "url": "/blob/master/src/EDUGraphAPI.Web/Models/EducationRegisterViewModel.cs"
-      }
-    ]
-  },
+
   {
     "controller": "admin",
     "action": "index",
@@ -299,90 +224,54 @@
   },
 
   {
-    "controller": "link",
+    "controller": "LinkController",
     "action": "index",
     "links": [
       {
         "title": "Controller",
-        "url": "/blob/master/src/EDUGraphAPI.Web/Controllers/LinkController.cs"
+        "url": "/blob/master/app/Http/Controllers/LinkController.php"
       },
       {
         "title": "View",
-        "url": "/blob/master/src/EDUGraphAPI.Web/Views/Link/Index.cshtml"
-      },
-      {
-        "title": "ApplicationService",
-        "url": "/blob/master/src/EDUGraphAPI.Web/Services/ApplicationService.cs"
-      },
-      {
-        "title": "UserContext",
-        "url": "/blob/master/src/EDUGraphAPI.Web/Models/UserContext.cs"
-      },
-      {
-        "title": "AADGraphClient",
-        "url": "/blob/master/src/EDUGraphAPI.Web/Services/GraphClients/AADGraphClient.cs"
-      },
-      {
-        "title": "MSGraphClient",
-        "url": "/blob/master/src/EDUGraphAPI.Web/Services/GraphClients/MSGraphClient.cs"
+        "url": "/blob/master/resources/views/link/index.blade.php"
       }
     ]
   },
   {
-    "controller": "link",
-    "action": "loginlocal",
+    "controller": "LinkController",
+    "action": "loginLocal",
     "links": [
       {
         "title": "Controller",
-        "url": "/blob/master/src/EDUGraphAPI.Web/Controllers/LinkController.cs"
+        "url": "/blob/master/app/Http/Controllers/LinkController.php"
       },
       {
         "title": "View",
-        "url": "/blob/master/src/EDUGraphAPI.Web/Views/Link/LoginLocal.cshtml"
-      },
-      {
-        "title": "LoginViewModel",
-        "url": "/blob/master/src/EDUGraphAPI.Web/Models/AccountViewModels.cs"
-      },
-      {
-        "title": "AADGraphClient",
-        "url": "/blob/master/src/EDUGraphAPI.Web/Services/GraphClients/AADGraphClient.cs"
+        "url": "/blob/master/resources/views/link/loginlocal.blade.php"
       }
     ]
   },
   {
-    "controller": "link",
-    "action": "createlocalaccount",
+    "controller": "LinkController",
+    "action": "createLocalAccount",
     "links": [
       {
         "title": "Controller",
-        "url": "/blob/master/src/EDUGraphAPI.Web/Controllers/LinkController.cs"
+        "url": "/blob/master/app/Http/Controllers/LinkController.php"
       },
       {
         "title": "View",
-        "url": "/blob/master/src/EDUGraphAPI.Web/Views/Link/CreateLocalAccount.cshtml"
-      },
-      {
-        "title": "ApplicationService",
-        "url": "/blob/master/src/EDUGraphAPI.Web/Services/ApplicationService.cs"
-      },
-      {
-        "title": "EducationRegisterViewModel",
-        "url": "/blob/master/src/EDUGraphAPI.Web/Models/EducationRegisterViewModel.cs"
-      },
-      {
-        "title": "AADGraphClient",
-        "url": "/blob/master/src/EDUGraphAPI.Web/Services/GraphClients/AADGraphClient.cs"
+        "url": "/blob/master/resources/views/link/createlocalaccount.blade.php"
       }
     ]
   },
   {
-    "controller": "link",
+    "controller": "LinkController",
     "action": "logino365required",
     "links": [
       {
         "title": "Controller",
-        "url": "/blob/master/src/EDUGraphAPI.Web/Controllers/LinkController.cs"
+        "url": "/blob/master/app/Http/Controllers/LinkController.php"
       },
       {
         "title": "View",
@@ -391,20 +280,20 @@
     ]
   },
   {
-    "controller": "manage",
-    "action": "aboutme",
+    "controller": "AboutMeController",
+    "action": "index",
     "links": [
       {
         "title": "Controller",
-        "url": "/blob/master/src/EDUGraphAPI.Web/Controllers/ManageController.cs"
+        "url": "/blob/master/app/Http/Controllers/Auth/AboutMeController.php"
       },
       {
         "title": "View",
-        "url": "/blob/master/src/EDUGraphAPI.Web/Views/Manage/AboutMe.cshtml"
+        "url": "/blob/master/resources/views/auth/aboutme.blade.php"
       },
       {
-        "title": "AboutMeViewModel",
-        "url": "/blob/master/src/EDUGraphAPI.Web/Models/AboutMeViewModel.cs"
+        "title": "Services",
+        "url": "/blob/master/app/Services/EducationServiceClient.php"
       }
     ]
   }
