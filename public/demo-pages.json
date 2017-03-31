@@ -275,7 +275,7 @@
       },
       {
         "title": "View",
-        "url": "/blob/master/src/EDUGraphAPI.Web/Views/Link/LoginO365Required.cshtml"
+        "url": "/blob/master/resources/views/link/loginO365Required.blade.php"
       }
     ]
   },
