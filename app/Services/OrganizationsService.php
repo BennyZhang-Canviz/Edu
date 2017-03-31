@@ -1,15 +1,13 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: zzq
- * Date: 2017/3/20
- * Time: 14:50
+ *  Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license.
+ *  See LICENSE in the project root for license information.
  */
 
 namespace App\Services;
 use App\Model\Organizations;
 
-class OrganizationsServices
+class OrganizationsService
 {
 
     public function CreateByTenant($tenant,$tenantId)

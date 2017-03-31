@@ -1,10 +1,14 @@
 <?php
+/**
+ *  Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license.
+ *  See LICENSE in the project root for license information.
+ */
 
 namespace App\Http\Controllers;
 
 
 use App\Model\TokenCache;
-use App\Services\TokenCacheServices;
+use App\Services\TokenCacheService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Microsoft\Graph\Connect\Constants;
@@ -35,7 +39,7 @@ class HomeController extends Controller
         //Below code can get information from Microsoft graph.
 //        $user = Auth::user();
 //        $o365UserId = $user->o365UserId;
-//        $token = (new TokenCacheServices)-> GetMicrosoftToken ($o365UserId);
+//        $token = (new TokenCacheService)-> GetMicrosoftToken ($o365UserId);
 //        $client = new \GuzzleHttp\Client();
 //        $authHeader = [
 //            'headers' => [

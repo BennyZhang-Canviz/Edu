@@ -1,4 +1,9 @@
 <?php
+/**
+ *  Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license.
+ *  See LICENSE in the project root for license information.
+ */
+
 namespace App\Services;
 
 use App\Config\SiteConstants;
@@ -10,7 +15,7 @@ use Microsoft\Graph\Model\Conversation;
 use Microsoft\Graph\Model\Drive;
 use Microsoft\Graph\Model\DriveItem;
 
-class MSGraphClient
+class MSGraphService
 {
     /**
      * Create a new instance.
@@ -19,7 +24,7 @@ class MSGraphClient
      */
     public function __construct()
     {
-        $this->tokenCacheService = new TokenCacheServices();
+        $this->tokenCacheService = new TokenCacheService();
         $this->graph = new Graph();
     }
 

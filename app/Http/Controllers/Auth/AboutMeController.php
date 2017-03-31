@@ -1,10 +1,14 @@
 <?php
+/**
+ *  Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license.
+ *  See LICENSE in the project root for license information.
+ */
 
 namespace App\Http\Controllers\Auth;
 
 use App\Config\SiteConstants;
-use App\Services\EducationServiceClient;
-use App\Services\UserRolesServices;
+use App\Services\EducationService;
+use App\Services\UserRolesService;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -21,7 +25,7 @@ class AboutMeController extends Controller
         if(isset($_GET['showSaveMessage'])){
             $showSaveMessage=true;
         }
-        //EducationServiceClient
+        //EducationService
         $o365UserId='';
         $classes=[];
         if(Auth::check()){
@@ -31,7 +35,7 @@ class AboutMeController extends Controller
         if(isset($_SESSION[SiteConstants::Session_O365_User_ID]))
             $o365UserId =$_SESSION[SiteConstants::Session_O365_User_ID];
         if($o365UserId){
-           $classes =  (new EducationServiceClient)->getAllMySections(false);
+           $classes =  (new EducationService)->getAllMySections(false);
         }
         $arrData = array(
             'displayName'=>$displayName,
@@ -81,7 +85,7 @@ class AboutMeController extends Controller
         }
 
         if($o365userId)
-            $role = (new UserRolesServices)->GetUserRole($o365userId);
+            $role = (new UserRolesService)->GetUserRole($o365userId);
         return $role;
     }
 

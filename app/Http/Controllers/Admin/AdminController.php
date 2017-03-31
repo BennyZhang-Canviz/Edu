@@ -1,11 +1,15 @@
 <?php
+/**
+ *  Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license.
+ *  See LICENSE in the project root for license information.
+ */
 
 namespace App\Http\Controllers\Admin;
 
 use App\Model\Organizations;
 use App\Services\AuthenticationHelper;
-use App\Services\OrganizationsServices;
-use App\Services\TokenCacheServices;
+use App\Services\OrganizationsService;
+use App\Services\TokenCacheService;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -120,7 +124,7 @@ class AdminController extends Controller
             $idToken = $microsoftToken->getValues()['id_token'];
             $parsedToken = (new Parser())->parse((string)$idToken);
             $tenantId = $parsedToken->getClaim('tid');
-            (new OrganizationsServices)->SetTenantConsentResult($tenantId, true);
+            (new OrganizationsService)->SetTenantConsentResult($tenantId, true);
         }
 
         $redirectUrl = '/';
@@ -136,7 +140,7 @@ class AdminController extends Controller
     {
         $user = Auth::user();
         $o365UserId = $user->o365UserId;
-        $token = (new TokenCacheServices)->GetAADToken($o365UserId);
+        $token = (new TokenCacheService)->GetAADToken($o365UserId);
         $tenantId = (new AADGraphClient)->GetTenantIdByUserId($o365UserId);
         $url = 'https://graph.windows.net/' . $tenantId . '/servicePrincipals/?api-version=1.6&$filter=appId%20eq%20\'' . Constants::CLIENT_ID . '\'';
         $client = new \GuzzleHttp\Client();
@@ -155,7 +159,7 @@ class AdminController extends Controller
                 'Authorization' => 'Bearer ' . $token
             ]
         ]);
-        (new OrganizationsServices)->SetTenantConsentResult($tenantId, false);
+        (new OrganizationsService)->SetTenantConsentResult($tenantId, false);
 
         header('Location: ' . '/admin?consented=false');
         exit();
@@ -167,7 +171,7 @@ class AdminController extends Controller
         $user = Auth::user();
         $o365UserId = $user->o365UserId;
         $tenantId = (new AADGraphClient)->GetTenantIdByUserId($o365UserId);
-        $org = (new OrganizationsServices)->GetOrganization($tenantId);
+        $org = (new OrganizationsService)->GetOrganization($tenantId);
         $users=[];
         if($org){
           $users =  User::where('OrganizationId',$org->id)
@@ -201,7 +205,7 @@ class AdminController extends Controller
         set_time_limit(1200);
         $user = Auth::user();
         $o365UserId = $user->o365UserId;
-        $token = (new TokenCacheServices)->GetAADToken($o365UserId);
+        $token = (new TokenCacheService)->GetAADToken($o365UserId);
         $tenantId = (new AADGraphClient)->GetTenantIdByUserId($o365UserId);
         $url = Constants::AADGraph . '/' . $tenantId . '/servicePrincipals/?api-version=1.6&$filter=appId%20eq%20\'' . Constants::CLIENT_ID . '\'';
         $client = new \GuzzleHttp\Client();

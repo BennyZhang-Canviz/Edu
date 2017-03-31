@@ -1,8 +1,13 @@
 <?php
+/**
+ *  Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license.
+ *  See LICENSE in the project root for license information.
+ */
+
 namespace App\Services;
 use App\Model\UserRoles;
 
-class UserRolesServices
+class UserRolesService
 {
     public function CreateOrUpdateUserRoles($roles, $userId){
         UserRoles::where('UserId',  $userId)->delete();

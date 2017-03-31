@@ -1,4 +1,8 @@
 <?php
+/**
+ *  Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license.
+ *  See LICENSE in the project root for license information.
+ */
 
 /*
 |--------------------------------------------------------------------------
@@ -11,9 +15,7 @@
 |
 */
 use App\Services\CookieService;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-
 
 Route::get('/', function () {
     if (Auth::check()) {
@@ -31,7 +33,6 @@ Route::get('/differentaccount', 'O365AuthController@differentAccountLogin');
 Route::get('/oauth.php', 'O365AuthController@oauth');
 Route::get('/o365login', 'O365AuthController@o365Login');
 
-
 Route::get('/userlogout',function (){
     Session::flush();
     session_destroy();
@@ -42,10 +43,8 @@ Route::get('/userlogout',function (){
 //login, register related.
 Auth::routes();
 
-
 //all schools, teachers and students, classes, class details.
 Route::group(['middleware' => ['web','auth','SchoolMiddleware']], function () {
-//    Route::get('/home', 'SchoolsController@index');
     Route::get('/schools', 'SchoolsController@index');
     Route::get('/users/{objectId}', 'SchoolsController@users');
     Route::get('/users/next/{objectId}/{skipToken}', 'SchoolsController@usersNext');
@@ -73,7 +72,9 @@ Route::group(['namespace'=>'Admin'], function () {
     Route::get('/admin/processcode','AdminController@ProcessCode');
 
 });
+
 Route::get('/o365loginrequired', 'LinkController@loginO365Required');
+
 //Admin functions.
 Route::group(['middleware' => ['web','auth','Admin.Login'],'namespace'=>'Admin'], function () {
     Route::get('/admin', 'AdminController@index');

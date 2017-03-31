@@ -7,7 +7,6 @@
 use Illuminate\Support\Facades\Route;
 use Microsoft\Graph\Connect\Constants;
 
-
 $links = getCurrentPageLinks();
 
 function getCurrentPageLinks()

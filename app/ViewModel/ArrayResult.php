@@ -1,13 +1,10 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: stlui
- * Date: 3/26/2017
- * Time: 12:41 PM
+ *  Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license.
+ *  See LICENSE in the project root for license information.
  */
 
 namespace App\ViewModel;
-
 
 class ArrayResult extends ParsableObject
 {

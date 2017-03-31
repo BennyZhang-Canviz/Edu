@@ -1,4 +1,8 @@
 <?php
+/**
+ *  Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license.
+ *  See LICENSE in the project root for license information.
+ */
 
 namespace App\Http\Controllers;
 
@@ -6,10 +10,10 @@ namespace App\Http\Controllers;
 use App\Model\TokenCache;
 use App\Services\CookieService;
 use App\Services\UserService;
-use App\Services\EducationServiceClient;
+use App\Services\EducationService;
 use App\Services\MapService;
-use App\Services\MSGraphClient;
-use App\Services\TokenCacheServices;
+use App\Services\MSGraphService;
+use App\Services\TokenCacheService;
 use App\ViewModel\Student;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -28,7 +32,7 @@ class SchoolsController extends Controller
      */
     public function index()
     {
-        $educationServiceClient = new EducationServiceClient();
+        $educationServiceClient = new EducationService();
         $me = $educationServiceClient->getMe();
         $schools = $educationServiceClient->getSchools();
         foreach($schools as $school)
@@ -71,7 +75,7 @@ class SchoolsController extends Controller
      */
     public function users($objectId)
     {
-        $educationServiceClient = new EducationServiceClient();
+        $educationServiceClient = new EducationService();
         $school = $educationServiceClient->getSchool($objectId);
         $users = $educationServiceClient->getMembers($objectId, 12, null);
         $students = $educationServiceClient->getStudents($school->schoolId, 12, null);
@@ -91,7 +95,7 @@ class SchoolsController extends Controller
      */
     public function usersNext($objectId, $skipToken)
     {
-        $educationServiceClient = new EducationServiceClient();
+        $educationServiceClient = new EducationService();
         $users = $educationServiceClient->getMembers($objectId, 12, $skipToken);
         return response()->json($users);
     }
@@ -106,7 +110,7 @@ class SchoolsController extends Controller
      */
     public function studentsNext($objectId, $skipToken)
     {
-        $educationServiceClient = new EducationServiceClient();
+        $educationServiceClient = new EducationService();
         $school = $educationServiceClient->getSchool($objectId);
         $students = $educationServiceClient->getStudents($school->schoolId, 12, $skipToken);
         return response()->json($students);
@@ -122,7 +126,7 @@ class SchoolsController extends Controller
      */
     public function teachersNext($objectId, $skipToken)
     {
-        $educationServiceClient = new EducationServiceClient();
+        $educationServiceClient = new EducationService();
         $school = $educationServiceClient->getSchool($objectId);
         $teachers = $educationServiceClient->getTeachers($school->schoolId, 12, $skipToken);
         return response()->json($teachers);
@@ -139,7 +143,7 @@ class SchoolsController extends Controller
     public function classDetail($objectId, $classId)
     {
         $curUser = Auth::user();
-        $educationServiceClient = new EducationServiceClient();
+        $educationServiceClient = new EducationService();
         $me = $educationServiceClient->getMe();
         $school = $educationServiceClient->getSchool($objectId);
         $section = $educationServiceClient->getSectionWithMembers($classId);
@@ -149,7 +153,7 @@ class SchoolsController extends Controller
             $student->favoriteColor = UserService::getFavoriteColor($student->o365UserId);
         }
 
-        $msGraph = new MSGraphClient();
+        $msGraph = new MSGraphService();
         $conversations = $msGraph->getGroupConversations($classId);
         $seeMoreConversationsUrl = sprintf(Constants::O365GroupConversationsUrlFormat, $section->Email);
         $driveItems = $msGraph->getGroupDriveItems($classId);
@@ -184,7 +188,7 @@ class SchoolsController extends Controller
      */
     public function classes($objectId)
     {
-        $educationServiceClient = new EducationServiceClient();
+        $educationServiceClient = new EducationService();
         $me = $educationServiceClient->getMe();
         $school = $educationServiceClient->getSchool($objectId);
         $schoolId = $school->schoolId;
@@ -216,7 +220,7 @@ class SchoolsController extends Controller
      */
     public function classesNext($schoolId,$nextLink)
     {
-        $educationServiceClient = new EducationServiceClient();
+        $educationServiceClient = new EducationService();
         $myClasses =  $educationServiceClient->getMySectionsOfCurrentSchool($schoolId);
         $school = $educationServiceClient->getSchool($schoolId);
         $allClasses = $educationServiceClient->getAllSections($school->schoolId,12,$nextLink);
@@ -236,7 +240,7 @@ class SchoolsController extends Controller
      */
     public function userPhoto($o365UserId)
     {
-        $msGraph = new MSGraphClient();
+        $msGraph = new MSGraphService();
         $stream = $msGraph->getUserPhoto($o365UserId);
         if ($stream)
         {

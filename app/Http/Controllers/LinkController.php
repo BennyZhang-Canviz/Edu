@@ -1,4 +1,8 @@
 <?php
+/**
+ *  Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license.
+ *  See LICENSE in the project root for license information.
+ */
 
 namespace App\Http\Controllers;
 
@@ -9,7 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
 use App\User;
 use App\Model\TokenCache;
-use App\Services\TokenCacheServices;
+use App\Services\TokenCacheService;
 use App\Services\AADGraphClient;
 
 
@@ -84,7 +88,7 @@ class LinkController extends Controller
             $user->email=$o365Email;
             $user->save();
             Auth::loginUsingId($user->id);
-            (new TokenCacheServices)->UpdateOrInsertCache($o365UserId,$_SESSION[SiteConstants::Session_Refresh_Token],$_SESSION[SiteConstants::Session_Tokens_Array]);
+            (new TokenCacheService)->UpdateOrInsertCache($o365UserId,$_SESSION[SiteConstants::Session_Refresh_Token],$_SESSION[SiteConstants::Session_Tokens_Array]);
             return redirect('/schools');
         }else{
             return view("link.createlocalaccount");
@@ -113,7 +117,7 @@ class LinkController extends Controller
                 $user->save();
                 Auth::loginUsingId($user->id);
 
-                (new TokenCacheServices)->UpdateOrInsertCache($_SESSION[SiteConstants::Session_O365_User_ID],$_SESSION[SiteConstants::Session_Refresh_Token],$_SESSION[SiteConstants::Session_Tokens_Array]);
+                (new TokenCacheService)->UpdateOrInsertCache($_SESSION[SiteConstants::Session_O365_User_ID],$_SESSION[SiteConstants::Session_Refresh_Token],$_SESSION[SiteConstants::Session_Tokens_Array]);
                 if (Auth::check()) {
                     return redirect("/schools");
                 }
@@ -135,7 +139,7 @@ class LinkController extends Controller
                 $user->OrganizationId =$_SESSION[SiteConstants::Session_OrganizationId];
                 $user->save();
                 Auth::loginUsingId($user->id);
-                (new TokenCacheServices)->UpdateOrInsertCache($_SESSION[SiteConstants::Session_O365_User_ID],$_SESSION[SiteConstants::Session_Refresh_Token],$_SESSION[SiteConstants::Session_Tokens_Array]);
+                (new TokenCacheService)->UpdateOrInsertCache($_SESSION[SiteConstants::Session_O365_User_ID],$_SESSION[SiteConstants::Session_Refresh_Token],$_SESSION[SiteConstants::Session_Tokens_Array]);
                 if (Auth::check()) {
                     return redirect("/schools");
                 }

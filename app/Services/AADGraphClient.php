@@ -1,7 +1,12 @@
 <?php
+/**
+ *  Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license.
+ *  See LICENSE in the project root for license information.
+ */
+
 namespace App\Services;
 
-use App\Services\TokenCacheServices;
+use App\Services\TokenCacheService;
 use App\ViewModel\SectionUser;
 use App\ViewModel\School;
 use App\ViewModel\Student;
@@ -13,7 +18,7 @@ use Microsoft\Graph\Model;
 use App\Config\SiteConstants;
 use App\Config\Roles;
 use App\Config\O365ProductLicenses;
-use App\Services\UserRolesServices;
+use App\Services\UserRolesService;
 use Microsoft\Graph\Connect\Constants;
 
 class AADGraphClient
@@ -31,7 +36,7 @@ class AADGraphClient
     //Get current user and roles from AAD. Update user roles to database.
     public function GetCurrentUser($userId)
     {
-       $token =  (new TokenCacheServices)->GetMicrosoftToken($userId);
+       $token =  (new TokenCacheService)->GetMicrosoftToken($userId);
        if($token){
            $graph = new Graph();
            $graph->setAccessToken($token);
@@ -48,7 +53,7 @@ class AADGraphClient
               array_push($roles,Roles::Student);
            if($this->IsUserTeacher($licenses))
                array_push($roles,Roles::Faculty);
-           (new UserRolesServices)->CreateOrUpdateUserRoles($roles,$userId);
+           (new UserRolesService)->CreateOrUpdateUserRoles($roles,$userId);
 
        }
 
@@ -56,7 +61,7 @@ class AADGraphClient
 
     public function GetTenantByUserId($userId)
     {
-        $token =  (new TokenCacheServices)->GetMicrosoftToken($userId);
+        $token =  (new TokenCacheService)->GetMicrosoftToken($userId);
         return $this->GetTenantByToken($token);
      }
 
@@ -95,7 +100,7 @@ class AADGraphClient
         }else{
             $tenantId = $this->GetTenantIdByUserId($userId);
         }
-        $token =  (new TokenCacheServices)->GetAADToken($userId);
+        $token =  (new TokenCacheService)->GetAADToken($userId);
         $adminRoles = $this->GetDirectoryAdminRole($userId,$tenantId,$token);
         $adminMembers = $this->GetAdminDirectoryMembers($tenantId,$adminRoles['value']->objectId,$token);
         $isAdmin=false;

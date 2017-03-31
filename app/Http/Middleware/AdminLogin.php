@@ -1,9 +1,13 @@
 <?php
+/**
+ *  Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license.
+ *  See LICENSE in the project root for license information.
+ */
 
 namespace App\Http\Middleware;
 
 use Closure;
-use App\Services\UserRolesServices;
+use App\Services\UserRolesService;
 use Illuminate\Support\Facades\Auth;
 
 class AdminLogin
@@ -18,7 +22,7 @@ class AdminLogin
     public function handle($request, Closure $next)
     {
         $user = Auth::user();
-       $isAdmin = (new UserRolesServices)->IsUserAdmin($user->o365UserId);
+       $isAdmin = (new UserRolesService)->IsUserAdmin($user->o365UserId);
        if(!$isAdmin)
            return redirect("/login");
         return $next($request);

@@ -1,13 +1,10 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: stlui
- * Date: 3/24/2017
- * Time: 11:32 AM
+ *  Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license.
+ *  See LICENSE in the project root for license information.
  */
 
 namespace App\ViewModel;
-
 
 class Teacher extends SectionUser
 {

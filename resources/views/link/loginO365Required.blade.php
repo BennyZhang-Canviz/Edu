@@ -1,3 +1,10 @@
+<?php
+/**
+ *  Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license.
+ *  See LICENSE in the project root for license information.
+ */
+?>
+
 @extends('layouts.app')
 @section('content')
     <h2>Login to Office 365 is required</h2>

@@ -1,8 +1,14 @@
 <?php
+/**
+ *  Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license.
+ *  See LICENSE in the project root for license information.
+ */
+
 use App\Config\Roles;
 use App\Config\SiteConstants;
-use App\Services\UserRolesServices;use Illuminate\Http\Request;use Illuminate\Support\Facades\Input;use Illuminate\Support\Facades\Route;
+use App\Services\UserRolesService;use Illuminate\Http\Request;use Illuminate\Support\Facades\Input;use Illuminate\Support\Facades\Route;
 ?>
+
 <!DOCTYPE html>
 <html lang="{{ config('app.locale') }}">
 <head>
@@ -63,7 +69,7 @@ use App\Services\UserRolesServices;use Illuminate\Http\Request;use Illuminate\Su
                 }
 
                 if($o365userId)
-                    $role = (new UserRolesServices)->GetUserRole($o365userId);
+                    $role = (new UserRolesService)->GetUserRole($o365userId);
 
                 $isInASchool=false;
                 $objectId='';

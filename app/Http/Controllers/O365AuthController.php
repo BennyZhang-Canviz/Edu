@@ -1,4 +1,8 @@
 <?php
+/**
+ *  Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license.
+ *  See LICENSE in the project root for license information.
+ */
 
 namespace App\Http\Controllers;
 
@@ -16,9 +20,9 @@ use App\Config\SiteConstants;
 use App\User;
 use Illuminate\Support\Facades\Crypt;
 use App\Model\TokenCache;
-use App\Services\TokenCacheServices;
+use App\Services\TokenCacheService;
 use App\Services\AADGraphClient;
-use App\Services\OrganizationsServices;
+use App\Services\OrganizationsService;
 use Socialize;
 
 
@@ -34,14 +38,14 @@ class O365AuthController extends Controller
         $o365UserId  = $user->id;
         $o365Email = $user->email;
 
-        $microsoftTokenArray = (new TokenCacheServices())->refreshToken($user->id,$refreshToken,Constants::RESOURCE_ID,true);
+        $microsoftTokenArray = (new TokenCacheService())->refreshToken($user->id,$refreshToken,Constants::RESOURCE_ID,true);
         $tokensArray = $this->getTokenArray($user,$microsoftTokenArray);
         $_SESSION[SiteConstants::Session_Tokens_Array] = $tokensArray;
 
         $graph = new AADGraphClient;
         $tenant = $graph->GetTenantByToken($microsoftTokenArray['token']);
         $tenantId = $graph->GetTenantId($tenant);
-        $orgId = (new OrganizationsServices)->CreateByTenant($tenant, $tenantId);
+        $orgId = (new OrganizationsService)->CreateByTenant($tenant, $tenantId);
         $_SESSION[SiteConstants::Session_OrganizationId] = $orgId;
         $_SESSION[SiteConstants::Session_TenantId] = $tenantId;
 
@@ -50,7 +54,7 @@ class O365AuthController extends Controller
         $userInDB = User::where('o365UserId', $o365UserId)->first();
         //If user exists on db, check if this user is linked. If linked, go to schools/index page, otherwise go to link page.
         //If user doesn't exists on db, add user information like o365 user id, first name, last name to session and then go to link page.
-        (new TokenCacheServices)->UpdateOrInsertCache($o365UserId, $refreshToken, $tokensArray);
+        (new TokenCacheService)->UpdateOrInsertCache($o365UserId, $refreshToken, $tokensArray);
         if ($userInDB) {
             $o365UserIdInDB = $userInDB->o365UserId;
             $o365UserEmailInDB = $userInDB->o365Email;
@@ -97,7 +101,7 @@ class O365AuthController extends Controller
             $localUser->password = '';
             $localUser->OrganizationId = $orgId;
             $localUser->save();
-            (new TokenCacheServices)->UpdateOrInsertCache($o365UserId, $refreshToken, $tokensArray);
+            (new TokenCacheService)->UpdateOrInsertCache($o365UserId, $refreshToken, $tokensArray);
 
             return redirect("/schools");
         }

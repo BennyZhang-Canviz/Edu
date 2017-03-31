@@ -1,4 +1,9 @@
 <?php
+/**
+ *  Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license.
+ *  See LICENSE in the project root for license information.
+ */
+
 namespace App\Services;
 
 use \DateTime;
@@ -17,7 +22,7 @@ use Microsoft\Graph\Graph;
 use Microsoft\Graph\Model;
 use Prophecy\Util\StringUtil;
 
-class  EducationServiceClient
+class  EducationService
 {
     private $tokenCacheService;
     private $o365UserId;
@@ -30,7 +35,7 @@ class  EducationServiceClient
      */
     public function __construct()
     {
-        $this->tokenCacheService = new TokenCacheServices();
+        $this->tokenCacheService = new TokenCacheService();
         $this->AADGraphClient = new AADGraphClient();
         if(isset($_SESSION[SiteConstants::Session_O365_User_ID]))
         {
