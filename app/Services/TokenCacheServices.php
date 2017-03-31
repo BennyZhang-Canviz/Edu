@@ -104,7 +104,6 @@ class TokenCacheServices
             $array=array();
             $array=json_decode($token,true);
             if($resource ===Constants::RESOURCE_ID){
-                //aad oper
                 $aadTokenExpires = $array[Constants::AADGraph]['expiresOn'];
                 $aadGraphTokenResult = $array[Constants::AADGraph]['value'];
             }else{

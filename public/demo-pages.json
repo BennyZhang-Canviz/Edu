@@ -9,23 +9,39 @@
     "links": [
       {
         "title": "Controller",
-        "url": "/blob/master/src/EDUGraphAPI.Web/Controllers/SchoolsController.cs"
+        "url": "/blob/Handle_cahce_here_and_then_login_/app/Http/Controllers/O365AuthController.php"
       },
       {
         "title": "View",
-        "url": "/blob/master/src/EDUGraphAPI.Web/Views/Schools/Index.cshtml"
+        "url": "/blob/master/resources/views/auth/o365loginhint.blade.php"
+      }
+    ]
+  },
+  {
+    "controller": "LoginController",
+    "action": "showLoginForm",
+    "links": [
+      {
+        "title": "Controller",
+        "url": "/blob/Handle_cahce_here_and_then_login_/app/Http/Controllers/Auth/LoginController.php"
       },
       {
-        "title": "ApplicationService",
-        "url": "/blob/master/src/EDUGraphAPI.Web/Services/ApplicationService.cs"
+        "title": "View",
+        "url": "/blob/master/resources/views/auth/login.blade.php"
+      }
+    ]
+  },
+  {
+    "controller": "RegisterController",
+    "action": "showRegistrationForm",
+    "links": [
+      {
+        "title": "Controller",
+        "url": "/blob/Handle_cahce_here_and_then_login_/app/Http/Controllers/Auth/LoginController.php"
       },
       {
-        "title": "SchoolsService",
-        "url": "/blob/master/src/EDUGraphAPI.Web/Services/SchoolsService.cs"
-      },
-      {
-        "title": "SchoolsViewModel",
-        "url": "/blob/master/src/EDUGraphAPI.Web/Models/SchoolsViewModel.cs"
+        "title": "View",
+        "url": "/blob/master/resources/views/auth/login.blade.php"
       }
     ]
   },
