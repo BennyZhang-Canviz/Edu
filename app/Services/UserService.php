@@ -5,6 +5,7 @@
  */
 
 namespace App\Services;
+
 use App\Model\ClassroomSeatingArrangements;
 use App\User;
 

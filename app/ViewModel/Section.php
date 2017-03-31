@@ -10,6 +10,11 @@ use App\Config\EduConstants;
 
 class Section extends ParsableObject
 {
+    /**
+     * Create a new instance.
+     *
+     * @return void
+     */
     public function __construct()
     {
         $this->addPropertyMappings(

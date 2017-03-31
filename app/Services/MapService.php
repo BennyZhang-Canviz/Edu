@@ -7,6 +7,7 @@
 namespace App\Services;
 
 use Microsoft\Graph\Connect\Constants;
+
 class MapService
 {
     /**

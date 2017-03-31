@@ -6,8 +6,6 @@
 
 namespace App\Services;
 
-use \DateTime;
-use App\Config\O365ProductLicenses;
 use App\Config\Roles;
 use App\Config\SiteConstants;
 use App\ViewModel\ArrayResult;
@@ -18,9 +16,7 @@ use App\ViewModel\Student;
 use App\ViewModel\Teacher;
 use Illuminate\Support\Facades\Auth;
 use Microsoft\Graph\Connect\Constants;
-use Microsoft\Graph\Graph;
 use Microsoft\Graph\Model;
-use Prophecy\Util\StringUtil;
 
 class  EducationService
 {
@@ -48,9 +44,10 @@ class  EducationService
     }
 
     /**
-     * Get the current user.
+     * Get the current logged in user
+     * Reference URL: https://msdn.microsoft.com/office/office365/api/student-rest-operations#get-current-user
      *
-     * @return Model\User The current user
+     * @return Model\User The current logged in user
      */
     public function getMe()
     {
@@ -87,9 +84,8 @@ class  EducationService
     }
 
     /**
-     *
-     * Get a school by using the object_id.
-     * Reference URL: https://msdn.microsoft.com/office/office365/api/school-rest-operations#get-a-school.
+     * Get a school by the object id.
+     * Reference URL: https://msdn.microsoft.com/office/office365/api/school-rest-operations#get-a-school
      *
      * @param string $objectId the object id of the school administrative unit in Azure Active Directory
      *
@@ -100,94 +96,96 @@ class  EducationService
         return $this->getResponse("get", "/administrativeUnits/" . $objectId . "?api-version=beta", School::class, null, null);
     }
 
-    public function getAllMySections($loadMembers)
+    /**
+     * Get all the sections the current logged in user belongs to
+     *
+     * @param bool $loadMembers Whether get the members of the sections
+     *
+     * @return All the section the current logged in user belongs to
+     */
+    public function getMySections($loadMembers)
     {
-        $relativeUrl = "/me/memberOf?api-version=1.5";
-        $memberOfs = $this->getAllPages("get", $relativeUrl,Section::class);
-        $sections=[];
-        if (is_array($memberOfs) && !empty($memberOfs))
+        $memberOfs = $this->getAllPages("get", "/me/memberOf?api-version=1.5",Section::class);
+        $sections = [];
+        if (empty($memberOfs))
         {
-            foreach($memberOfs as $sec)
+            return $sections;
+        }
+        foreach ($memberOfs as $memberOf)
+        {
+            if ($memberOf->objectType === 'Group' && $memberOf->EducationObjectType === 'Section')
             {
-                if($sec->objectType == 'Group' && $sec->EducationObjectType =='Section')
-                    array_push($sections, $sec);
+                array_push($sections, $memberOf);
             }
         }
-
-
         if(!$loadMembers)
+        {
             return $sections;
-        $results=[];
+        }
+
+        $sectionsWithMembers = [];
         foreach ($sections as $section)
         {
-            $sec = $this->getSectionWithMembers($section->objectId);
-            array_push($results, $sec);
+            $sectionWithMembers = $this->getSectionWithMembers($section->objectId);
+            array_push($sectionsWithMembers, $sectionWithMembers);
         }
-        return $results;
+        return $sectionsWithMembers ;
     }
 
-    public function getSectionWithMembers($sectionId){
-        $relativeUrl = '/groups/'.$sectionId.'?api-version=beta&$expand=members';
-        $section = $this->getResponse("get", $relativeUrl,Section::class,null,null);
-        return $section;
-    }
-
-
-    public function getMySectionsOfCurrentSchool($schoolId)
+    /**
+     * Get a section with its members
+     *
+     * @param string $objectId The object id of the section
+     *
+     * @return The section with its members
+     */
+    public function getSectionWithMembers($objectId)
     {
-        $sections= $this->getAllMySections(true);
-        $result =  array_filter($sections, function ($var)  use ($schoolId){
-            return ($var->SchoolId== $schoolId);
+        return $this->getResponse("get", '/groups/'. $objectId . '?api-version=beta&$expand=members',Section::class,null,null);
+    }
+
+    /**
+     * Get all the sections the current logged in user belongs to in a school
+     *
+     * @param string $schoolId The object id of the school
+     *
+     * @return array All the sections the current logged in user belongs to in a school
+     */
+    public function getMySectionsOfSchool($schoolId)
+    {
+        $sections = $this->getMySections(true);
+        $sectionsOfSchool =  array_filter($sections, function($section) use($schoolId){
+            return ($section->SchoolId === $schoolId);
         });
-
-        $flag = true;
-        $temp=0;
-        $count = count($result)-1;
-
-        while ( $flag )
-        {
-            $flag = false;
-            for( $j=0;  $j < $count ; $j++)
-            {
-                if ( $result[$j]->CombinedCourseNumber() > $result[$j+1]->CombinedCourseNumber() )
-                {
-                    $temp = $result[$j];
-                    $result[$j] = $result[$j+1];
-                    $result[$j+1]=$temp;
-                    $flag = true;
-                }
-            }
-        }
-        return $result;
+        usort($sectionsOfSchool, function($a, $b){
+            return strcmp($a->CombinedCourseNumber(), $b->CombinedCourseNumber());
+        });
+        return $sectionsOfSchool;
     }
 
-    public  function getAllSections($schoolId,$top,$token)
+    /**
+     * Get sections in a school
+     *
+     * @param string $schoolId The object id of the school
+     * @param string $top The number of items to return in a result set
+     * @param string $skipToken The token used to retrieve the next subset of the requested collection
+     *
+     * @return array A subset of the sections in the school
+     */
+    public function getSections($schoolId, $top, $skipToken)
     {
-        $relativeUrl = '/groups?api-version=beta&$filter=extension_fe2174665583431c953114ff7268b7b3_Education_ObjectType%20eq%20\'Section\'%20and%20extension_fe2174665583431c953114ff7268b7b3_Education_SyncSource_SchoolId%20eq%20\''.$schoolId.'\'';
-        return  $this->HttpGetArrayAsync($relativeUrl,$top,$token);
+        return  $this->getResponse("get", '/groups?api-version=beta&$filter=extension_fe2174665583431c953114ff7268b7b3_Education_ObjectType%20eq%20\'Section\'%20and%20extension_fe2174665583431c953114ff7268b7b3_Education_SyncSource_SchoolId%20eq%20\''.$schoolId.'\'', Section::class, $top, $skipToken);
     }
 
-    private function HttpGetArrayAsync($relativeUrl,$top,$token)
-    {
-       return $json = $this->getResponse("get", $relativeUrl,Section::class,$top,$token);
-    }
-    private function GetSkipToken($nextLink)
-    {
-        $pattern = '/\$skiptoken=[^&]+/';
-        preg_match($pattern, $nextLink, $match);
-        if (count($match) == 0)
-            return '';
-        return $match[0];
-    }
     /**
      * Get members within a school
      * Reference URL: https://msdn.microsoft.com/en-us/office/office365/api/school-rest-operations#get-school-members
      *
      * @param string $objectId the object id of the school administrative unit in Azure Active Directory
-     * @param int $top The number of items to return in a result set.
-     * @param int $skipToken The token used to retrieve the next subset of the requested collection
+     * @param int $top The number of items to return in a result set
+     * @param string $skipToken The token used to retrieve the next subset of the requested collection
      *
-     * @return array members within the school
+     * @return array A subset of the members within the school
      */
     public function getMembers($objectId, $top, $skipToken)
     {
@@ -200,9 +198,9 @@ class  EducationService
      *
      * @param string $schoolId the id of the school administrative unit in Azure Active Directory
      * @param int $top The number of items to return in a result set.
-     * @param int $skipToken The token used to retrieve the next subset of the requested collection
+     * @param string $skipToken The token used to retrieve the next subset of the requested collection
      *
-     * @return array students within the school
+     * @return array A subset of the students within the school
      */
     public function getStudents($schoolId, $top, $skipToken)
     {
@@ -215,9 +213,9 @@ class  EducationService
      *
      * @param string $schoolId the id of the school administrative unit in Azure Active Directory
      * @param int $top The number of items to return in a result set.
-     * @param int $skipToken The token used to retrieve the next subset of the requested collection
+     * @param string $skipToken The token used to retrieve the next subset of the requested collection
      *
-     * @return array teachers within the school
+     * @return array A subset of the teachers within the school
      */
     public function getTeachers($schoolId, $top, $skipToken)
     {
@@ -241,7 +239,7 @@ class  EducationService
      * @param string $endpoint The Graph endpoint to call
      * @param string $returnType The type of the return object or object of an array
      * @param int $top The number of items to return in a result set.
-     * @param int $skipToken The token used to retrieve the next subset of the requested collection
+     * @param string $skipToken The token used to retrieve the next subset of the requested collection
      *
      * @return mixed Response of AAD Graph API
      */
@@ -250,7 +248,7 @@ class  EducationService
         $token =  $this->getToken();
         if($token)
         {
-            $url = Constants::AADGraph . '/' . $this->getTenantId() . $endpoint;
+            $url = Constants::AADGraph . '/' . $_SESSION[SiteConstants::Session_TenantId] . $endpoint;
             if ($top)
             {
                 $url = $this->appendParamToUrl($url, "\$top", $top);
@@ -323,11 +321,4 @@ class  EducationService
         $url .= $str . $name . "=" . $value;
         return $url;
     }
-
-    private function getTenantId()
-    {
-       return $this->AADGraphClient->GetTenantIdByUserId($this->o365UserId);
-    }
-
-
 }

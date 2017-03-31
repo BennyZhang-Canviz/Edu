@@ -6,7 +6,6 @@
 
 namespace App\ViewModel;
 
-
 class School extends ParsableObject
 {
     /**

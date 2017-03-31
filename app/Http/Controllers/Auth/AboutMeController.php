@@ -35,7 +35,7 @@ class AboutMeController extends Controller
         if(isset($_SESSION[SiteConstants::Session_O365_User_ID]))
             $o365UserId =$_SESSION[SiteConstants::Session_O365_User_ID];
         if($o365UserId){
-           $classes =  (new EducationService)->getAllMySections(false);
+           $classes =  (new EducationService)->getMySections(false);
         }
         $arrData = array(
             'displayName'=>$displayName,

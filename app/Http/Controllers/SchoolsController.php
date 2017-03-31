@@ -6,22 +6,15 @@
 
 namespace App\Http\Controllers;
 
-
-use App\Model\TokenCache;
 use App\Services\CookieService;
 use App\Services\UserService;
 use App\Services\EducationService;
 use App\Services\MapService;
 use App\Services\MSGraphService;
-use App\Services\TokenCacheService;
 use App\ViewModel\Student;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
 use Microsoft\Graph\Connect\Constants;
-use Microsoft\Graph\Graph;
-use Microsoft\Graph\Model;
-use App\Services\AADGraphClient;
 
 class SchoolsController extends Controller
 {
@@ -46,8 +39,7 @@ class SchoolsController extends Controller
             }
         }
         // sort schools: my schools will be in front of
-        usort($schools, function($a, $b)
-        {
+        usort($schools, function($a, $b){
             if ($a->isMySchool xor $b->isMySchool)
             {
                 return $a->isMySchool ? -1 : 1;
@@ -192,8 +184,8 @@ class SchoolsController extends Controller
         $me = $educationServiceClient->getMe();
         $school = $educationServiceClient->getSchool($objectId);
         $schoolId = $school->schoolId;
-        $myClasses =  $educationServiceClient->getMySectionsOfCurrentSchool($schoolId);
-        $allClasses = $educationServiceClient->getAllSections($schoolId,12,null);
+        $myClasses =  $educationServiceClient->getMySectionsOfSchool($schoolId);
+        $allClasses = $educationServiceClient->getSections($schoolId,12,null);
 
         foreach ($allClasses->value as $class1) {
             $class1->IsMySection=false;
@@ -221,9 +213,9 @@ class SchoolsController extends Controller
     public function classesNext($schoolId,$nextLink)
     {
         $educationServiceClient = new EducationService();
-        $myClasses =  $educationServiceClient->getMySectionsOfCurrentSchool($schoolId);
+        $myClasses =  $educationServiceClient->getMySectionsOfSchool($schoolId);
         $school = $educationServiceClient->getSchool($schoolId);
-        $allClasses = $educationServiceClient->getAllSections($school->schoolId,12,$nextLink);
+        $allClasses = $educationServiceClient->getSections($school->schoolId,12,$nextLink);
         foreach ($allClasses->value as $class) {
             $class->CombinedCNumber = $class->CombinedCourseNumber();
         }
