@@ -147,8 +147,8 @@ class LinkController extends Controller
 
     }
 
-    private  function  isAdmin($userid)
+    public function loginO365Required()
     {
-
+        return view('link.loginO365Required');
     }
 }

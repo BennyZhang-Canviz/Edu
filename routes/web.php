@@ -31,6 +31,7 @@ Route::get('/differentaccount', 'O365AuthController@differentAccountLogin');
 Route::get('/oauth.php', 'O365AuthController@oauth');
 Route::get('/o365login', 'O365AuthController@o365Login');
 
+
 Route::get('/userlogout',function (){
     Session::flush();
     session_destroy();
@@ -70,6 +71,7 @@ Route::group(['namespace'=>'Admin'], function () {
     Route::get('/admin/processcode','AdminController@ProcessCode');
 
 });
+Route::get('/o365loginrequired', 'LinkController@loginO365Required');
 //Admin functions.
 Route::group(['middleware' => ['web','auth','Admin.Login'],'namespace'=>'Admin'], function () {
     Route::get('/admin', 'AdminController@index');
