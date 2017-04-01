@@ -7,10 +7,10 @@
 namespace App\Http\Controllers;
 
 use App\Services\CookieService;
-use App\Services\UserService;
 use App\Services\EducationService;
 use App\Services\MapService;
 use App\Services\MSGraphService;
+use App\Services\UserService;
 use App\ViewModel\Student;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
@@ -28,25 +28,20 @@ class SchoolsController extends Controller
         $educationService = new EducationService();
         $me = $educationService->getMe();
         $schools = $educationService->getSchools();
-        foreach($schools as $school)
-        {
+        foreach ($schools as $school) {
             $school->isMySchool = $school->schoolId === $me->schoolId;
             $ll = MapService::getLatitudeAndLongitude($school->state, $school->city, $school->address);
-            if ($ll)
-            {
+            if ($ll) {
                 $school->latitude = $ll[0];
                 $school->longitude = $ll[1];
             }
         }
 
         // sort schools: firstly sort by whether it's my school, secondly sort by the display name
-        usort($schools, function($a, $b){
-            if ($a->isMySchool xor $b->isMySchool)
-            {
+        usort($schools, function ($a, $b) {
+            if ($a->isMySchool xor $b->isMySchool) {
                 return $a->isMySchool ? -1 : 1;
-            }
-            else
-            {
+            } else {
                 return strcmp($a->displayName, $b->displayName);
             }
         });
@@ -59,7 +54,7 @@ class SchoolsController extends Controller
     }
 
     /**
-     * Show teachers and students of the specified school
+     * Show teachers and students of a school
      *
      * @param string $objectId The object id of the school
      *
@@ -78,7 +73,7 @@ class SchoolsController extends Controller
     }
 
     /**
-     * Get users of the specified school
+     * Get users of a school
      *
      * @param string $objectId The object id of the school
      * @param string $skipToken The token used to retrieve the next subset of the requested collection
@@ -93,7 +88,7 @@ class SchoolsController extends Controller
     }
 
     /**
-     * Get students of the specified school.
+     * Get students of a school.
      *
      * @param string $objectId The object id of the school
      * @param string $skipToken The token used to retrieve the next subset of the requested collection
@@ -109,7 +104,7 @@ class SchoolsController extends Controller
     }
 
     /**
-     * Get teachers of the specified school.
+     * Get teachers of a school.
      *
      * @param string $objectId The object id of the school
      * @param string $skipToken The token used to retrieve the next subset of the requested collection
@@ -125,7 +120,7 @@ class SchoolsController extends Controller
     }
 
     /**
-     * Show details of a specified class
+     * Show details of a class
      *
      * @param string $objectId The object id of the school
      * @param string $classId The object id of the class
@@ -139,8 +134,7 @@ class SchoolsController extends Controller
         $me = $educationService->getMe();
         $school = $educationService->getSchool($objectId);
         $section = $educationService->getSectionWithMembers($classId);
-        foreach($section->getStudents() as $student)
-        {
+        foreach ($section->getStudents() as $student) {
             $student->position = UserService::getSeatPositionInClass($student->o365UserId, $classId);
             $student->favoriteColor = UserService::getFavoriteColor($student->o365UserId);
         }
@@ -167,9 +161,9 @@ class SchoolsController extends Controller
     }
 
     /**
-     * Display all classes of a school.
-     * @param $objectId
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * Show all classes of a school.
+     * @param string $objectId The object id of the school
+     * @return \Illuminate\Http\Response
      */
     public function classes($objectId)
     {
@@ -177,32 +171,32 @@ class SchoolsController extends Controller
         $me = $educationService->getMe();
         $school = $educationService->getSchool($objectId);
         $schoolId = $school->schoolId;
-        $myClasses =  $educationService->getMySectionsOfSchool($schoolId);
-        $allClasses = $educationService->getSections($schoolId,12,null);
+        $myClasses = $educationService->getMySectionsOfSchool($schoolId);
+        $allClasses = $educationService->getSections($schoolId, 12, null);
         $this->checkClasses($allClasses, $myClasses);
 
         $data = ["myClasses" => $myClasses, "allClasses" => $allClasses, "school" => $school, "me" => $me];
-        return view('schools.classes',$data);
+        return view('schools.classes', $data);
     }
 
     /**
      * Show next 12 schools for classes page.
-     * @param $schoolId
-     * @param $nextLink
+     * @param string $objectId The object id of the school
+     * @param string $skipToken The token used to retrieve the next subset of the requested collection
      * @return \Illuminate\Http\JsonResponse
      */
-    public function classesNext($schoolId, $nextLink)
+    public function classesNext($objectId, $skipToken)
     {
         $educationService = new EducationService();
-        $school = $educationService->getSchool($schoolId);
-        $myClasses =  $educationService->getMySectionsOfSchool($school->schoolId);
-        $allClasses = $educationService->getSections($school->schoolId,12,$nextLink);
+        $school = $educationService->getSchool($objectId);
+        $myClasses = $educationService->getMySectionsOfSchool($school->schoolId);
+        $allClasses = $educationService->getSections($school->schoolId, 12, $skipToken);
         $this->checkClasses($allClasses, $myClasses);
-        return  response()->json($allClasses);
+        return response()->json($allClasses);
     }
 
     /**
-     * Get photo of the specified user
+     * Get photo of a user
      *
      * @param string $o365UserId The Office 365 user id of the user
      *
@@ -212,22 +206,20 @@ class SchoolsController extends Controller
     {
         $msGraph = new MSGraphService();
         $stream = $msGraph->getUserPhoto($o365UserId);
-        if ($stream)
-        {
+        if ($stream) {
             $contents = $stream->getContents();
             $headers = [
                 "Content-type" => "image/jpeg",
                 "Accept-Ranges" => "bytes",
                 "Content-Length" => strlen($contents)
             ];
-            return response()->stream(function() use($stream, $contents){
+            return response()->stream(function () use ($stream, $contents) {
                 $out = fopen('php://output', 'wb');
                 fwrite($out, $contents);
                 fclose($out);
             }, 200, $headers);
         }
-        if ($stream === null)
-        {
+        if ($stream === null) {
             return response()->file(realpath("./public/images/header-default.jpg"));
         }
         return response('', 403);
@@ -254,12 +246,10 @@ class SchoolsController extends Controller
      */
     private function checkClasses($allClasses, $myClasses)
     {
-        foreach ($allClasses->value as $class1)
-        {
+        foreach ($allClasses->value as $class1) {
             $class1->isMySection = false;
-            foreach ($myClasses as $class2)
-            {
-                if($class1->email === $class2->email){
+            foreach ($myClasses as $class2) {
+                if ($class1->email === $class2->email) {
                     $class1->isMySection = true;
                     $class1->members = $class2->members;
                     break;

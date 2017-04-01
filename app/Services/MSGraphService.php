@@ -12,7 +12,6 @@ use GuzzleHttp\Psr7\Stream;
 use Illuminate\Support\Facades\Auth;
 use Microsoft\Graph\Graph;
 use Microsoft\Graph\Model\Conversation;
-use Microsoft\Graph\Model\Drive;
 use Microsoft\Graph\Model\DriveItem;
 
 class MSGraphService

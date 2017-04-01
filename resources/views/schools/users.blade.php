@@ -32,14 +32,19 @@
             </div>
             <div>
                 <div class="col-md-6 usericon">
-                    <div class="stuicon"></div><div>Student</div>
-                    <div class="teacicon"></div><div>Teacher</div>
+                    <div class="stuicon"></div>
+                    <div>Student</div>
+                    <div class="teacicon"></div>
+                    <div>Teacher</div>
                 </div>
                 <div class="col-md-6 filterlink-container">
-                    <span>FILTER:</span> <a id="filterteacher" class="filterlink" data-type="teachers">Teachers</a> | <a id="filterstudnet" class="filterlink" data-type="students">Students</a> | <a id="filterall" class="filterlink selected" data-type="users">All</a>
+                    <span>FILTER:</span> <a id="filterteacher" class="filterlink" data-type="teachers">Teachers</a> | <a
+                            id="filterstudnet" class="filterlink" data-type="students">Students</a> | <a id="filterall"
+                                                                                                         class="filterlink selected"
+                                                                                                         data-type="users">All</a>
                 </div>
             </div>
-            <br style="clear:both;" />
+            <br style="clear:both;"/>
         </div>
         <div class="users-container tiles-root-container">
             <div id="users" class="tiles-secondary-container">
@@ -55,7 +60,7 @@
                 @endcomponent
             </div>
         </div>
-        <input id="school-objectid" type="hidden" value="{{$school->objectId}}" />
+        <input id="school-objectid" type="hidden" value="{{$school->objectId}}"/>
     </div>
     <script src="{{ asset('/public/js/users.js') }}"></script>
 @endsection

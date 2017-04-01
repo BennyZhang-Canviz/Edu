@@ -49,8 +49,7 @@ class ArrayResult extends ParsableObject
         $pattern = '/\$skiptoken=([^&]+)/';
         $match = [];
         preg_match($pattern, $this->nextLink, $match);
-        if (count($match) == 2)
-        {
+        if (count($match) == 2) {
             return $match[1];
         }
         return '';

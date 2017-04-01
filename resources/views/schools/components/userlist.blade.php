@@ -12,7 +12,7 @@
         @foreach ($users->value as $user)
             <div class="element {{$user->educationObjectType == "Teacher" ? "teacher-bg" : "student-bg"}}">
                 <div class="userimg">
-                    <img src="../public/images/header-default.jpg"  realheader="/userPhoto/{{$user->o365UserId}}"/>
+                    <img src="../public/images/header-default.jpg" realheader="/userPhoto/{{$user->o365UserId}}"/>
                 </div>
                 <div class="username">{{$user->displayName}}</div>
             </div>
@@ -20,8 +20,8 @@
     </div>
     @if ($users->skipToken)
         <div class="pagination">
-            <input id="skipToken" type="hidden" value="{{$users->skipToken}}" />
-            <input id="curpage" type="hidden" value="1" />
+            <input id="skipToken" type="hidden" value="{{$users->skipToken}}"/>
+            <input id="curpage" type="hidden" value="1"/>
             <span class="current prev">Previous</span>
             <span class="next">Next</span>
         </div>

@@ -21,43 +21,33 @@ abstract class ParsableObject
     {
         $map = collect($this->mappingTable);
         $data = collect($json);
-        if ($map->isEmpty() or $data->isEmpty())
-        {
+        if ($map->isEmpty() or $data->isEmpty()) {
             return;
         }
-        foreach($map as $key => $value)
-        {
-            if (!$data->has($value))
-            {
+        foreach ($map as $key => $value) {
+            if (!$data->has($value)) {
                 continue;
             }
             $class = new ReflectionClass(get_class($this));
-            if ($class->hasProperty($key))
-            {
+            if ($class->hasProperty($key)) {
                 $property = $class->getProperty($key);
                 $dataValue = $data[$value];
                 $elementTypes = collect($this->arrayElementTypeTable);
-                if ($elementTypes && $elementTypes->has($key))
-                {
-                    if (!is_array($dataValue))
-                    {
+                if ($elementTypes && $elementTypes->has($key)) {
+                    if (!is_array($dataValue)) {
                         continue;
                     }
                     $proValue = $property->getValue($this);
-                    if (is_null($proValue))
-                    {
+                    if (is_null($proValue)) {
                         $proValue = [];
                     }
-                    foreach($dataValue as $_key => $_value)
-                    {
+                    foreach ($dataValue as $_key => $_value) {
                         $obj = new $elementTypes[$key]();
                         $obj->parse($_value);
                         $proValue[] = $obj;
                     }
                     $property->setValue($this, $proValue);
-                }
-                else
-                {
+                } else {
                     $property->setValue($this, $dataValue);
                 }
             }
@@ -73,8 +63,7 @@ abstract class ParsableObject
      */
     public function addPropertyMappings($mappings)
     {
-        if (!is_array($this->mappingTable))
-        {
+        if (!is_array($this->mappingTable)) {
             $this->mappingTable = [];
         }
         $this->mappingTable = array_merge($this->mappingTable, $mappings);
@@ -89,8 +78,7 @@ abstract class ParsableObject
      */
     public function addArrayElementTypes($types)
     {
-        if (!is_array($this->arrayElementTypeTable))
-        {
+        if (!is_array($this->arrayElementTypeTable)) {
             $this->arrayElementTypeTable = [];
         }
         $this->arrayElementTypeTable = array_merge($this->arrayElementTypeTable, $types);

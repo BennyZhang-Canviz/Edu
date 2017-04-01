@@ -19,7 +19,8 @@ class UserService
      *
      * @return int The seat position of the user in the class
      */
-    public static function getSeatPositionInClass($o365UserId, $classId){
+    public static function getSeatPositionInClass($o365UserId, $classId)
+    {
         $seat = ClassroomSeatingArrangements::where([
             ['o365UserId', $o365UserId],
             ['classId', $classId]
@@ -36,8 +37,7 @@ class UserService
      */
     public static function saveSeatingArrangements($arrangements)
     {
-        if (!is_array($arrangements) || empty($arrangements))
-        {
+        if (!is_array($arrangements) || empty($arrangements)) {
             return false;
         }
         try {
@@ -59,9 +59,7 @@ class UserService
                     $seat->save();
                 }
             }
-        }
-        catch(Exception $e)
-        {
+        } catch (Exception $e) {
             return false;
         }
         return true;
@@ -74,7 +72,8 @@ class UserService
      *
      * @return string The favorite color of the user
      */
-    public static function getFavoriteColor($o365UserId){
+    public static function getFavoriteColor($o365UserId)
+    {
         $user = User::where('o365UserId', $o365UserId)->first();
         return $user ? $user->favorite_color : "";
     }

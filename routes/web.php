@@ -23,8 +23,9 @@ Route::get('/', function () {
     }
     $cookieServices = new CookieService();
     $userName = $cookieServices->GetCookiesOfUsername();
-    if($userName)
+    if ($userName) {
         return redirect('/o365loginhint');
+    }
     return redirect('/login');
 });
 
@@ -33,7 +34,7 @@ Route::get('/differentaccount', 'O365AuthController@differentAccountLogin');
 Route::get('/oauth.php', 'O365AuthController@oauth');
 Route::get('/o365login', 'O365AuthController@o365Login');
 
-Route::get('/userlogout',function (){
+Route::get('/userlogout', function () {
     Session::flush();
     session_destroy();
     Auth::logout();
@@ -44,7 +45,7 @@ Route::get('/userlogout',function (){
 Auth::routes();
 
 //all schools, teachers and students, classes, class details.
-Route::group(['middleware' => ['web','auth','SchoolMiddleware']], function () {
+Route::group(['middleware' => ['web', 'auth', 'SchoolMiddleware']], function () {
     Route::get('/schools', 'SchoolsController@index');
     Route::get('/users/{objectId}', 'SchoolsController@users');
     Route::get('/users/next/{objectId}/{skipToken}', 'SchoolsController@usersNext');
@@ -52,7 +53,7 @@ Route::group(['middleware' => ['web','auth','SchoolMiddleware']], function () {
     Route::get('/teachers/next/{objectId}/{skipToken}', 'SchoolsController@teachersNext');
     Route::get('/classes/{objectId}', 'SchoolsController@classes');
     Route::get('/class/{objectId}/{classId}', 'SchoolsController@classDetail');
-    Route::get('/classesnext/{schoolId}/{nextLink}', 'SchoolsController@classesNext');
+    Route::get('/classes/next/{objectId}/{skipToken}', 'SchoolsController@classesNext');
     Route::post('/saveSeatingArrangements', 'SchoolsController@saveSeatingArrangements');
 });
 
@@ -66,23 +67,23 @@ Route::group(['middleware' => ['web']], function () {
     Route::any('/link/loginlocal', 'LinkController@loginLocal');
 });
 
-Route::group(['namespace'=>'Admin'], function () {
-    Route::get('/admin/consent','AdminController@consent');
+Route::group(['namespace' => 'Admin'], function () {
+    Route::get('/admin/consent', 'AdminController@consent');
     Route::post('/admin/adminconsent', 'AdminController@AdminConsent');
-    Route::get('/admin/processcode','AdminController@ProcessCode');
+    Route::get('/admin/processcode', 'AdminController@ProcessCode');
 
 });
 
 Route::get('/o365loginrequired', 'LinkController@loginO365Required');
 
 //Admin functions.
-Route::group(['middleware' => ['web','auth','Admin.Login'],'namespace'=>'Admin'], function () {
+Route::group(['middleware' => ['web', 'auth', 'Admin.Login'], 'namespace' => 'Admin'], function () {
     Route::get('/admin', 'AdminController@index');
     Route::post('/admin/adminunconsent', 'AdminController@AdminUnconsent');
-    Route::post('/admin/enableuseraccess','AdminController@EnableUserAccess');
-    Route::get('/admin/linkedaccounts','AdminController@MangeLinkedAccounts');
-    Route::get('/admin/unlinkaccounts/{userId}','AdminController@UnlinkAccount');
-    Route::post('/admin/dounlink/{userId}','AdminController@DoUnlink');
+    Route::post('/admin/enableuseraccess', 'AdminController@EnableUserAccess');
+    Route::get('/admin/linkedaccounts', 'AdminController@MangeLinkedAccounts');
+    Route::get('/admin/unlinkaccounts/{userId}', 'AdminController@UnlinkAccount');
+    Route::post('/admin/dounlink/{userId}', 'AdminController@DoUnlink');
 });
 
 Route::get('/auth/aboutme', 'Auth\AboutMeController@index');

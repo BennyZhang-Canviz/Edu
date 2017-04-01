@@ -21,8 +21,7 @@ class MapService
      */
     public static function getLatitudeAndLongitude($state, $city, $address)
     {
-        if ($state || $city || $address)
-        {
+        if ($state || $city || $address) {
             $url = sprintf("http://dev.virtualearth.net/REST/v1/Locations/US/%s/%s/%s?output=json&key=%s", $state, $city, $address, Constants::BINGMAPKEY);
             $result = HttpService::getHttpResponse("get", null, $url);
             $json = json_decode($result->getBody());

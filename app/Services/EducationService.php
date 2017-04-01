@@ -33,12 +33,13 @@ class  EducationService
     {
         $this->tokenCacheService = new TokenCacheService();
         $this->aadGraphClient = new AADGraphClient();
-        if(isset($_SESSION[SiteConstants::Session_O365_User_ID]))
-        {
+        if (isset($_SESSION[SiteConstants::Session_O365_User_ID])) {
             $this->o365UserId = $_SESSION[SiteConstants::Session_O365_User_ID];
-        }elseif (Auth::check()){
-            if(Auth::user())
-                $this->o365UserId = Auth::user()->o365UserId;
+        } else {
+            $user = Auth::user();
+            if ($user) {
+                $this->o365UserId = $user->o365UserId;
+            }
         }
 
     }
@@ -52,21 +53,20 @@ class  EducationService
     public function getMe()
     {
         $json = $this->getResponse("get", "/me?api-version=1.5", null, null, null);
-        $assignedLicenses = array_map(function($license){return new Model\AssignedLicense($license);}, $json["assignedLicenses"]);
+        $assignedLicenses = array_map(function ($license) {
+            return new Model\AssignedLicense($license);
+        }, $json["assignedLicenses"]);
         $isStudent = $this->IsUserStudent($assignedLicenses);
         $isTeacher = $this->IsUserTeacher($assignedLicenses);
         $user = new SectionUser();
-        if ($isStudent)
-        {
+        if ($isStudent) {
             $user = new Student();
-            $user->userRole=Roles::Student;
-        }
-        else if ($isTeacher)
-        {
+            $user->userRole = Roles::Student;
+        } else if ($isTeacher) {
             $user = new Teacher();
-            $user->userRole=Roles::Faculty;
-        }else{
-            $user->userRole=Roles::Admin;
+            $user->userRole = Roles::Faculty;
+        } else {
+            $user->userRole = Roles::Admin;
         }
         $user->parse($json);
         return $user;
@@ -105,31 +105,26 @@ class  EducationService
      */
     public function getMySections($loadMembers)
     {
-        $memberOfs = $this->getAllPages("get", "/me/memberOf?api-version=1.5",Section::class);
+        $memberOfs = $this->getAllPages("get", "/me/memberOf?api-version=1.5", Section::class);
         $sections = [];
-        if (empty($memberOfs))
-        {
+        if (empty($memberOfs)) {
             return $sections;
         }
-        foreach ($memberOfs as $memberOf)
-        {
-            if ($memberOf->objectType === 'Group' && $memberOf->educationObjectType === 'Section')
-            {
+        foreach ($memberOfs as $memberOf) {
+            if ($memberOf->objectType === 'Group' && $memberOf->educationObjectType === 'Section') {
                 array_push($sections, $memberOf);
             }
         }
-        if(!$loadMembers)
-        {
+        if (!$loadMembers) {
             return $sections;
         }
 
         $sectionsWithMembers = [];
-        foreach ($sections as $section)
-        {
+        foreach ($sections as $section) {
             $sectionWithMembers = $this->getSectionWithMembers($section->objectId);
             array_push($sectionsWithMembers, $sectionWithMembers);
         }
-        return $sectionsWithMembers ;
+        return $sectionsWithMembers;
     }
 
     /**
@@ -141,7 +136,7 @@ class  EducationService
      */
     public function getSectionWithMembers($objectId)
     {
-        return $this->getResponse("get", '/groups/'. $objectId . '?api-version=beta&$expand=members',Section::class,null,null);
+        return $this->getResponse("get", '/groups/' . $objectId . '?api-version=beta&$expand=members', Section::class, null, null);
     }
 
     /**
@@ -154,10 +149,10 @@ class  EducationService
     public function getMySectionsOfSchool($schoolId)
     {
         $sections = $this->getMySections(true);
-        $sectionsOfSchool =  array_filter($sections, function($section) use($schoolId){
+        $sectionsOfSchool = array_filter($sections, function ($section) use ($schoolId) {
             return ($section->schoolId === $schoolId);
         });
-        usort($sectionsOfSchool, function($a, $b){
+        usort($sectionsOfSchool, function ($a, $b) {
             return strcmp($a->combinedCourseNumber, $b->combinedCourseNumber);
         });
         return $sectionsOfSchool;
@@ -174,7 +169,7 @@ class  EducationService
      */
     public function getSections($schoolId, $top, $skipToken)
     {
-        return  $this->getResponse("get", '/groups?api-version=beta&$filter=extension_fe2174665583431c953114ff7268b7b3_Education_ObjectType%20eq%20\'Section\'%20and%20extension_fe2174665583431c953114ff7268b7b3_Education_SyncSource_SchoolId%20eq%20\''.$schoolId.'\'', Section::class, $top, $skipToken);
+        return $this->getResponse("get", '/groups?api-version=beta&$filter=extension_fe2174665583431c953114ff7268b7b3_Education_ObjectType%20eq%20\'Section\'%20and%20extension_fe2174665583431c953114ff7268b7b3_Education_SyncSource_SchoolId%20eq%20\'' . $schoolId . '\'', Section::class, $top, $skipToken);
     }
 
     /**
@@ -245,22 +240,18 @@ class  EducationService
      */
     private function getResponse($requestType, $endpoint, $returnType, $top, $skipToken)
     {
-        $token =  $this->getToken();
-        if($token)
-        {
+        $token = $this->getToken();
+        if ($token) {
             $url = Constants::AADGraph . '/' . $this->getTenantId() . $endpoint;
-            if ($top)
-            {
+            if ($top) {
                 $url = $this->appendParamToUrl($url, "\$top", $top);
             }
-            if ($skipToken)
-            {
+            if ($skipToken) {
                 $url = $this->appendParamToUrl($url, "\$skiptoken", $skipToken);
             }
             $result = HttpService::getHttpResponse($requestType, $token, $url);
             $json = json_decode($result->getBody(), true);
-            if ($returnType)
-            {
+            if ($returnType) {
                 $isArray = (array_key_exists('value', $json) && is_array($json['value']));
                 $retObj = $isArray ? new ArrayResult($returnType) : new $returnType();
                 $retObj->parse($json);
@@ -275,16 +266,15 @@ class  EducationService
      * Get all pages of data of AAD Graph API
      *
      * @param string $requestType The HTTP method to use, e.g. "GET" or "POST"
-     * @param string $endpoint    The Graph endpoint to call
-     * @param string $returnType  The type of the return object or object of an array
+     * @param string $endpoint The Graph endpoint to call
+     * @param string $returnType The type of the return object or object of an array
      *
      * @return mixed All pages of data of AAD Graph API
      */
     private function getAllPages($requestType, $endpoint, $returnType)
     {
         $data = $nextPage = $this->getResponse($requestType, $endpoint, $returnType, 100, null);
-        while($nextPage->skipToken)
-        {
+        while ($nextPage->skipToken) {
             $nextPage = $this->getResponse("get", "/administrativeUnits?api-version=beta", School::class, 100, $data->skipToken);
             $data->value = array_merge($data->value, $nextPage->value);
         }
@@ -299,11 +289,10 @@ class  EducationService
      */
     private function getToken()
     {
-        if (!isset($this->o365UserId) || strlen($this->o365UserId) == 0)
-        {
+        if (!isset($this->o365UserId) || strlen($this->o365UserId) == 0) {
             return null;
         }
-        return $this->tokenCacheService-> GetAADToken($this->o365UserId);
+        return $this->tokenCacheService->GetAADToken($this->o365UserId);
     }
 
     /**
@@ -313,8 +302,7 @@ class  EducationService
      */
     private function getTenantId()
     {
-        if (array_key_exists(SiteConstants::Session_TenantId, $_SESSION))
-        {
+        if (array_key_exists(SiteConstants::Session_TenantId, $_SESSION)) {
             return $_SESSION[SiteConstants::Session_TenantId];
         }
         return $this->aadGraphClient->GetTenantIdByUserId($this->o365UserId);

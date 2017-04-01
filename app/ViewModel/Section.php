@@ -36,12 +36,12 @@ class Section extends ParsableObject
                 "termName" => "extension_fe2174665583431c953114ff7268b7b3_Education_TermName",
                 "termId" => "extension_fe2174665583431c953114ff7268b7b3_Education_SyncSource_TermId",
                 "sectionNumber" => "extension_fe2174665583431c953114ff7268b7b3_Education_SectionNumber",
-                "sectionName" =>"extension_fe2174665583431c953114ff7268b7b3_Education_SectionName",
-                "sectionId" =>"extension_fe2174665583431c953114ff7268b7b3_Education_SyncSource_SectionId",
-                "schoolId" =>"extension_fe2174665583431c953114ff7268b7b3_Education_SyncSource_SchoolId",
-                "syncSource" =>"extension_fe2174665583431c953114ff7268b7b3_Education_SyncSource",
-                "anchorId" =>"extension_fe2174665583431c953114ff7268b7b3_Education_AnchorId",
-                "educationStatus" =>"extension_fe2174665583431c953114ff7268b7b3_Education_Status",
+                "sectionName" => "extension_fe2174665583431c953114ff7268b7b3_Education_SectionName",
+                "sectionId" => "extension_fe2174665583431c953114ff7268b7b3_Education_SyncSource_SectionId",
+                "schoolId" => "extension_fe2174665583431c953114ff7268b7b3_Education_SyncSource_SchoolId",
+                "syncSource" => "extension_fe2174665583431c953114ff7268b7b3_Education_SyncSource",
+                "anchorId" => "extension_fe2174665583431c953114ff7268b7b3_Education_AnchorId",
+                "educationStatus" => "extension_fe2174665583431c953114ff7268b7b3_Education_Status",
                 "members" => "members"
             ]);
         $this->addArrayElementTypes(["members" => SectionUser::class]);
@@ -103,23 +103,23 @@ class Section extends ParsableObject
     }
 
     public $objectId;
-    public $objectType ;
+    public $objectType;
     public $educationObjectType;
     public $displayName;
-    public $email ;
-    public $securityEnabled ;
-    public $mailNickname ;
+    public $email;
+    public $securityEnabled;
+    public $mailNickname;
     public $period;
-    public $courseNumber ;
+    public $courseNumber;
     public $courseDescription;
-    public $courseName ;
-    public $courseId ;
+    public $courseName;
+    public $courseId;
     public $termEndDate;
-    public $termStartDate ;
+    public $termStartDate;
     public $termName;
     public $termId;
-    public $sectionNumber ;
-    public $sectionName ;
+    public $sectionNumber;
+    public $sectionName;
     public $sectionId;
     public $schoolId;
     public $syncSource;

@@ -23,8 +23,7 @@ class HttpService
     {
         $client = new Client();
         $authHeader = [];
-        if ($token)
-        {
+        if ($token) {
             $authHeader = HttpService::getAuthHeader($token);
         }
         return $client->request($requestType, $url, $authHeader);

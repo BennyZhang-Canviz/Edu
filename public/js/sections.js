@@ -30,7 +30,7 @@ $(document).ready(function () {
 
         var schoolId = element.siblings("input#schoolid").val();
         var skipTokenElement = element.siblings("input#skiptoken");
-        var url = "/classesnext/"+schoolId+"/"+ skipTokenElement.val();
+        var url = "/classes/next/"+schoolId+"/"+ skipTokenElement.val();
 
         element.addClass("disabled");
         $.ajax({
