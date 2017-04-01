@@ -10,8 +10,8 @@
 @section('content')
     <?php
     use App\Config\Roles;
-
     ?>
+
     <div class="row schools sections">
         <div class="tophero">
             <div class="col-md-8">
@@ -94,25 +94,9 @@
                                             <h6>{{$class->termName}}</h6>
                                             <h5>Start/Finish Date:</h5>
                                             <h6>
-                                                <span id="termdate">
-                                                    <?php
-                                                    if(isset($class->termStartDate))
-                                                    {
-                                                        $time = strtotime($class->termStartDate);
-                                                        echo date("F d Y",$time);
-                                                    }
-                                                    ?>
-                                                   </span>
+                                                <span id="termdate">{{$class->termStartDate ? (new DateTime($class->termStartDate))->format("c") : ""}}</span>
                                                 <span> - </span>
-                                                <span id="termdate">
-                                                    <?php
-                                                    if(isset($class->termEndDate))
-                                                    {
-                                                        $time = strtotime($class->termEndDate);
-                                                        echo date("F d Y",$time);
-                                                    }
-                                                    ?>
-                                                   </span>
+                                                <span id="termdate">{{$class->termEndDate ? (new DateTime($class->termEndDate))->format("c") : ""}}</span>
                                             </h6>
                                             <h5>Period:</h5>
                                             <h6>{{$class->period}}</h6>
