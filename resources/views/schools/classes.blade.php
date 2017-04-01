@@ -151,23 +151,9 @@
                                         <h6>{{$myClass->termName}}</h6>
                                         <h5>Start/Finish Date:</h5>
                                         <h6>
-                                                <span id="termdate">
-                                                    <?php
-                                                    if (isset($myClass->termStartDate)) {
-                                                        $time = strtotime($myClass->termStartDate);
-                                                        echo date("F d Y", $time);
-                                                    }
-                                                    ?>
-                                                   </span>
+                                                <span id="termdate">{{$myClass->termStartDate ? (new DateTime($myClass->termStartDate))->format("c") : ""}}</span>
                                             <span> - </span>
-                                            <span id="termdate">
-                                                    <?php
-                                                if (isset($myClass->termEndDate)) {
-                                                    $time = strtotime($myClass->termEndDate);
-                                                    echo date("F d Y", $time);
-                                                }
-                                                ?>
-                                                   </span>
+                                            <span id="termdate">{{$myClass->termEndDate ? (new DateTime($myClass->termEndDate))->format("c") : ""}}</span>
                                         </h6>
                                         <h5>Period:</h5>
                                         <h6>{{$myClass->period}}</h6>
@@ -180,5 +166,6 @@
             </div>
         </div>
     </div>
+    <script src="{{ asset('/public/js/moment.min.js') }}"></script>
     <script src="{{ asset('/public/js/sections.js') }}"></script>
 @endsection
