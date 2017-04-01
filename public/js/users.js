@@ -13,7 +13,7 @@ $(document).ready(function () {
         tilesContainer.removeClass(tilesContainer.attr("class").replace("tiles-root-container", "")).addClass(filterType + "-container");
     });
 
-    $(".teacher-student .tiles-root-container .pagination .prev, .teacher-student .tiles-root-container .pagination .next").click(function () {
+    $(".teacher-student .tiles-root-container .pagination .prev, .teacher-student .tiles-root-container .pagination .next").click(function() {
         var element = $(this);
         if (element.hasClass("current") || element.hasClass("disabled")) {
             return;
@@ -50,13 +50,10 @@ $(document).ready(function () {
                 url: url,
                 dataType: 'json',
                 contentType: "application/json; charset=utf-8",
-                success: function (data) {
-                    if (data.errorCode === 401) {
-                        alert("Your current session has expired. Please click OK to refresh the page.");
-                        window.location.reload(false);
-                        return;
-                    }
-
+                beforeSend: function(jqXHR, settings){
+                    jqXHR.setRequestHeader("accept", "application/json");
+                },
+                success: function(data) {
                     var value = data.value;
                     if (!(value instanceof Array) || value.length == 0) {
                         return;
@@ -76,7 +73,13 @@ $(document).ready(function () {
                     hasSkipToken = typeof (newSkipToken) == "string" && newSkipToken.length > 0;
                     showPage(false, targetPageNum, hasSkipToken, prevElement, nextElement, curPageElement, content);
                 },
-                complete: function (XMLHttpRequest, textStatus, errorThrown) {
+                error: function(jqXHR, textStatus, errorThrown ) {
+                    if (jqXHR.responseJSON && jqXHR.responseJSON.errorCode === 401) {
+                        alert("Your current session has expired. Please click OK to refresh the page.");
+                        window.location.reload(false);
+                    }
+                },
+                complete: function(XMLHttpRequest, textStatus, errorThrown) {
                     prevNext.removeClass("disabled");
                 }
             });

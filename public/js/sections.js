@@ -44,13 +44,10 @@ $(document).ready(function () {
             url: url,
             dataType: 'json',
             contentType: "application/json; charset=utf-8",
-            success: function (data) {
-                if (data.errorCode === 401) {
-                    alert("Your current session has expired. Please click OK to refresh the page.");
-                    window.location.reload(false);
-                    return;
-                }
-
+            beforeSend: function(jqXHR, settings){
+                jqXHR.setRequestHeader("accept", "application/json");
+            },
+            success: function(data) {
                 var tiles = element.parent().prev(".content");
                 var newTiles = $();
                 $.each(data.value, function (i, s) {
@@ -100,7 +97,13 @@ $(document).ready(function () {
                 }
                 $(window).scrollTop($(document).height() - $(window).height())
             },
-            complete: function () {
+            error: function(jqXHR, textStatus, errorThrown ) {
+                if (jqXHR.responseJSON && jqXHR.responseJSON.errorCode === 401) {
+                    alert("Your current session has expired. Please click OK to refresh the page.");
+                    window.location.reload(false);
+                }
+            },
+            complete: function() {
                 element.removeClass("disabled");
             }
         });
