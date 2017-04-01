@@ -13,18 +13,20 @@ class O365Provider extends \SocialiteProviders\Azure\Provider
 {
 
     protected $version = '1.6';
+
     /**
      * {@inheritdoc}
+     * If there's cookie for email, add a login_hint on O365 login url.
      */
     protected function getAuthUrl($state)
     {
-        $url =  parent::getAuthUrl($state);
+        $url = parent::getAuthUrl($state);
         //login_hint
         $mail = (new CookieService)->GetCookiesOfEmail();
-        if($mail){
-            if(strpos($url,'?')>0){
+        if ($mail) {
+            if (strpos($url, '?') > 0) {
                 $url = $url . '&' . 'login_hint=' . $mail;
-            }else{
+            } else {
                 $url = $url . '?' . 'login_hint=' . $mail;
             }
         }

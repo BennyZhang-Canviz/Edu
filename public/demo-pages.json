@@ -234,6 +234,10 @@
       {
         "title": "View",
         "url": "/blob/master/resources/views/link/index.blade.php"
+      },
+      {
+        "title": "AADGraphClient",
+        "url": "/blob/master/app/Services/AADGraphClient.php"
       }
     ]
   },

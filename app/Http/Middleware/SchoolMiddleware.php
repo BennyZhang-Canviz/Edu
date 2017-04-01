@@ -12,16 +12,16 @@ use Illuminate\Support\Facades\Auth;
 class SchoolMiddleware
 {
     /**
-     * Handle an incoming request.
+     * Only linked accounts can go to schools, classes and class detail page.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
+     * @param  \Illuminate\Http\Request $request
+     * @param  \Closure $next
      * @return mixed
      */
     public function handle($request, Closure $next)
     {
         $user = Auth::user();
-        if (!$user->isLinked()){
+        if (!$user->isLinked()) {
             return redirect('/link');
         }
 

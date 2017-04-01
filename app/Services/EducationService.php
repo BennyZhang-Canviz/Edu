@@ -129,7 +129,7 @@ class  EducationService
 
     /**
      * Get a section with its members
-     *
+     * Reference URL: https://msdn.microsoft.com/office/office365/api/section-rest-operations#get-a-section.
      * @param string $objectId The object id of the section
      *
      * @return The section with its members
@@ -160,7 +160,7 @@ class  EducationService
 
     /**
      * Get sections in a school
-     *
+     * Reference URL: https://msdn.microsoft.com/office/office365/api/section-rest-operations#get-a-section.
      * @param string $schoolId The object id of the school
      * @param string $top The number of items to return in a result set
      * @param string $skipToken The token used to retrieve the next subset of the requested collection

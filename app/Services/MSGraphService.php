@@ -38,17 +38,13 @@ class MSGraphService
     public function getUserPhoto($o365UserId)
     {
         $token = $this->getToken();
-        if ($token)
-        {
-            try
-            {
+        if ($token) {
+            try {
                 return $this->graph->setAccessToken($token)
                     ->createRequest("get", "/users/$o365UserId/photo/\$value")
                     ->setReturnType(Stream::class)
                     ->execute();
-            }
-            catch (Exception $e)
-            {
+            } catch (Exception $e) {
                 return null;
             }
         }
@@ -98,8 +94,8 @@ class MSGraphService
      * Get all pages of data of MS Graph API
      *
      * @param string $requestType The HTTP method to use, e.g. "GET" or "POST"
-     * @param string $endpoint    The Graph endpoint to call
-     * @param string $returnType  The type of the return object or object of an array
+     * @param string $endpoint The Graph endpoint to call
+     * @param string $returnType The type of the return object or object of an array
      *
      * @return mixed All pages of data of MS Graph API
      */
@@ -107,14 +103,12 @@ class MSGraphService
     {
         $pages = [];
         $token = $this->getToken();
-        if ($token)
-        {
+        if ($token) {
             $request = $this->graph
                 ->setAccessToken($token)
                 ->createCollectionRequest($requestType, $endpoint)
                 ->setReturnType($returnType);
-            while(!$request->isEnd())
-            {
+            while (!$request->isEnd()) {
                 $page = $request->getPage();
                 if (is_array($page)) {
                     $pages = array_merge($pages, $page);
@@ -128,16 +122,15 @@ class MSGraphService
      * Get data of MS Graph API
      *
      * @param string $requestType The HTTP method to use, e.g. "GET" or "POST"
-     * @param string $endpoint    The Graph endpoint to call
-     * @param string $returnType  The type of the return object or object of an array
+     * @param string $endpoint The Graph endpoint to call
+     * @param string $returnType The type of the return object or object of an array
      *
      * @return mixed data of MS Graph API
      */
     private function getResponse($requestType, $endpoint, $returnType)
     {
         $token = $this->getToken();
-        if ($token)
-        {
+        if ($token) {
             return $this->graph
                 ->setAccessToken($token)
                 ->createRequest($requestType, $endpoint)
@@ -156,8 +149,7 @@ class MSGraphService
     {
         $user = Auth::user();
         $o365UserId = isset($user->o365UserId) ? $user->o365UserId : (array_key_exists(SiteConstants::Session_O365_User_ID, $_SESSION) ? $_SESSION[SiteConstants::Session_O365_User_ID] : null);
-        if (!$o365UserId)
-        {
+        if (!$o365UserId) {
             return null;
         }
         return $this->tokenCacheService->GetMicrosoftToken($o365UserId);

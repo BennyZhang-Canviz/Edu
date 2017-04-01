@@ -40,7 +40,7 @@ class O365AuthController extends Controller
         $graph = new AADGraphClient;
         $tenant = $graph->GetTenantByToken($microsoftTokenArray['token']);
         $tenantId = $graph->GetTenantId($tenant);
-        $orgId = (new OrganizationsService)->CreateByTenant($tenant, $tenantId);
+        $orgId = (new OrganizationsService)->CreateOrganization($tenant, $tenantId);
         $this->linkLocalUserToO365IfLogin($user, $o365Email, $o365UserId, $orgId);
 
         //If user exists on db, check if this user is linked. If linked, go to schools/index page, otherwise go to link page.
