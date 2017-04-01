@@ -36,9 +36,7 @@ class LinkController extends Controller
                     $isLocalUserExists = true;
                     $localUserEmail = $_SESSION[SiteConstants::Session_O365_User_Email];
                 }
-
-
-                (new AADGraphClient)->GetCurrentUser($o365userId);
+                (new AADGraphClient)->GetCurrentUserAndUpdateUserRoles($o365userId);
             }
         }
 
@@ -50,7 +48,7 @@ class LinkController extends Controller
             $o365UserIdInDB= $user->o365UserId;
             $o365UserEmailInDB=$user->o365Email;
             $localUserEmail = $user->email;
-            if( !$o365UserEmailInDB || ! $o365UserEmailInDB || $o365UserEmailInDB==='' || $o365UserIdInDB==='') {
+            if( !$o365UserEmailInDB || ! $o365UserIdInDB || $o365UserEmailInDB==='' || $o365UserIdInDB==='') {
                 //Local user login but not linked. Should show link to existing o365 account link and then login to o365.
                 $showLinkToExistingO365Account = true;
             }else{

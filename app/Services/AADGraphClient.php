@@ -6,20 +6,13 @@
 
 namespace App\Services;
 
-use App\Services\TokenCacheService;
-use App\ViewModel\SectionUser;
-use App\ViewModel\School;
-use App\ViewModel\Student;
-use App\ViewModel\Teacher;
+use App\Config\O365ProductLicenses;
+use App\Config\Roles;
+use App\Config\SiteConstants;
 use GuzzleHttp\Client;
-use Illuminate\Support\Facades\Auth;
+use Microsoft\Graph\Connect\Constants;
 use Microsoft\Graph\Graph;
 use Microsoft\Graph\Model;
-use App\Config\SiteConstants;
-use App\Config\Roles;
-use App\Config\O365ProductLicenses;
-use App\Services\UserRolesService;
-use Microsoft\Graph\Connect\Constants;
 
 class AADGraphClient
 {
@@ -34,7 +27,7 @@ class AADGraphClient
     }
 
     //Get current user and roles from AAD. Update user roles to database.
-    public function GetCurrentUser($userId)
+    public function GetCurrentUserAndUpdateUserRoles($userId)
     {
        $token =  (new TokenCacheService)->GetMicrosoftToken($userId);
        if($token){

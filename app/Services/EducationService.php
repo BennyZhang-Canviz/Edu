@@ -6,13 +6,12 @@
 
 namespace App\Services;
 
-use Exception;
 use App\Config\Roles;
 use App\Config\SiteConstants;
 use App\ViewModel\ArrayResult;
-use App\ViewModel\SectionUser;
 use App\ViewModel\School;
 use App\ViewModel\Section;
+use App\ViewModel\SectionUser;
 use App\ViewModel\Student;
 use App\ViewModel\Teacher;
 use Illuminate\Support\Facades\Auth;
