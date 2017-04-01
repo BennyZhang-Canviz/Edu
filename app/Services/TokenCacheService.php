@@ -123,8 +123,8 @@ class TokenCacheService
                     $microsoftTokenResult = $array[Constants::RESOURCE_ID]['value'];
                 }
             }
-            $format = '{"https://graph.windows.net":{"expiresOn":"%s","value":"%s"},"https://graph.microsoft.com":{"expiresOn":"%s","value":"%s"}}';
-            $tokensArray = sprintf($format, $aadTokenExpires,$aadGraphTokenResult, $microsoftTokenExpires,$microsoftTokenResult);
+            $format = '{"%s":{"expiresOn":"%s","value":"%s"},"%s":{"expiresOn":"%s","value":"%s"}}';
+            $tokensArray = sprintf($format,Constants::AADGraph, $aadTokenExpires,$aadGraphTokenResult,Constants::RESOURCE_ID, $microsoftTokenExpires,$microsoftTokenResult);
             $this->UpdateOrInsertCache($userId,$newRefreshToken,$tokensArray);
             if($resource ===Constants::RESOURCE_ID){
                 if($returnExpires)

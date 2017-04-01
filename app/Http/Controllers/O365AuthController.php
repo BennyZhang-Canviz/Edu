@@ -69,16 +69,27 @@ class O365AuthController extends Controller
         }
     }
 
+    /**
+     * Return token array and will be insert into tokencache table.
+     */
     private function getTokenArray($user, $microsoftTokenArray)
     {
         $ts = $user->accessTokenResponseBody['expires_on'];
         $date = new \DateTime("@$ts");
         $aadTokenExpires = $date->format('Y-m-d H:i:s');
-        $format = '{"https://graph.windows.net":{"expiresOn":"%s","value":"%s"},"https://graph.microsoft.com":{"expiresOn":"%s","value":"%s"}}';
-        return sprintf($format, $aadTokenExpires, $user->token, $microsoftTokenArray['expires'], $microsoftTokenArray['token']);
+        $format = '{"%s":{"expiresOn":"%s","value":"%s"},"%s":{"expiresOn":"%s","value":"%s"}}';
+        return sprintf($format,Constants::AADGraph, $aadTokenExpires, $user->token,Constants::RESOURCE_ID, $microsoftTokenArray['expires'], $microsoftTokenArray['token']);
 
     }
 
+    /**
+     * If a local user is login, link O365 user with local user.
+     * @param $user
+     * @param $o365Email
+     * @param $o365UserId
+     * @param $orgId
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     */
     private function linkLocalUserToO365IfLogin($user, $o365Email, $o365UserId, $orgId)
     {
         if (Auth::check()) {
@@ -99,6 +110,9 @@ class O365AuthController extends Controller
         }
     }
 
+    /**
+     * If an O365 user is linked and login to the site, after logout, go to this page directly for quick login.
+     */
     public function o365LoginHint()
     {
         $cookieServices = new CookieService();
@@ -114,6 +128,9 @@ class O365AuthController extends Controller
         return Socialize::with('O365')->redirect();
     }
 
+    /**
+     * This function is for O365 login hint page after a user clicks 'Login with a different account'. It will clean all cookies and then goes to login page.
+     */
     public function differentAccountLogin()
     {
         $cookieServices = new CookieService();

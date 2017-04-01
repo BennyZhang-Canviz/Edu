@@ -6,19 +6,18 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Config\SiteConstants;
+use App\Http\Controllers\Controller;
 use App\Model\Organizations;
+use App\Services\AADGraphClient;
 use App\Services\AuthenticationHelper;
 use App\Services\OrganizationsService;
 use App\Services\TokenCacheService;
 use App\User;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Controllers\Controller;
-use App\Services\AADGraphClient;
 use Illuminate\Support\Facades\Input;
 use Lcobucci\JWT\Parser;
 use Microsoft\Graph\Connect\Constants;
-use App\Config\SiteConstants;
 
 class AdminController extends Controller
 {
@@ -39,22 +38,25 @@ class AdminController extends Controller
             }
         }
         $msg = '';
+        $successMsg='';
         $consented = Input::get('consented');
         if ($consented != null) {
             if ($consented === 'true')
-                $msg = SiteConstants::AdminConsentSucceedMessage;
+                $successMsg = SiteConstants::AdminConsentSucceedMessage;
             else
-                $msg = SiteConstants::AdminUnconsentMessage;
+                $successMsg = SiteConstants::AdminUnconsentMessage;
         }
-        if(isset($_GET['msg']))
-        {
+        if (isset($_GET['msg'])) {
             $msg = $_GET['msg'];
+        }
+        if (isset($_GET['successMsg'])) {
+            $successMsg = $_GET['successMsg'];
         }
         $arrData = array(
             'IsAdminConsented' => $IsAdminConsented,
-            'msg' => $msg
+            'msg' => $msg,
+            'successMsg'=>$successMsg
         );
-
         return view('admin.index', $arrData);
     }
 
@@ -81,14 +83,8 @@ class AdminController extends Controller
         $state = uniqid();
         $_SESSION[SiteConstants::Session_State] = $state;
 
-        $provider = new \League\OAuth2\Client\Provider\GenericProvider([
-            'clientId' => Constants::CLIENT_ID,
-            'clientSecret' => Constants::CLIENT_SECRET,
-            'redirectUri' => $redirectUrl,
-            'urlAuthorize' => Constants::AUTHORITY_URL . Constants::AUTHORIZE_ENDPOINT,
-            'urlAccessToken' => Constants::AUTHORITY_URL . Constants::TOKEN_ENDPOINT,
-            'urlResourceOwnerDetails' => ''
-        ]);
+        $provider = (new AuthenticationHelper())->GetProvider($redirectUrl);
+
         $url = $provider->getAuthorizationUrl([
             'response_type' => 'code',
             'resource' => Constants::AADGraph,
@@ -109,14 +105,7 @@ class AdminController extends Controller
         }
         if ($code) {
             $redirectUrl = $_SERVER['APP_URL'] . '/admin/processcode';
-            $provider = new \League\OAuth2\Client\Provider\GenericProvider([
-                'clientId' => Constants::CLIENT_ID,
-                'clientSecret' => Constants::CLIENT_SECRET,
-                'redirectUri' => $redirectUrl,
-                'urlAuthorize' => Constants::AUTHORITY_URL . Constants::AUTHORIZE_ENDPOINT,
-                'urlAccessToken' => Constants::AUTHORITY_URL . Constants::TOKEN_ENDPOINT,
-                'urlResourceOwnerDetails' => ''
-            ]);
+            $provider = (new AuthenticationHelper())->GetProvider($redirectUrl);
             $microsoftToken = $provider->getAccessToken('authorization_code', [
                 'code' => $code,
                 'resource' => Constants::RESOURCE_ID
@@ -127,7 +116,7 @@ class AdminController extends Controller
             (new OrganizationsService)->SetTenantConsentResult($tenantId, true);
         }
 
-        $redirectUrl = '/';
+        $redirectUrl = '/admin';
         if (isset($_SESSION[SiteConstants::Session_RedirectURL])) {
             $redirectUrl = $_SESSION[SiteConstants::Session_RedirectURL];
             unset($_SESSION[SiteConstants::Session_RedirectURL]);
@@ -142,7 +131,7 @@ class AdminController extends Controller
         $o365UserId = $user->o365UserId;
         $token = (new TokenCacheService)->GetAADToken($o365UserId);
         $tenantId = (new AADGraphClient)->GetTenantIdByUserId($o365UserId);
-        $url = 'https://graph.windows.net/' . $tenantId . '/servicePrincipals/?api-version=1.6&$filter=appId%20eq%20\'' . Constants::CLIENT_ID . '\'';
+        $url = Constants::AADGraph . '/' . $tenantId . '/servicePrincipals/?api-version=1.6&$filter=appId%20eq%20\'' . Constants::CLIENT_ID . '\'';
         $client = new \GuzzleHttp\Client();
         $result = $client->request('GET', $url, [
             'headers' => [
@@ -152,7 +141,7 @@ class AdminController extends Controller
         ]);
         $app = json_decode($result->getBody())->value;
         $appId = $app[0]->objectId;
-        $url = 'https://graph.windows.net/' . $tenantId . '/servicePrincipals/' . $appId . '?api-version=1.6';
+        $url = Constants::AADGraph . '/' . $tenantId . '/servicePrincipals/' . $appId . '?api-version=1.6';
         $result = $client->request('DELETE', $url, [
             'headers' => [
                 'Content-Type' => 'application/json;odata.metadata=minimal;odata.streaming=true',
@@ -172,32 +161,32 @@ class AdminController extends Controller
         $o365UserId = $user->o365UserId;
         $tenantId = (new AADGraphClient)->GetTenantIdByUserId($o365UserId);
         $org = (new OrganizationsService)->GetOrganization($tenantId);
-        $users=[];
-        if($org){
-          $users =  User::where('OrganizationId',$org->id)
-                    ->where('o365UserId','!=',null)
-                    ->where('o365UserId','!=','')->get();
+        $users = [];
+        if ($org) {
+            $users = User::where('OrganizationId', $org->id)
+                ->where('o365UserId', '!=', null)
+                ->where('o365UserId', '!=', '')->get();
         }
-        return view('admin.manageaccounts',compact('users'));
+        return view('admin.manageaccounts', compact('users'));
     }
 
     public function UnlinkAccount($userId)
     {
-        $user = User::where('id',$userId)->first();
-        if(!$user)
-          return  redirect('/admin/linkedaccounts');
-        return view('admin.unlinkaccount',compact('user'));
+        $user = User::where('id', $userId)->first();
+        if (!$user)
+            return redirect('/admin/linkedaccounts');
+        return view('admin.unlinkaccount', compact('user'));
     }
 
     public function DoUnlink($userId)
     {
-        $user = User::where('id',$userId)->first();
-        if(!$user)
-            return  redirect('/admin/linkedaccounts');
-        $user->o365Email=null;
+        $user = User::where('id', $userId)->first();
+        if (!$user)
+            return redirect('/admin/linkedaccounts');
+        $user->o365Email = null;
         $user->o365UserId = null;
         $user->save();
-        return  redirect('/admin/linkedaccounts');
+        return redirect('/admin/linkedaccounts');
     }
 
     public function EnableUserAccess()
@@ -228,19 +217,19 @@ class AdminController extends Controller
         }
 
         try {
-          $this->AddAppRoleAssignmentForUsers($authHeader, null, $tenantId, $servicePrincipalId, $servicePrincipalName);
+            $this->AddAppRoleAssignmentForUsers($authHeader, null, $tenantId, $servicePrincipalId, $servicePrincipalName);
 
         } catch (\Exception $e) {
             return back()->with('msg', SiteConstants::EnableUserAccessFailed);
         }
-        $count ='0';
-        if(isset($_SESSION[SiteConstants::Session_EnabledUserCount]))
-            $count =(int) $_SESSION[SiteConstants::Session_EnabledUserCount];
-        $message ='There\'re no users in your tanent.';
-        if($count>0)
-            $message = 'User access was successfully enabled for '.$count.' users.';
-        $_SESSION[SiteConstants::Session_EnabledUserCount]=null;
-        header('Location: ' . '/admin?msg='.$message);
+        $count = '0';
+        if (isset($_SESSION[SiteConstants::Session_EnabledUserCount]))
+            $count = (int)$_SESSION[SiteConstants::Session_EnabledUserCount];
+        $message = 'There\'re no users in your tanent.';
+        if ($count > 0)
+            $message = 'User access was successfully enabled for ' . $count . ' users.';
+        $_SESSION[SiteConstants::Session_EnabledUserCount] = null;
+        header('Location: ' . '/admin?successMsg=' . $message);
         exit();
     }
 
@@ -256,13 +245,13 @@ class AdminController extends Controller
         $response = json_decode($result->getBody());
         $users = $response->value;
 
-        $this->AddAppRoleAssignment($authHeader,$users,$servicePrincipalId, $servicePrincipalName,$tenantId);
-        if(!isset($_SESSION[SiteConstants::Session_EnabledUserCount]))
+        $this->AddAppRoleAssignment($authHeader, $users, $servicePrincipalId, $servicePrincipalName, $tenantId);
+        if (!isset($_SESSION[SiteConstants::Session_EnabledUserCount]))
             $_SESSION[SiteConstants::Session_EnabledUserCount] = count($users);
-        else{
+        else {
             $count = (int)$_SESSION[SiteConstants::Session_EnabledUserCount];
             $count += count($users);
-            $_SESSION[SiteConstants::Session_EnabledUserCount] =$count;
+            $_SESSION[SiteConstants::Session_EnabledUserCount] = $count;
         }
         if (isset(get_object_vars($response)['odata.nextLink']))
             $nextLink = get_object_vars($response)['odata.nextLink'];
@@ -321,7 +310,7 @@ class AdminController extends Controller
             'resourceDisplayName' => $servicePrincipalName
         ];
 
-        $authHeader['body']=json_encode($body);
+        $authHeader['body'] = json_encode($body);
 
         $url = Constants::AADGraph . '/' . $tenantId . '/users/' . $user->objectId . '/appRoleAssignments?api-version=1.6';
         $res = $client->request('POST', $url, $authHeader);

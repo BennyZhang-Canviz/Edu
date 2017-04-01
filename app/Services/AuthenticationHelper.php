@@ -10,12 +10,12 @@ use Microsoft\Graph\Connect\Constants;
 
 class AuthenticationHelper
 {
-    public static function GetProvider()
+    public  function GetProvider($redirectUri=Constants::REDIRECT_URI)
     {
         $provider = new \League\OAuth2\Client\Provider\GenericProvider([
             'clientId' => Constants::CLIENT_ID,
             'clientSecret' => Constants::CLIENT_SECRET,
-            'redirectUri' => Constants::REDIRECT_URI,
+            'redirectUri' => $redirectUri,
             'urlAuthorize' => Constants::AUTHORITY_URL . Constants::AUTHORIZE_ENDPOINT,
             'urlAccessToken' => Constants::AUTHORITY_URL . Constants::TOKEN_ENDPOINT,
             'urlResourceOwnerDetails' => ''
