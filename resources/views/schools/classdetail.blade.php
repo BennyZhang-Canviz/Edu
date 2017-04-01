@@ -14,27 +14,27 @@
                 <div class="col-md-6 secondnav">
                     <a href="/schools"> All Schools</a>
                     > <a href="/classes/{{$school->objectId}}">{{$school->displayName}}</a>
-                    > {{$section->CourseName}}
+                    > {{$section->courseName}}
                 </div>
             </div>
             <div class="container">
                 <div class="a-heading ">Class Details</div>
-                <div class="b-title">{{$section->CourseNumber . " | " . $section->DisplayName}}</div>
+                <div class="b-title">{{$section->courseNumber . " | " . $section->displayName}}</div>
             </div>
             <div class="container coursedetail">
                 <div class="col-md-6">
-                    <span>Course Name:</span> {{$section->CourseName}}
+                    <span>Course Name:</span> {{$section->courseName}}
                     <br />
-                    <span>Description:</span> {{$section->CourseDescription}}
+                    <span>Description:</span> {{$section->courseDescription}}
                     <br />
-                    <span>Period:</span> {{$section->Period}}
+                    <span>Period:</span> {{$section->period}}
                     <br />
-                    <span>Term Name:</span> {{$section->TermName}}
+                    <span>Term Name:</span> {{$section->termName}}
                     <br />
                     <span>Start/Finish Date:</span>
-                    <span id="termdate">{{$section->TermStartDate ? (new DateTime($section->TermStartDate))->format("c") : ""}}</span>
+                    <span id="termdate">{{$section->termStartDate ? (new DateTime($section->termStartDate))->format("c") : ""}}</span>
                     <span id="termdate-separator"> - </span>
-                    <span id="termdate">{{$section->TermEndDate ? (new DateTime($section->TermEndDate))->format("c") : ""}}</span>
+                    <span id="termdate">{{$section->termEndDate ? (new DateTime($section->termEndDate))->format("c") : ""}}</span>
                 </div>
                 <div class="col-md-6">
                     <span>Teacher:</span>

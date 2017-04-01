@@ -147,7 +147,7 @@ class SchoolsController extends Controller
 
         $msGraph = new MSGraphService();
         $conversations = $msGraph->getGroupConversations($classId);
-        $seeMoreConversationsUrl = sprintf(Constants::O365GroupConversationsUrlFormat, $section->Email);
+        $seeMoreConversationsUrl = sprintf(Constants::O365GroupConversationsUrlFormat, $section->email);
         $driveItems = $msGraph->getGroupDriveItems($classId);
         $seeMoreFilesUrl = $msGraph->getGroupDriveRoot($classId)->getWebUrl();
         $data =
