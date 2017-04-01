@@ -109,7 +109,7 @@
                         @if($allClasses->skipToken)
                             <div class="seemore " id="see-more">
                                 <input id="skiptoken" type="hidden" value="{{$allClasses->skipToken}}"/>
-                                <input id="schoolid" type="hidden" value="{{$school->objectId}}"/>
+                                <input id="schoolid" type="hidden" value="{{$school->schoolId}}"/>
                                 <span>See More</span>
                             </div>
                         @endif

@@ -181,16 +181,15 @@ class SchoolsController extends Controller
 
     /**
      * Show next 12 schools for classes page.
-     * @param string $objectId The object id of the school
+     * @param string $schoolId The id of the school
      * @param string $skipToken The token used to retrieve the next subset of the requested collection
      * @return \Illuminate\Http\JsonResponse
      */
-    public function classesNext($objectId, $skipToken)
+    public function classesNext($schoolId, $skipToken)
     {
         $educationService = new EducationService();
-        $school = $educationService->getSchool($objectId);
-        $myClasses = $educationService->getMySectionsOfSchool($school->schoolId);
-        $allClasses = $educationService->getSections($school->schoolId, 12, $skipToken);
+        $myClasses = $educationService->getMySectionsOfSchool($schoolId);
+        $allClasses = $educationService->getSections($schoolId, 12, $skipToken);
         $this->checkClasses($allClasses, $myClasses);
         return response()->json($allClasses);
     }

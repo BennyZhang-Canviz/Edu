@@ -53,7 +53,7 @@ Route::group(['middleware' => ['web', 'auth', 'SchoolMiddleware']], function () 
     Route::get('/teachers/next/{objectId}/{skipToken}', 'SchoolsController@teachersNext');
     Route::get('/classes/{objectId}', 'SchoolsController@classes');
     Route::get('/class/{objectId}/{classId}', 'SchoolsController@classDetail');
-    Route::get('/classes/next/{objectId}/{skipToken}', 'SchoolsController@classesNext');
+    Route::get('/classes/next/{schoolId}/{skipToken}', 'SchoolsController@classesNext');
     Route::post('/saveSeatingArrangements', 'SchoolsController@saveSeatingArrangements');
 });
 

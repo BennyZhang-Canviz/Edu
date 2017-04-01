@@ -14,7 +14,7 @@ $(document).ready(function () {
             if (dateStr) {
                 $e.text(moment.utc(dateStr).local().format('MMMM D YYYY'));
             }
-        });;
+        });
     };
 
     bindShowDetail($(".section-tiles .tile-container"));

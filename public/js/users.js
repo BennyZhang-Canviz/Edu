@@ -39,9 +39,9 @@ $(document).ready(function () {
             showPage(isBackward, targetPageNum, hasSkipToken, prevElement, nextElement, curPageElement, content);
         }
         else if (hasSkipToken) {
-            var schoolId = $(".teacher-student input#school-objectid").val();
+            var objectId = $(".teacher-student input#school-objectid").val();
             var action = container.attr("id");
-            var url = "/" + action + "/next/" + schoolId + "/" + skipToken;
+            var url = "/" + action + "/next/" + objectId + "/" + skipToken;
 
             var prevNext = prevElement.add(nextElement);
             prevNext.addClass("disabled");
