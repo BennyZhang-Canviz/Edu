@@ -60,6 +60,9 @@ class AdminController extends Controller
         return view('admin.index', $arrData);
     }
 
+    /**
+     * Admin can do consent directly without login to the APP.
+     */
     public function consent()
     {
         $_SESSION[SiteConstants::Session_RedirectURL] = '/admin/consent';
@@ -77,6 +80,9 @@ class AdminController extends Controller
 
     }
 
+    /**
+     * Redirect admin to O365 login and consent page.
+     */
     public function AdminConsent()
     {
         $redirectUrl = $_SERVER['APP_URL'] . '/admin/processcode';
@@ -96,6 +102,9 @@ class AdminController extends Controller
         exit();
     }
 
+    /**
+     * Process consent result after consent and return from O365.
+     */
     public function ProcessCode()
     {
         $code = Input::get('code');
@@ -124,6 +133,7 @@ class AdminController extends Controller
         header('Location: ' . $redirectUrl . '?consented=true');
         exit();
     }
+
 
     public function AdminUnconsent()
     {
@@ -199,8 +209,6 @@ class AdminController extends Controller
         $url = Constants::AADGraph . '/' . $tenantId . '/servicePrincipals/?api-version=1.6&$filter=appId%20eq%20\'' . Constants::CLIENT_ID . '\'';
         $client = new \GuzzleHttp\Client();
         $app = null;
-        $appId = '';
-        $appName = '';
         $authHeader = [
             'headers' => [
                 'Content-Type' => 'application/json;odata.metadata=minimal;odata.streaming=true',

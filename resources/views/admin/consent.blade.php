@@ -8,7 +8,7 @@
 @extends('layouts.app')
 @section('content')
     @if(session('msg') || $msg)
-        <div class="message-container bg-danger"> <p>{{session('msg') }} <?php echo $msg; ?></p>  </div>
+        <div class="message-container bg-success"> <p>{{session('msg') }} <?php echo $msg; ?></p>  </div>
     @endif
     <h2>Admin</h2>
 @if(!$consented)

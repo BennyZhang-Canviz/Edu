@@ -26,8 +26,8 @@ class LinkController extends Controller
         $areAccountsLinked = false;
         $showLinkToExistingO365Account = false;
         $localUserEmail = '';
-        //If session exists for O365 user, it's the first time that an O365 user login.
 
+        //If session exists for O365 user, it's the first time that an O365 user login.
         if(isset($_SESSION[SiteConstants::Session_O365_User_ID])){
             $o365userId = $_SESSION[SiteConstants::Session_O365_User_ID];
             if($o365userId){
@@ -39,7 +39,6 @@ class LinkController extends Controller
                 (new AADGraphClient)->GetCurrentUserAndUpdateUserRoles($o365userId);
             }
         }
-
 
         //check if a user is login.
         $o365UserEmailInDB='';
@@ -66,7 +65,9 @@ class LinkController extends Controller
         return view("link.index",$arrData);
     }
 
-    //Create a new local account and link with O365 account.
+    /**
+     * Create a new local account and link with O365 account.
+     */
     public function createLocalAccount()
     {
 
@@ -93,6 +94,10 @@ class LinkController extends Controller
         }
         }
 
+    /**
+     * If there's a local user with same email as o365 email on db, link this account to o365 account directly and then go to schools page.
+     * If there's no local user with same email as o365 email on db, create a new user and then link.
+     */
     public function loginLocal()
     {
         $o365email = $_SESSION[SiteConstants::Session_O365_User_Email];
