@@ -21,36 +21,43 @@ class Section extends ParsableObject
             [
                 "objectId" => "objectId",
                 "objectType" => "objectType",
-                "EducationObjectType" => "extension_fe2174665583431c953114ff7268b7b3_Education_ObjectType",
-                "DisplayName" => "displayName",
-                "Email" => "mail",
-                "SecurityEnabled" => "securityEnabled",
-                "MailNickname" => "mailNickname",
-                "Period" => "extension_fe2174665583431c953114ff7268b7b3_Education_Period",
-                "CourseNumber" => "extension_fe2174665583431c953114ff7268b7b3_Education_CourseNumber",
-                "CourseDescription" => "extension_fe2174665583431c953114ff7268b7b3_Education_CourseDescription",
-                "CourseName" => "extension_fe2174665583431c953114ff7268b7b3_Education_CourseName",
-                "CourseId" => "extension_fe2174665583431c953114ff7268b7b3_Education_SyncSource_CourseId",
-                "TermEndDate" => "extension_fe2174665583431c953114ff7268b7b3_Education_TermEndDate",
-                "TermStartDate" => "extension_fe2174665583431c953114ff7268b7b3_Education_TermStartDate",
-                "TermName" => "extension_fe2174665583431c953114ff7268b7b3_Education_TermName",
-                "TermId" => "extension_fe2174665583431c953114ff7268b7b3_Education_SyncSource_TermId",
-                "SectionNumber" => "extension_fe2174665583431c953114ff7268b7b3_Education_SectionNumber",
-                "SectionName" =>"extension_fe2174665583431c953114ff7268b7b3_Education_SectionName",
-                "SectionId" =>"extension_fe2174665583431c953114ff7268b7b3_Education_SyncSource_SectionId",
-                "SchoolId" =>"extension_fe2174665583431c953114ff7268b7b3_Education_SyncSource_SchoolId",
-                "SyncSource" =>"extension_fe2174665583431c953114ff7268b7b3_Education_SyncSource",
-                "AnchorId" =>"extension_fe2174665583431c953114ff7268b7b3_Education_AnchorId",
-                "EducationStatus" =>"extension_fe2174665583431c953114ff7268b7b3_Education_Status",
-                "NextLinkURL"=>"odata.nextLink",
+                "educationObjectType" => "extension_fe2174665583431c953114ff7268b7b3_Education_ObjectType",
+                "displayName" => "displayName",
+                "email" => "mail",
+                "securityEnabled" => "securityEnabled",
+                "mailNickname" => "mailNickname",
+                "period" => "extension_fe2174665583431c953114ff7268b7b3_Education_Period",
+                "courseNumber" => "extension_fe2174665583431c953114ff7268b7b3_Education_CourseNumber",
+                "courseDescription" => "extension_fe2174665583431c953114ff7268b7b3_Education_CourseDescription",
+                "courseName" => "extension_fe2174665583431c953114ff7268b7b3_Education_CourseName",
+                "courseId" => "extension_fe2174665583431c953114ff7268b7b3_Education_SyncSource_CourseId",
+                "termEndDate" => "extension_fe2174665583431c953114ff7268b7b3_Education_TermEndDate",
+                "termStartDate" => "extension_fe2174665583431c953114ff7268b7b3_Education_TermStartDate",
+                "termName" => "extension_fe2174665583431c953114ff7268b7b3_Education_TermName",
+                "termId" => "extension_fe2174665583431c953114ff7268b7b3_Education_SyncSource_TermId",
+                "sectionNumber" => "extension_fe2174665583431c953114ff7268b7b3_Education_SectionNumber",
+                "sectionName" =>"extension_fe2174665583431c953114ff7268b7b3_Education_SectionName",
+                "sectionId" =>"extension_fe2174665583431c953114ff7268b7b3_Education_SyncSource_SectionId",
+                "schoolId" =>"extension_fe2174665583431c953114ff7268b7b3_Education_SyncSource_SchoolId",
+                "syncSource" =>"extension_fe2174665583431c953114ff7268b7b3_Education_SyncSource",
+                "anchorId" =>"extension_fe2174665583431c953114ff7268b7b3_Education_AnchorId",
+                "educationStatus" =>"extension_fe2174665583431c953114ff7268b7b3_Education_Status",
                 "members" => "members"
             ]);
         $this->addArrayElementTypes(["members" => SectionUser::class]);
     }
 
-    public function CombinedCourseNumber()
+    /**
+     * Parse json data to the object
+     *
+     * @param string $json The json data
+     *
+     * @return void
+     */
+    public function parse($json)
     {
-        return strtoupper(substr($this->CourseName,3)) + $this->GetCourseNumber($this->CourseNumber);
+        parent::parse($json);
+        $this->combinedCourseNumber = $this->getCombinedCourseNumber();
     }
 
     /**
@@ -73,40 +80,52 @@ class Section extends ParsableObject
         return collect($this->members)->where("educationObjectType", "=", EduConstants::TeacherObjectType)->all();
     }
 
-    private function GetCourseNumber($courseNumber)
+    /**
+     * Get the combination of course name and course number
+     *
+     * @return string The combination of course name and course number
+     */
+    public function getCombinedCourseNumber()
     {
-        $pattern = '/\d+/';
-        preg_match($pattern, $courseNumber, $match);
-        if (count($match) == 0)
-            return '';
-        return $match[0];
+        return strtoupper(substr($this->courseName, 0, 3)) . $this->getCourseNumber();
+    }
+
+    /**
+     * Get the digits in course number
+     *
+     * @return string The digits in course number
+     */
+    private function getCourseNumber()
+    {
+        $match = [];
+        preg_match('/\d+/', $this->courseNumber, $match);
+        return count($match) === 0 ? '' : $match[0];
     }
 
     public $objectId;
     public $objectType ;
-    public $EducationObjectType ;
-    public $DisplayName;
-    public $Email ;
-    public $SecurityEnabled ;
-    public $MailNickname ;
-    public $Period;
-    public $CourseNumber ;
-    public $CourseDescription;
-    public $CourseName ;
-    public $CourseId ;
-    public $TermEndDate;
-    public $TermStartDate ;
-    public $TermName;
-    public $TermId;
-    public $SectionNumber ;
-    public $SectionName ;
-    public $SectionId;
-    public $SchoolId;
-    public $SyncSource;
-    public $AnchorId;
-    public $EducationStatus;
-    public $IsMySection;
-    public $NextLinkURL;
-    public $CombinedCNumber;
+    public $educationObjectType;
+    public $displayName;
+    public $email ;
+    public $securityEnabled ;
+    public $mailNickname ;
+    public $period;
+    public $courseNumber ;
+    public $courseDescription;
+    public $courseName ;
+    public $courseId ;
+    public $termEndDate;
+    public $termStartDate ;
+    public $termName;
+    public $termId;
+    public $sectionNumber ;
+    public $sectionName ;
+    public $sectionId;
+    public $schoolId;
+    public $syncSource;
+    public $anchorId;
+    public $educationStatus;
+    public $isMySection;
+    public $combinedCourseNumber;
     public $members;
 }

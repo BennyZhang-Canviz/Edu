@@ -25,9 +25,9 @@ class SchoolsController extends Controller
      */
     public function index()
     {
-        $educationServiceClient = new EducationService();
-        $me = $educationServiceClient->getMe();
-        $schools = $educationServiceClient->getSchools();
+        $educationService = new EducationService();
+        $me = $educationService->getMe();
+        $schools = $educationService->getSchools();
         foreach($schools as $school)
         {
             $school->isMySchool = $school->schoolId === $me->schoolId;
@@ -38,7 +38,8 @@ class SchoolsController extends Controller
                 $school->longitude = $ll[1];
             }
         }
-        // sort schools: my schools will be in front of
+
+        // sort schools: firstly sort by whether it's my school, secondly sort by the display name
         usort($schools, function($a, $b){
             if ($a->isMySchool xor $b->isMySchool)
             {
@@ -51,10 +52,9 @@ class SchoolsController extends Controller
         });
 
         $cookieServices = new CookieService();
-        $cookieServices->SetCookies($me->displayName,$me->mail);
+        $cookieServices->SetCookies($me->displayName, $me->mail);
 
         $data = ["me" => $me, "schools" => $schools, "bingMapKey" => Constants::BINGMAPKEY];
-
         return view('schools.schools', $data);
     }
 
@@ -67,11 +67,11 @@ class SchoolsController extends Controller
      */
     public function users($objectId)
     {
-        $educationServiceClient = new EducationService();
-        $school = $educationServiceClient->getSchool($objectId);
-        $users = $educationServiceClient->getMembers($objectId, 12, null);
-        $students = $educationServiceClient->getStudents($school->schoolId, 12, null);
-        $teachers = $educationServiceClient->getTeachers($school->schoolId, 12, null);
+        $educationService = new EducationService();
+        $school = $educationService->getSchool($objectId);
+        $users = $educationService->getMembers($objectId, 12, null);
+        $students = $educationService->getStudents($school->schoolId, 12, null);
+        $teachers = $educationService->getTeachers($school->schoolId, 12, null);
         $data = ["school" => $school, "users" => $users, "students" => $students, "teachers" => $teachers];
 
         return view('schools.users', $data);
@@ -87,8 +87,8 @@ class SchoolsController extends Controller
      */
     public function usersNext($objectId, $skipToken)
     {
-        $educationServiceClient = new EducationService();
-        $users = $educationServiceClient->getMembers($objectId, 12, $skipToken);
+        $educationService = new EducationService();
+        $users = $educationService->getMembers($objectId, 12, $skipToken);
         return response()->json($users);
     }
 
@@ -102,9 +102,9 @@ class SchoolsController extends Controller
      */
     public function studentsNext($objectId, $skipToken)
     {
-        $educationServiceClient = new EducationService();
-        $school = $educationServiceClient->getSchool($objectId);
-        $students = $educationServiceClient->getStudents($school->schoolId, 12, $skipToken);
+        $educationService = new EducationService();
+        $school = $educationService->getSchool($objectId);
+        $students = $educationService->getStudents($school->schoolId, 12, $skipToken);
         return response()->json($students);
     }
 
@@ -118,9 +118,9 @@ class SchoolsController extends Controller
      */
     public function teachersNext($objectId, $skipToken)
     {
-        $educationServiceClient = new EducationService();
-        $school = $educationServiceClient->getSchool($objectId);
-        $teachers = $educationServiceClient->getTeachers($school->schoolId, 12, $skipToken);
+        $educationService = new EducationService();
+        $school = $educationService->getSchool($objectId);
+        $teachers = $educationService->getTeachers($school->schoolId, 12, $skipToken);
         return response()->json($teachers);
     }
 
@@ -135,10 +135,10 @@ class SchoolsController extends Controller
     public function classDetail($objectId, $classId)
     {
         $curUser = Auth::user();
-        $educationServiceClient = new EducationService();
-        $me = $educationServiceClient->getMe();
-        $school = $educationServiceClient->getSchool($objectId);
-        $section = $educationServiceClient->getSectionWithMembers($classId);
+        $educationService = new EducationService();
+        $me = $educationService->getMe();
+        $school = $educationService->getSchool($objectId);
+        $section = $educationService->getSectionWithMembers($classId);
         foreach($section->getStudents() as $student)
         {
             $student->position = UserService::getSeatPositionInClass($student->o365UserId, $classId);
@@ -167,40 +167,21 @@ class SchoolsController extends Controller
     }
 
     /**
-     * The education service
-     *
-     * @var string
-     */
-    private $educationServiceClient;
-
-    /**
      * Display all classes of a school.
      * @param $objectId
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function classes($objectId)
     {
-        $educationServiceClient = new EducationService();
-        $me = $educationServiceClient->getMe();
-        $school = $educationServiceClient->getSchool($objectId);
+        $educationService = new EducationService();
+        $me = $educationService->getMe();
+        $school = $educationService->getSchool($objectId);
         $schoolId = $school->schoolId;
-        $myClasses =  $educationServiceClient->getMySectionsOfSchool($schoolId);
-        $allClasses = $educationServiceClient->getSections($schoolId,12,null);
+        $myClasses =  $educationService->getMySectionsOfSchool($schoolId);
+        $allClasses = $educationService->getSections($schoolId,12,null);
+        $this->checkClasses($allClasses, $myClasses);
 
-        foreach ($allClasses->value as $class1) {
-            $class1->IsMySection=false;
-            foreach ($myClasses as $class2){
-                if($class1->Email == $class2->Email){
-                    {
-                        $class1->IsMySection=true;
-                        $class1->members = $class2->members;
-                        break;
-                    }
-                }
-            }
-        }
-
-        $data = ["myClasses" => $myClasses, "allClasses"=>$allClasses,"school" => $school,"me"=>$me];
+        $data = ["myClasses" => $myClasses, "allClasses" => $allClasses, "school" => $school, "me" => $me];
         return view('schools.classes',$data);
     }
 
@@ -210,17 +191,14 @@ class SchoolsController extends Controller
      * @param $nextLink
      * @return \Illuminate\Http\JsonResponse
      */
-    public function classesNext($schoolId,$nextLink)
+    public function classesNext($schoolId, $nextLink)
     {
-        $educationServiceClient = new EducationService();
-        $myClasses =  $educationServiceClient->getMySectionsOfSchool($schoolId);
-        $school = $educationServiceClient->getSchool($schoolId);
-        $allClasses = $educationServiceClient->getSections($school->schoolId,12,$nextLink);
-        foreach ($allClasses->value as $class) {
-            $class->CombinedCNumber = $class->CombinedCourseNumber();
-        }
-        return  response()->json(['Sections' => $allClasses,'MySections'=>$myClasses,'School'=>$school]);
-
+        $educationService = new EducationService();
+        $school = $educationService->getSchool($schoolId);
+        $myClasses =  $educationService->getMySectionsOfSchool($school->schoolId);
+        $allClasses = $educationService->getSections($school->schoolId,12,$nextLink);
+        $this->checkClasses($allClasses, $myClasses);
+        return  response()->json($allClasses);
     }
 
     /**
@@ -264,5 +242,29 @@ class SchoolsController extends Controller
     {
         $succeeded = UserService::saveSeatingArrangements(Input::all());
         return response()->json([], $succeeded ? 200 : 500);
+    }
+
+    /**
+     * Check every class if it's my class by comparing with known my classes, if true, set its members from the known my class
+     *
+     * @param array $allClasses The classes to check
+     * @param array $myClasses The known my classes
+     *
+     * @return void
+     */
+    private function checkClasses($allClasses, $myClasses)
+    {
+        foreach ($allClasses->value as $class1)
+        {
+            $class1->isMySection = false;
+            foreach ($myClasses as $class2)
+            {
+                if($class1->email === $class2->email){
+                    $class1->isMySection = true;
+                    $class1->members = $class2->members;
+                    break;
+                }
+            }
+        }
     }
 }

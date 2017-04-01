@@ -67,21 +67,21 @@
                         <div class="content clearfix">
                             @foreach($allClasses->value as $class)
                                 <div class="tile-container">
-                                    @if($class->IsMySection)
+                                    @if($class->isMySection)
                                         <a class="mysectionlink" href="{{url('/class/'.$school->objectId.'/'.$class->objectId)}}">
                                     @endif
                                     <div class="tile">
-                                        <h5>{{$class->DisplayName}}</h5>
-                                        <h2>{{$class->CombinedCourseNumber()}}</h2>
+                                        <h5>{{$class->displayName}}</h5>
+                                        <h2>{{$class->combinedCourseNumber}}</h2>
                                     </div>
-                                    @if($class->IsMySection)
+                                    @if($class->isMySection)
                                         </a>
                                     @endif
                                         <div class="detail">
                                             <h5>Course Id:</h5>
-                                            <h6>{{$class->CourseId}}</h6>
+                                            <h6>{{$class->courseId}}</h6>
                                             <h5>Description:</h5>
-                                            <h6>{{$class->CourseDescription}}</h6>
+                                            <h6>{{$class->courseDescription}}</h6>
                                             <h5>Teachers:</h5>
                                             @if($teachers = $class->getTeachers())
                                                 @foreach($teachers as $user)
@@ -91,14 +91,14 @@
                                                 @endforeach
                                             @endif
                                             <h5>Term Name:</h5>
-                                            <h6>{{$class->TermName}}</h6>
+                                            <h6>{{$class->termName}}</h6>
                                             <h5>Start/Finish Date:</h5>
                                             <h6>
                                                 <span id="termdate">
                                                     <?php
-                                                    if(isset($class->TermStartDate))
+                                                    if(isset($class->termStartDate))
                                                     {
-                                                        $time = strtotime($class->TermStartDate);
+                                                        $time = strtotime($class->termStartDate);
                                                         echo date("F d Y",$time);
                                                     }
                                                     ?>
@@ -106,23 +106,23 @@
                                                 <span> - </span>
                                                 <span id="termdate">
                                                     <?php
-                                                    if(isset($class->TermEndDate))
+                                                    if(isset($class->termEndDate))
                                                     {
-                                                        $time = strtotime($class->TermEndDate);
+                                                        $time = strtotime($class->termEndDate);
                                                         echo date("F d Y",$time);
                                                     }
                                                     ?>
                                                    </span>
                                             </h6>
                                             <h5>Period:</h5>
-                                            <h6>{{$class->Period}}</h6>
+                                            <h6>{{$class->period}}</h6>
                                         </div>
                                 </div>
                             @endforeach
                         </div>
                         @if($allClasses->skipToken)
                         <div class="seemore " id="see-more">
-                            <input id="nextlink" type="hidden" value="{{$allClasses->skipToken}}" />
+                            <input id="skiptoken" type="hidden" value="{{$allClasses->skipToken}}" />
                             <input id="schoolid" type="hidden" value="{{$school->objectId}}" />
                             <span>See More</span>
                         </div>
@@ -134,7 +134,7 @@
             <div id="myclasses" class="tiles-secondary-container">
                 <div class="section-tiles">
                     @if(count($myClasses)===0)
-                        @if($me->userRole ===Roles::Faculty)
+                        @if($me->userRole === Roles::Faculty)
                             <div class="nodata"> Not teaching any classes.</div>
                         @else
                             <div class="nodata"> Not enrolled in any classes.</div>
@@ -145,15 +145,15 @@
                                 <div class="tile-container">
                                     <a class="mysectionlink" href="{{url('/class/'.$school->objectId.'/'.$myClass->objectId)}}">
                                     <div class="tile">
-                                        <h5>{{$myClass->DisplayName}}</h5>
-                                        <h2>{{$myClass->CombinedCourseNumber()}}</h2>
+                                        <h5>{{$myClass->displayName}}</h5>
+                                        <h2>{{$myClass->combinedCourseNumber}}</h2>
                                     </div>
                                     </a>
                                     <div class="detail">
                                         <h5>Course Id:</h5>
-                                        <h6>{{$myClass->CourseId}}</h6>
+                                        <h6>{{$myClass->courseId}}</h6>
                                         <h5>Description:</h5>
-                                        <h6>{{$myClass->CourseDescription}}</h6>
+                                        <h6>{{$myClass->courseDescription}}</h6>
                                         <h5>Teachers:</h5>
                                           @foreach($myClass->getTeachers() as $user)
                                            @if($user->educationObjectType==='Teacher')
@@ -161,14 +161,14 @@
                                             @endif
                                            @endforeach
                                             <h5>Term Name:</h5>
-                                            <h6>{{$myClass->TermName}}</h6>
+                                            <h6>{{$myClass->termName}}</h6>
                                             <h5>Start/Finish Date:</h5>
                                             <h6>
                                                 <span id="termdate">
                                                     <?php
-                                                    if(isset($myClass->TermStartDate))
+                                                    if(isset($myClass->termStartDate))
                                                         {
-                                                            $time = strtotime($myClass->TermStartDate);
+                                                            $time = strtotime($myClass->termStartDate);
                                                             echo date("F d Y",$time);
                                                         }
                                                     ?>
@@ -176,16 +176,16 @@
                                                 <span> - </span>
                                                 <span id="termdate">
                                                     <?php
-                                                    if(isset($myClass->TermEndDate))
+                                                    if(isset($myClass->termEndDate))
                                                     {
-                                                        $time = strtotime($myClass->TermEndDate);
+                                                        $time = strtotime($myClass->termEndDate);
                                                         echo date("F d Y",$time);
                                                     }
                                                     ?>
                                                    </span>
                                             </h6>
                                             <h5>Period:</h5>
-                                            <h6>{{$myClass->Period}}</h6>
+                                            <h6>{{$myClass->period}}</h6>
                                     </div>
                                 </div>
                             @endforeach

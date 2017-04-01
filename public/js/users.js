@@ -51,7 +51,7 @@ $(document).ready(function () {
                 dataType: 'json',
                 contentType: "application/json; charset=utf-8",
                 success: function (data) {
-                    if (data.error === "AdalException" || data.error === "Unauthorized") {
+                    if (data.errorCode === 401) {
                         alert("Your current session has expired. Please click OK to refresh the page.");
                         window.location.reload(false);
                         return;

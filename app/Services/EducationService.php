@@ -6,6 +6,7 @@
 
 namespace App\Services;
 
+use Exception;
 use App\Config\Roles;
 use App\Config\SiteConstants;
 use App\ViewModel\ArrayResult;
@@ -22,7 +23,7 @@ class  EducationService
 {
     private $tokenCacheService;
     private $o365UserId;
-    private $AADGraphClient;
+    private $aadGraphClient;
 
     /**
      * Create a new instance.
@@ -32,7 +33,7 @@ class  EducationService
     public function __construct()
     {
         $this->tokenCacheService = new TokenCacheService();
-        $this->AADGraphClient = new AADGraphClient();
+        $this->aadGraphClient = new AADGraphClient();
         if(isset($_SESSION[SiteConstants::Session_O365_User_ID]))
         {
             $this->o365UserId = $_SESSION[SiteConstants::Session_O365_User_ID];
@@ -113,7 +114,7 @@ class  EducationService
         }
         foreach ($memberOfs as $memberOf)
         {
-            if ($memberOf->objectType === 'Group' && $memberOf->EducationObjectType === 'Section')
+            if ($memberOf->objectType === 'Group' && $memberOf->educationObjectType === 'Section')
             {
                 array_push($sections, $memberOf);
             }
@@ -155,10 +156,10 @@ class  EducationService
     {
         $sections = $this->getMySections(true);
         $sectionsOfSchool =  array_filter($sections, function($section) use($schoolId){
-            return ($section->SchoolId === $schoolId);
+            return ($section->schoolId === $schoolId);
         });
         usort($sectionsOfSchool, function($a, $b){
-            return strcmp($a->CombinedCourseNumber(), $b->CombinedCourseNumber());
+            return strcmp($a->combinedCourseNumber, $b->combinedCourseNumber);
         });
         return $sectionsOfSchool;
     }
@@ -224,12 +225,12 @@ class  EducationService
 
     private function IsUserStudent($licenses)
     {
-        return $this->AADGraphClient->IsUserStudent($licenses);
+        return $this->aadGraphClient->IsUserStudent($licenses);
     }
 
     private function IsUserTeacher($licenses)
     {
-        return $this->AADGraphClient->IsUserTeacher($licenses);
+        return $this->aadGraphClient->IsUserTeacher($licenses);
     }
 
     /**
@@ -248,7 +249,7 @@ class  EducationService
         $token =  $this->getToken();
         if($token)
         {
-            $url = Constants::AADGraph . '/' . $_SESSION[SiteConstants::Session_TenantId] . $endpoint;
+            $url = Constants::AADGraph . '/' . $this->getTenantId() . $endpoint;
             if ($top)
             {
                 $url = $this->appendParamToUrl($url, "\$top", $top);
@@ -261,7 +262,7 @@ class  EducationService
             $json = json_decode($result->getBody(), true);
             if ($returnType)
             {
-                $isArray = (array_key_exists('value', $json) and is_array($json['value']));
+                $isArray = (array_key_exists('value', $json) && is_array($json['value']));
                 $retObj = $isArray ? new ArrayResult($returnType) : new $returnType();
                 $retObj->parse($json);
                 return $retObj;
@@ -299,11 +300,25 @@ class  EducationService
      */
     private function getToken()
     {
-        if (!isset($this->o365UserId) or strlen($this->o365UserId) == 0)
+        if (!isset($this->o365UserId) || strlen($this->o365UserId) == 0)
         {
             return null;
         }
         return $this->tokenCacheService-> GetAADToken($this->o365UserId);
+    }
+
+    /**
+     * Get tenant id
+     *
+     * @return string The tenant id
+     */
+    private function getTenantId()
+    {
+        if (array_key_exists(SiteConstants::Session_TenantId, $_SESSION))
+        {
+            return $_SESSION[SiteConstants::Session_TenantId];
+        }
+        return $this->aadGraphClient->GetTenantIdByUserId($this->o365UserId);
     }
 
     /**
